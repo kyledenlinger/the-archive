@@ -1,0 +1,60 @@
+import { useState } from 'react';
+import { BookOpen } from 'lucide-react';
+import { FlipStop, LICENSE_IDS, LicenseId } from '../content/types';
+import { ChoiceButton } from '../components/ChoiceButton';
+
+interface Props {
+  flip: FlipStop;
+  onChoose: (license: LicenseId) => void;
+  openReference?: () => void;
+}
+
+export function LicensePicker({ flip, onChoose, openReference }: Props) {
+  const [shown, setShown] = useState<Partial<Record<LicenseId, boolean>>>({});
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap justify-between items-baseline gap-4">
+        <h2 className="text-amber-200 text-sm uppercase tracking-widest font-bold">Choose a license</h2>
+        {openReference && (
+          <button type="button" onClick={openReference} className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-200 text-sm">
+            <BookOpen size={16} aria-hidden="true" /> Open the reference desk
+          </button>
+        )}
+      </div>
+      <ul className="space-y-4">
+        {LICENSE_IDS.map((id) => {
+          const l = flip.licenses[id];
+          const summaryId = `license-summary-${id}`;
+          return (
+            <li key={id} className="bg-stone-900/50 border border-amber-900/30 rounded-2xl p-6 space-y-4">
+              <h3 className="text-amber-100 font-serif text-2xl">{l.label}</h3>
+              <p className="font-serif italic text-amber-50/80">
+                <span className="not-italic text-[10px] font-bold tracking-[0.3em] text-amber-500 uppercase mr-2">The Clerk:</span>“{l.clerkGloss}”
+              </p>
+              <button
+                type="button"
+                aria-expanded={Boolean(shown[id])}
+                aria-controls={summaryId}
+                aria-label={`What ${l.label} actually means`}
+                onClick={() => setShown((s) => ({ ...s, [id]: !s[id] }))}
+                className="text-sm text-amber-400 hover:text-amber-200 underline underline-offset-4"
+              >
+                {shown[id] ? 'Hide' : 'What this actually means'}
+              </button>
+              {shown[id] && (
+                <p id={summaryId} className="text-sm text-amber-50/90 bg-stone-950/60 border-l-2 border-amber-600 p-4">
+                  {l.summary}
+                </p>
+              )}
+              <div>
+                <ChoiceButton className="choice-btn !w-auto !p-4" ariaLabel={`Choose ${l.label}`} onSelect={() => onChoose(id)}>
+                  Choose this license
+                </ChoiceButton>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}

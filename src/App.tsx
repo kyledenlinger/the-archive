@@ -11,6 +11,7 @@ import { Onboarding } from './screens/Onboarding';
 import { PersonaSelect } from './screens/PersonaSelect';
 import { Stop } from './screens/Stop';
 import { Interstitial } from './screens/Interstitial';
+import { Flip } from './screens/Flip';
 import { ScreenProps } from './screens/types';
 
 function NotYetBuilt(_: ScreenProps) {
@@ -33,6 +34,8 @@ function CurrentScreen(props: ScreenProps) {
       return <Stop {...props} />;
     case 'interstitial':
       return <Interstitial {...props} />;
+    case 'flip':
+      return <Flip {...props} />;
     default:
       return <NotYetBuilt {...props} />;
   }
@@ -51,7 +54,7 @@ export default function App({ seed, content = defaultContent }: { seed?: number;
       <div className="min-h-screen bg-stone-950 text-amber-50 selection:bg-amber-500/30 selection:text-amber-200 overflow-x-hidden">
         {showCart && <CartBar cart={state.cart} content={content} personaName={persona?.name} />}
         <main className="relative z-10" key={`${state.screen}-${state.stopIndex}`}>
-          <CurrentScreen state={state} dispatch={dispatch} content={content} />
+          <CurrentScreen state={state} dispatch={dispatch} content={content} openReference={openRef} />
         </main>
         <ReferencePanel entries={content.reference} resources={content.resources} revealed={state.revealed} open={refOpen} onOpen={openRef} onClose={closeRef} />
         <div className="fixed inset-0 pointer-events-none opacity-20" aria-hidden="true">

@@ -6,17 +6,20 @@ export function ChoiceButton({
   disabled,
   children,
   className = 'choice-btn',
+  ariaLabel,
 }: {
   onSelect: () => void;
   disabled?: boolean;
   children: ReactNode;
   className?: string;
+  ariaLabel?: string;
 }) {
   const fired = useRef(false);
   return (
     <button
       type="button"
       disabled={disabled}
+      aria-label={ariaLabel}
       className={className}
       onClick={() => {
         if (fired.current || disabled) return;

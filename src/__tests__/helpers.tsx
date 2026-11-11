@@ -32,3 +32,10 @@ export async function passStopWithFirstChoice(user: ReturnType<typeof userEvent.
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
   await user.click(screen.getByRole('button', { name: content.interstitial.continueLabel }));
 }
+
+/** Play from the start through stop 3 (first plain choice each time), landing on the flip. */
+export async function toFlip(persona: PersonaId, mode: Mode = 'class') {
+  const user = await startAs(persona, mode);
+  for (let i = 0; i < 3; i++) await passStopWithFirstChoice(user);
+  return user;
+}

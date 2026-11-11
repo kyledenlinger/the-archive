@@ -8,8 +8,9 @@ import { stop1Free } from './stops/stop1-free';
 import { stop2Layers } from './stops/stop2-layers';
 import { stop3Permission } from './stops/stop3-permission';
 import { ask } from './ask';
+import { stop4Flip } from './stops/stop4-flip';
+import { clerk } from './clerk';
 import { fairUse } from './fairUse';
-import { placeholderClerk, placeholderFlip } from './placeholders';
 
 export const content: GameContent = {
   personas,
@@ -18,11 +19,11 @@ export const content: GameContent = {
     free: stop1Free,
     layers: stop2Layers,
     permission: stop3Permission,
-    flip: placeholderFlip,
+    flip: stop4Flip,
   },
   fairUse,
   ask,
-  clerk: placeholderClerk,
+  clerk,
   reference,
   resources,
   interstitial,

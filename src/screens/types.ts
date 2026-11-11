@@ -6,4 +6,6 @@ export interface ScreenProps {
   state: GameState;
   dispatch: Dispatch<Action>;
   content: GameContent;
+  /** Opens the reference panel (owned by App). */
+  openReference?: () => void;
 }
