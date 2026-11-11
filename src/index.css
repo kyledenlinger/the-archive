@@ -23,7 +23,7 @@
   }
 
   .choice-btn {
-    @apply w-full text-left p-6 rounded-xl border border-amber-900/30 bg-stone-900/40 
+    @apply disabled:opacity-50 w-full text-left p-6 rounded-xl border border-amber-900/30 bg-stone-900/40 
            hover:bg-amber-900/20 hover:border-amber-500/50 transition-all 
            font-serif text-amber-100 flex items-center justify-between;
   }
@@ -49,4 +49,14 @@
 
 ::-webkit-scrollbar-thumb {
   @apply bg-amber-900/50 rounded-full hover:bg-amber-800/50 transition-colors;
+}
+
+/* Visible keyboard focus on every interactive element */
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, a:focus-visible {
+  outline: 2px solid var(--color-amber-300);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
