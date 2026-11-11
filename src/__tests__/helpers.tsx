@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { content } from '../content';
-import { Mode, PersonaId } from '../content/types';
+import { GuessId, LicenseId, Mode, PersonaId, ReuseResponse } from '../content/types';
 
 export async function startAs(persona: PersonaId, mode: Mode = 'class') {
   const user = userEvent.setup();
@@ -38,4 +38,23 @@ export async function toFlip(persona: PersonaId, mode: Mode = 'class') {
   const user = await startAs(persona, mode);
   for (let i = 0; i < 3; i++) await passStopWithFirstChoice(user);
   return user;
+}
+
+/** Play the flip with one license and the same response for every event, ending on the guess screen. */
+export async function throughFlip(user: ReturnType<typeof userEvent.setup>, license: LicenseId = 'cc-by', response: ReuseResponse = 'credit') {
+  const flip = content.stops.flip;
+  await user.click(screen.getByRole('button', { name: /Start with your work/ }));
+  await user.click(screen.getByRole('button', { name: `Choose ${flip.licenses[license].label}` }));
+  for (let i = 0; i < 3; i++) {
+    await user.click(screen.getByRole('button', { name: flip.responses[response].label }));
+    await user.click(screen.getByRole('button', { name: /^Next/ }));
+  }
+  await user.click(screen.getByRole('button', { name: /^Continue/ }));
+}
+
+/** From the guess screen: guess, then read the reveal through to the ending choice. */
+export async function guessAndReveal(user: ReturnType<typeof userEvent.setup>, guess: GuessId = 'letter') {
+  const label = content.clerk.guessOptions.find((g) => g.id === guess)!.label;
+  await user.click(screen.getByRole('button', { name: label }));
+  for (let i = 1; i < content.clerk.reveal.length; i++) await user.click(screen.getByRole('button', { name: /^Continue/ }));
 }

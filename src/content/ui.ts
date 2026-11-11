@@ -12,3 +12,23 @@ export const ui = {
   personaHeading: 'Who are you?',
   personaIntro: 'Pick the creator you’ll play. It decides what you’re looking for, and what’s at stake when you find it.',
 };
+
+// End-of-game framing text (cart review).
+export const endUi = {
+  revealHeading: 'The answer',
+  endingQuestion: 'What do you do for him?',
+  guessHeading: 'What is the Clerk?',
+  cartHeading: 'Your cart',
+  guessLine: (guess: string) => `Your guess: ${guess}. The Clerk was a scrapbook.`,
+  facilitatorLine: 'Facilitator: use these cart notes as case documents for the full-room debrief.',
+  independentSummary:
+    'You filled your cart with four decisions, each with a reason behind it. None of them is the answer; each is a position you could explain and defend, which is most of what working with copyright comes down to.',
+  resourcesHeading: 'Where to find work you can use',
+};
+
+/** Labels for the flip's cart note, one per reuse event. */
+export const flipNoteLabels = {
+  within: 'When someone used it within your terms:',
+  outside: 'When someone went outside them:',
+  beyond: 'When someone asked for more:',
+};

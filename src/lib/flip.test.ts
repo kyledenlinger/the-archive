@@ -18,3 +18,11 @@ test('flipCartNote lists the license and the three notes in order', () => {
   expect(note.indexOf('CREDIT.')).toBeLessThan(note.indexOf('TAKEDOWN.'));
   expect(note.indexOf('TAKEDOWN.')).toBeLessThan(note.indexOf('NEGOTIATE.'));
 });
+
+test('flipCartNote labels each response with its event when labels are given', () => {
+  const flip = makeValidContent().stops.flip;
+  flip.licenses.cc0.label = 'CC0';
+  flip.responses.negotiate.cartNote = 'Negotiated.';
+  const note = flipCartNote(flip, 'cc0', { within: 'negotiate', outside: 'negotiate', beyond: 'negotiate' }, { within: 'W:', outside: 'O:', beyond: 'B:' });
+  expect(note).toBe('CC0. W: Negotiated. O: Negotiated. B: Negotiated.');
+});

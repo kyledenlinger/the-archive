@@ -9,6 +9,7 @@ import { ChoiceButton } from '../components/ChoiceButton';
 import { btnLink, btnPrimary, eyebrow, page } from '../components/styles';
 import { LicensePicker } from '../mechanics/LicensePicker';
 import { ReuseEvents } from '../mechanics/ReuseEvents';
+import { flipNoteLabels } from '../content/ui';
 import { ScreenProps } from './types';
 
 type Phase = 'intro' | 'license' | 'events' | 'askForHelp';
@@ -22,7 +23,7 @@ export function Flip({ state, dispatch, content, openReference }: ScreenProps) {
   const finish = () => {
     const r = state.flip.responses;
     if (!license || !r.within || !r.outside || !r.beyond) return;
-    dispatch({ type: 'FINISH_FLIP', cartNote: flipCartNote(flip, license, r as Record<ReuseEventKind, ReuseResponse>) });
+    dispatch({ type: 'FINISH_FLIP', cartNote: flipCartNote(flip, license, r as Record<ReuseEventKind, ReuseResponse>, flipNoteLabels) });
   };
 
   return (

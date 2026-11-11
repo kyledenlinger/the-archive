@@ -5,22 +5,17 @@ import { GameContent } from './content/types';
 import { initialState, reducer } from './state';
 import { CartBar } from './components/CartBar';
 import { ReferencePanel } from './components/ReferencePanel';
-import { ScreenHeading } from './components/ScreenHeading';
 import { ModeSelect } from './screens/ModeSelect';
 import { Onboarding } from './screens/Onboarding';
 import { PersonaSelect } from './screens/PersonaSelect';
 import { Stop } from './screens/Stop';
 import { Interstitial } from './screens/Interstitial';
 import { Flip } from './screens/Flip';
+import { Guess } from './screens/Guess';
+import { Reveal } from './screens/Reveal';
+import { Ending } from './screens/Ending';
+import { CartReview } from './screens/CartReview';
 import { ScreenProps } from './screens/types';
-
-function NotYetBuilt(_: ScreenProps) {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <ScreenHeading className="text-2xl font-serif italic text-amber-100">Under construction</ScreenHeading>
-    </div>
-  );
-}
 
 function CurrentScreen(props: ScreenProps) {
   switch (props.state.screen) {
@@ -36,8 +31,14 @@ function CurrentScreen(props: ScreenProps) {
       return <Interstitial {...props} />;
     case 'flip':
       return <Flip {...props} />;
-    default:
-      return <NotYetBuilt {...props} />;
+    case 'guess':
+      return <Guess {...props} />;
+    case 'reveal':
+      return <Reveal {...props} />;
+    case 'ending':
+      return <Ending {...props} />;
+    case 'cart':
+      return <CartReview {...props} />;
   }
 }
 

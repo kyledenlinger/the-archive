@@ -6,6 +6,12 @@ export function resolveReuse(flip: FlipStop, persona: PersonaId, kind: ReuseEven
   return flip.events[persona][kind].situation[license];
 }
 
-export function flipCartNote(flip: FlipStop, license: LicenseId, responses: Record<ReuseEventKind, ReuseResponse>): string {
-  return [flip.licenses[license].label + '.', ...REUSE_ORDER.map((k) => flip.responses[responses[k]].cartNote)].join(' ');
+export function flipCartNote(
+  flip: FlipStop,
+  license: LicenseId,
+  responses: Record<ReuseEventKind, ReuseResponse>,
+  labels?: Record<ReuseEventKind, string>,
+): string {
+  const notes = REUSE_ORDER.map((k) => (labels ? `${labels[k]} ` : '') + flip.responses[responses[k]].cartNote);
+  return [flip.licenses[license].label + '.', ...notes].join(' ');
 }
