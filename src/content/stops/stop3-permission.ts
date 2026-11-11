@@ -4,22 +4,22 @@ export const stop3Permission: StandardStop = {
   id: 'permission',
   title: 'Permission Isn’t Only About Copyright',
   clerkIntro:
-    'This wing is quieter. Everything here came with paperwork: licenses, terms of service, little boxes you ticked without reading. Copyright says what the law allows. These say what you agreed to. They don’t always line up. And sometimes (this is going to sound radical) you can simply ask.',
+    'This wing is quieter. Everything in it came with paperwork: licenses, terms of service, the little boxes you ticked without reading. Copyright tells you what the law allows, and this paperwork tells you what you agreed to. The two don’t always line up. And sometimes, and I know this sounds radical, you can just ask.',
   clerkClue:
-    'As you walk, he recites, half to himself: “Keep this safe until I come back for it.” He glances at you. “Somebody wrote that to me, once.” Further on, a brass sign reads TAKEDOWN REQUESTS. He flinches as you pass it.',
+    'As you walk, he says something half to himself: “Keep this safe until I come back for it.” He glances at you. “Somebody wrote that to me, once.” A little farther on you pass a brass sign that reads TAKEDOWN REQUESTS, and he flinches.',
   setup: {
     chronicler:
-      'You paid for a stock clip of floodwater rushing through a culvert. The license you clicked through says “editorial use only.” Your festival screening is presented by a sponsor, a regional bank, whose logo opens every program.',
+      'The Clerk pulls the paperwork for a clip that’s already in your film: stock footage of floodwater rushing through a culvert, which you paid for. The license you clicked through says “editorial use only.” Your festival screening is presented by a sponsor, a regional bank, whose logo opens every program.',
     herald:
-      'Your video uses a trending song from the app’s built-in sound library, which the platform has licensed for use on its own app. Now you want to cross-post the same video to another platform and run it as a paid promotion for a sponsor.',
+      'The Clerk pulls the paperwork for the song in your latest video, a trending track from the app’s built-in sound library. The platform has licensed that library for use on its own app. Now you want to cross-post the same video to another platform and run it as a paid promotion for a sponsor.',
     naturalist:
-      'For an explainer about a rare salamander, you generated an illustration with an AI image tool, since no photo of it hunting exists. You used the free tier. The tool’s terms say free-tier images are for non-commercial use only. Your channel earns ad revenue.',
+      'The Clerk pulls the terms for an illustration in your next explainer, about a rare salamander. No photo of it hunting exists, so you made the illustration with an AI image tool, on the free tier. The tool’s terms say free-tier images are for non-commercial use only, and your channel earns ad revenue.',
     artificer:
-      'You want to collage a photograph from a living artist’s online portfolio: a striking image of a flooded greenhouse. No license is stated. The portfolio lists a contact email, and the artist posted something new last week.',
+      'For your next collage you want a photograph with no paperwork at all: a striking image of a flooded greenhouse from a living artist’s online portfolio. No license is stated. The portfolio lists a contact email, and the artist posted something new last week.',
     bard:
-      'You generated a backing track with an AI music generator. Its terms grant commercial rights to output only on paid plans, and you made the track on the free plan. You’re about to release on streaming services.',
+      'The Clerk pulls the terms for the backing track on your new song, which you made with an AI music generator. Its terms grant commercial rights to output only on paid plans, and you made the track on the free plan. You’re about to release the song on streaming services.',
     conjurer:
-      'Your game uses an asset-store pack of tile art, licensed for use in games but not for redistributing the assets themselves, and a font whose desktop license covers print and images. Now you want to open-source the whole game on GitHub, assets and all.',
+      'The Clerk pulls two licenses from your game. One covers an asset-store pack of tile art, licensed for use in games but not for redistributing the assets themselves. The other covers a font, and its desktop license covers print and images. Now you want to open-source the whole game on GitHub, assets and all.',
   },
   complication:
     'Copyright isn’t the only thing in play here. You agreed to terms, or someone else set them. Those terms are a contract, and they can say no where copyright law alone might say yes, or yes where it might not.',
@@ -29,7 +29,7 @@ export const stop3Permission: StandardStop = {
       label: 'Use it.',
       outcome: {
         chronicler: {
-          text: 'You use it. The festival screens the film, and nobody says anything. Streaming, your next hope, would be a different screening entirely.',
+          text: 'You use it. The festival screens the film, and nobody says anything. Streaming, which you’re hoping for next, would be a different kind of screening entirely.',
           cartNote:
             'Used an “editorial use only” stock clip in a sponsored festival screening. The question here is the license, not copyright: a sponsor-presented event may fall outside “editorial,” and streaming almost certainly would. The exposure is contractual: the agency can demand a fee or end the license.',
         },
