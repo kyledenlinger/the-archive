@@ -14,9 +14,9 @@ export const stop4Flip: FlipStop = {
   id: 'flip',
   title: 'The Flip',
   clerkIntro:
-    'Last stop. This one’s different. Turn around. You made something, and it’s in here now too. Everything ends up here eventually. The only question is what it says on the label. Choose carefully. Or don’t, honestly; they’re all defensible. That’s not advice, obviously.',
+    'Last stop, and this one’s a little different. Turn around. That’s yours, on the shelf behind you. You made something, and it ended up in here too. Everything does, eventually. The only question is what it says on the label. Choose carefully. Or don’t, honestly; they’re all defensible. That’s not advice, obviously.',
   clerkClue:
-    'He watches you reach for the license cards with an intensity you haven’t seen from him before. He doesn’t blink. When you glance over, he looks away, embarrassed.',
+    'As you reach for the license cards, he watches more closely than he has watched anything all day. When you glance over, he looks away, embarrassed.',
   setup: {
     chronicler: 'Your documentary premiered at the festival. People cried at the flood footage. It’s out in the world now.',
     herald: 'A graphic you made, a cartoon raccoon pulling an all-nighter, has gone semi-viral.',
@@ -75,10 +75,10 @@ export const stop4Flip: FlipStop = {
       outside: {
         setup: 'A video channel uploads your entire film under its own title, with no credit. It’s running ads.',
         situation: sit(
-          'Copying the whole film without permission. A clear infringement, and video platforms have a takedown process for exactly this.',
+          'This is copying the whole film without permission, which is a clear infringement, and video platforms have a takedown process for exactly this.',
           'Your license allowed reuploading, ads and all, but only with credit. No credit puts them outside your terms. (CC 4.0 licenses give someone 30 days to fix a lapse like this once they’re told about it.)',
           'Reuploading was allowed with credit, under the same license. No credit and a new title put them outside your terms.',
-          'Ads make this commercial, and there’s no credit. Outside your terms twice over.',
+          'The ads make this commercial, and there’s no credit, so it’s outside your terms on both counts.',
           'You waived your rights, so the upload itself is allowed, ads included. Claiming they made it is a separate problem: platforms may act on that deception, but it isn’t a copyright violation.',
         ),
       },
@@ -140,7 +140,7 @@ export const stop4Flip: FlipStop = {
       outside: {
         setup: 'A news site runs your photo at the top of an article about winter wildlife, with no credit.',
         situation: sit(
-          'Using your photo without permission. A story about the viral photo itself might support fair use, but using it simply as an illustration usually doesn’t.',
+          'This uses your photo without permission. A story about the viral photo itself might support fair use, but using it simply as an illustration usually doesn’t.',
           'Your license allowed this, with credit. Without credit, they’re outside your terms.',
           'Allowed with credit; they gave none. Outside your terms.',
           'A commercial news site with no credit is outside your terms on both counts, unless the story is about the photo itself and fair use applies.',
@@ -172,7 +172,7 @@ export const stop4Flip: FlipStop = {
       outside: {
         setup: 'A fast-fashion site is selling T-shirts printed with your collage. You found out from a friend who bought one.',
         situation: sit(
-          'Printing and selling your collage without permission. A clear infringement, and a common one.',
+          'This is printing and selling your collage without permission: a clear infringement, and a common one.',
           'Your license would have allowed commercial shirts, with credit. Uncredited shirts are outside your terms. CC BY is generous: with credit, this is part of what it permits.',
           'Credited shirts would be allowed, and an altered design would have to carry CC BY-SA. Uncredited shirts are outside your terms.',
           'Selling shirts is commercial: outside your terms, credit or not.',
@@ -207,7 +207,7 @@ export const stop4Flip: FlipStop = {
           'Using your recording in an ad without permission is infringement, and the kind of use that normally comes with a license fee.',
           'Commercial use was allowed with credit, but they gave none. Outside your terms.',
           'Under CC licenses, setting music to video counts as an adaptation, so the ad itself would have to carry CC BY-SA, plus credit. Neither happened.',
-          'An ad is commercial. Outside your terms.',
+          'An ad is commercial, so this is outside your terms.',
           'Allowed. Under CC0, a brand can use your track in an ad without paying or crediting you.',
         ),
       },
@@ -236,10 +236,10 @@ export const stop4Flip: FlipStop = {
       outside: {
         setup: 'Someone uploads your game, unchanged, to another storefront under their own name, and charges for it.',
         situation: sit(
-          'Copying and selling your game without permission. Infringement; storefronts have takedown processes.',
+          'This is copying and selling your game without permission, which is infringement. Storefronts have takedown processes for it.',
           'Selling copies would have been allowed, with credit. Passing it off under their own name puts them outside your terms.',
           'Selling copies with credit, under the same license, would be allowed. Passing it off as their own isn’t.',
-          'Selling it is commercial. Outside your terms.',
+          'Selling it is commercial, so this is outside your terms.',
           'Allowed: CC0 lets anyone sell copies. Claiming they made it may break the storefront’s rules, but it doesn’t break your license.',
         ),
       },
