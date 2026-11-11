@@ -17,7 +17,8 @@ export function CartBar({ cart, content, personaName }: { cart: Partial<Record<S
             <li key={id} className={`flex items-center gap-1.5 ${has ? 'text-amber-300' : 'text-amber-200/50'}`} data-testid={`cart-slot-${id}`} data-filled={has} title={cart[id]}>
               <span aria-hidden="true">{has ? '■' : '□'}</span>
               <span>
-                {i + 1}. {content.stops[id].title}
+                {i + 1}.<span className="hidden md:inline"> {content.stops[id].title}</span>
+                <span className="sr-only md:hidden"> {content.stops[id].title}</span>
               </span>
               <span className="sr-only">{has ? '(filled)' : '(empty)'}</span>
             </li>

@@ -39,10 +39,10 @@ export function ReferencePanel({ entries, resources, revealed, open, onOpen, onC
         type="button"
         onClick={onOpen}
         aria-expanded={open}
-        className="fixed right-0 top-1/2 -translate-y-1/2 bg-amber-900/80 text-amber-100 p-3 rounded-l-xl border-l border-y border-amber-700/50 shadow-xl z-40 hover:bg-amber-800 transition-colors flex flex-col items-center gap-2"
+        className="fixed z-40 bg-amber-900/90 text-amber-100 border border-amber-700/50 shadow-xl hover:bg-amber-800 transition-colors flex items-center gap-2 bottom-4 right-4 rounded-full px-4 py-3 md:bottom-auto md:right-0 md:top-1/2 md:-translate-y-1/2 md:flex-col md:rounded-none md:rounded-l-xl md:border-r-0 md:px-3"
       >
         <BookOpen size={20} aria-hidden="true" />
-        <span className="[writing-mode:vertical-rl] text-xs font-medium tracking-widest uppercase">Reference</span>
+        <span className="md:[writing-mode:vertical-rl] text-xs font-medium tracking-widest uppercase">Reference</span>
       </button>
 
       {open && (
