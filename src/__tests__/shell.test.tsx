@@ -61,3 +61,12 @@ test('mode select to persona select by keyboard alone', async () => {
   }
   expect(screen.getByRole('heading', { level: 1, name: 'Who are you?' })).toBeInTheDocument();
 });
+
+test('while the reference desk is open, the game behind it is inert', async () => {
+  const user = await toOnboarding();
+  await user.click(screen.getByRole('button', { name: /Reference/ }));
+  expect(document.querySelector('main')).toHaveAttribute('inert');
+  await user.keyboard('{Escape}');
+  expect(document.querySelector('main')).not.toHaveAttribute('inert');
+  expect(screen.getByTestId('onboarding-line')).toHaveTextContent(lines[0]);
+});

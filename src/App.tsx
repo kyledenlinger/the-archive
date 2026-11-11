@@ -53,8 +53,8 @@ export default function App({ seed, content = defaultContent }: { seed?: number;
   return (
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen bg-stone-950 text-amber-50 selection:bg-amber-500/30 selection:text-amber-200 overflow-x-hidden">
-        {showCart && <CartBar cart={state.cart} content={content} personaName={persona?.name} />}
-        <main className="relative z-10" key={`${state.screen}-${state.stopIndex}`}>
+        {showCart && <div inert={refOpen}><CartBar cart={state.cart} content={content} personaName={persona?.name} /></div>}
+        <main className="relative z-10" key={`${state.screen}-${state.stopIndex}`} inert={refOpen}>
           <CurrentScreen state={state} dispatch={dispatch} content={content} openReference={openRef} />
         </main>
         <ReferencePanel entries={content.reference} resources={content.resources} revealed={state.revealed} open={refOpen} onOpen={openRef} onClose={closeRef} />
