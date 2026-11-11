@@ -2,10 +2,10 @@ import { ClerkContent } from './types';
 
 export const clerk: ClerkContent = {
   askForHelp:
-    'He has been watching the whole time. When you finish, he steps closer and holds out his ink-stained hands, palms up, as if there were something in them. “Could you do that for me? Put a name on me. A license. Anything.”',
+    'He has been watching the whole time. When you finish, he steps closer and holds out his ink-stained hands, palms up, as if he were offering you something. “Could you do that for me? Put a name on me, or a license. Anything.”',
 
   guessPrompt:
-    'Before you answer him, a question of your own. All along, the Clerk has been dropping hints about what he is. What do you think he is?',
+    'Before you answer, you think back over the things he has let slip along the way. What do you think the Clerk really is?',
   guessOptions: [
     { id: 'photograph', label: 'A photograph' },
     { id: 'song', label: 'A song' },
@@ -15,10 +15,10 @@ export const clerk: ClerkContent = {
   ],
 
   reveal: [
-    'You want to say yes. But you know the answer now, and so does he. You can’t license a work you don’t own, and you can’t release it, either. Only its creator can do that. Or time, when the term finally runs out.',
+    'You want to say yes, but you know the answer now, and so does he. You can’t license a work you don’t own, and you can’t release it, either. Only its creator can do that, or time, when the copyright term finally runs out.',
     'He nods slowly, as if he’d known all along. “Nobody’s ever been able to tell me who made me,” he says. “I suppose that’s the whole trouble.”',
-    'Then he opens his jacket, and there is no jacket. There never was. He is pages: a scrapbook, its spine cracked and mended with tape. Unlabeled photographs held in by paper corners. Letters in three different hands. Newspaper clippings with the dates torn off. And, pressed flat between two pages, a concert program from a night nobody remembers.',
-    'Every clue was true. The tune he couldn’t place comes from the program. He was developed, once: the photographs. Somebody wrote to him: the letters. No name tag, because none of his makers ever signed him. He is a stack of orphan works, bound together, every layer with its own missing creator.',
+    'Then he opens his jacket, and you see that it was never really a jacket. He’s made of pages. He’s a scrapbook, with a cracked spine mended with tape, full of unlabeled photographs held in by paper corners, letters in three different handwritings, and newspaper clippings with the dates torn off. Pressed flat between two of the pages is a concert program from a night nobody remembers.',
+    'Suddenly the hints make sense. The tune he couldn’t place comes from the concert program. The photographs are why he was “developed” once, and the letters are what somebody wrote to him. He has no name tag because none of the people who made him ever signed their work. He’s a stack of orphan works, bound together, and every piece has its own missing creator.',
     '“That’s not advice, obviously,” he says. “Just what I am.”',
   ],
 
@@ -26,7 +26,7 @@ export const clerk: ClerkContent = {
     search: {
       label: 'Search for his compiler.',
       scene:
-        'You start a diligent search: library catalogs, the newspapers his clippings came from, the venue printed on the concert program. It takes weeks. And you find a name: the woman who assembled him, in an estate-sale listing from 1989. Her heirs might be able to license the scrapbook as a compilation, since the selection and arrangement were hers. But every photograph, letter, and clipping inside him still has its own missing creator. The search answered one question and uncovered forty. The trade-off: real progress at a real cost, and a much clearer record for the next person who looks.',
+        'You start a diligent search: library catalogs, the newspapers his clippings came from, the venue printed on the concert program. It takes weeks. And you find a name: the woman who assembled him, in an estate-sale listing from 1989. Her heirs might be able to license the scrapbook as a compilation, since the selection and arrangement were hers. But every photograph, letter, and clipping inside him still has its own missing creator. The search answered one question and raised forty more. The trade-off: real progress at a real cost, and a much clearer record for the next person who looks.',
     },
     shelf: {
       label: 'Leave him on the shelf.',
