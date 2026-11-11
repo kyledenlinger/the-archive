@@ -1,7 +1,7 @@
 import { AskContent } from './types';
 
 export const ask: AskContent = {
-  intro: 'You start drafting a message. The clearer it is about what you want, the easier it is to say yes to. Leave anything blank you like.',
+  intro: 'You start drafting a message. The clearer it is about what you want, the easier it is for someone to say yes. You can leave any part blank.',
   fieldOptions: {
     what: { label: 'What you want to use', options: ['The whole thing', 'A short excerpt or clip', 'One image or one track', 'Part of it, adapted'] },
     how: { label: 'How you’ll use it', options: ['Unchanged, with credit', 'Edited or remixed', 'In the background', 'As the centerpiece'] },
@@ -24,7 +24,7 @@ export const ask: AskContent = {
         cartNote: 'Asked; the agency declined. The license doesn’t cover this use. Fair use can answer a copyright claim, but not a breach of the license you agreed to.',
       },
       silence: {
-        text: 'Two weeks, no reply. The festival is in three. Silence isn’t a yes, and the license still says editorial only.',
+        text: 'Two weeks go by with no reply, and the festival is in three. Silence isn’t a yes, and the license still says editorial only.',
         cartNote: 'Asked; no reply. Silence isn’t a yes, and the license still says editorial use only.',
       },
     },
@@ -42,7 +42,7 @@ export const ask: AskContent = {
         cartNote: 'Asked; declined. The promoted version needs a different track. A no doesn’t end the fair use question, but a song used as an ad’s soundtrack is a weak fair use case.',
       },
       silence: {
-        text: 'Your message goes to a general inbox. Nothing comes back. Silence isn’t a yes.',
+        text: 'Your message goes to a general inbox, and nothing comes back. Silence isn’t a yes.',
         cartNote: 'Asked; no reply. Silence isn’t a yes.',
       },
     },
@@ -79,7 +79,7 @@ export const ask: AskContent = {
           'Asked; politely declined. Permission is off the table. A genuinely transformative collage might still have a fair use argument, but you’d be using the work over the artist’s stated objection.',
       },
       silence: {
-        text: 'A week passes. Then two. Silence isn’t a yes.',
+        text: 'Two weeks pass with no reply. Silence isn’t a yes.',
         cartNote: 'Asked; no reply. Silence isn’t a yes.',
       },
     },
@@ -116,7 +116,7 @@ export const ask: AskContent = {
           'Asked; the asset creator declined redistribution. Keep the assets out of the public repository. Fair use is weak where your use stands in for buying the pack.',
       },
       silence: {
-        text: 'The asset store shows your message as delivered. That’s all. Silence isn’t a yes.',
+        text: 'The asset store shows your message as delivered, and that’s all. Silence isn’t a yes.',
         cartNote: 'Asked; no reply. Silence isn’t a yes, and the license still forbids redistribution.',
       },
     },
