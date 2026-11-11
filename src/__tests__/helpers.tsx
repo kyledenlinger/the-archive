@@ -20,3 +20,15 @@ export async function enterStop(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole('button', { name: /Look closer/ }));
 }
 
+
+/** Record a stop with its first plain choice and pass the class-mode wait screen. */
+export async function passStopWithFirstChoice(user: ReturnType<typeof userEvent.setup>) {
+  await enterStop(user);
+  const stop = [content.stops.free, content.stops.layers, content.stops.permission].find((s) =>
+    screen.queryByText(s.complication),
+  )!;
+  const first = stop.choices.find((c) => !c.mechanic)!;
+  await user.click(screen.getByRole('button', { name: first.label }));
+  await user.click(screen.getByRole('button', { name: /Add to cart/ }));
+  await user.click(screen.getByRole('button', { name: content.interstitial.continueLabel }));
+}
