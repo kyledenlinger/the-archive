@@ -9,17 +9,17 @@ export const fairUse: FairUseContent = {
       text: {
         free: {
           chronicler:
-            'Your film would use the clip to show what the flood looked like and how the town saw it at the time. The clip becomes evidence in your story, which leans transformative, especially if your narration comments on the coverage itself. As pure atmosphere, less so. A festival screening is close to noncommercial; a later streaming deal is not.',
+            'Your film would use the clip to show what the flood looked like and how the town saw it at the time. The clip becomes evidence in your story, which leans transformative, especially if your narration comments on the coverage itself. If it’s only there for atmosphere, less so. A festival screening is close to noncommercial; a later streaming deal is not.',
           herald:
-            'Your post would use the photo as a joke about late-night studying. Memes can add new meaning through captions, which can be transformative. But the joke leans on the same thing that made the photo funny in the first place, and it’s a promotional post.',
+            'Your post would use the photo for a joke about late-night studying. Memes can add new meaning through their captions, which can be transformative. But your joke depends on the same thing that made the photo funny in the first place, and the post is promotional.',
           naturalist:
-            'You’d illustrate an article about owl hunting with a photo of an owl hunting. Educational, yes, but that’s the same reason the photographer took it. Not much of a new purpose, and your channel earns money.',
+            'You’d illustrate an article about owl hunting with a photo of an owl hunting. That’s educational, but it’s also the reason the photographer took the picture, so it isn’t much of a new purpose. And your channel earns money.',
           artificer:
             'Collage can be strongly transformative: you’d cut the moth apart, combine it with other material, and give it a new meaning. How much of the original survives, and how recognizable it stays, matters. You’d also be selling prints.',
           bard:
             'You’d loop the break as the rhythmic foundation of a new track. Courts have been tough on music sampling, and using a beat as a beat is close to its original purpose. A commercial release adds weight.',
           conjurer:
-            'The sprites would be the potions in your game. That’s game art used as game art, exactly what it was made for. Not transformative, and commercial if you charge for the game.',
+            'The sprites would be the potions in your game: game art used as game art, exactly what it was made for. That isn’t transformative, and it’s commercial if you charge for the game.',
         },
         layers: {
           chronicler: "The newsreel would establish what the town looked like before the flood: historical context in a documentary, a reasonably strong purpose. But the layer that’s still protected is the 2010 score, and using a score as a score isn’t transformative.",
@@ -46,7 +46,7 @@ export const fairUse: FairUseContent = {
       text: {
         free: {
           chronicler: 'News footage is mostly factual, which helps you. The camera work and editing still involve creative choices, but factual works get thinner protection.',
-          herald: 'A candid snapshot is creative, but not elaborately so. Photos are treated as creative works; a casual one, somewhat less.',
+          herald: 'Photos are treated as creative works, though a casual snapshot like this one counts as somewhat less creative than an elaborately staged one.',
           naturalist: 'The owl is real, but the timing, framing, and technique are the photographer’s creative choices. This is treated as a creative work.',
           artificer: 'An original ink illustration is highly creative. This factor leans against fair use, though it rarely decides a case on its own.',
           bard: 'A drum performance on a record is creative expression. This leans against you.',
@@ -80,7 +80,7 @@ export const fairUse: FairUseContent = {
           naturalist: 'The whole photo. For an illustration, there isn’t another way to use it.',
           artificer: 'Maybe just the wings, cut up and recombined. Smaller, less recognizable portions help your argument.',
           bard: 'Two bars, looped. Small in seconds, but if it’s the most distinctive part of the record, it may be the heart of it.',
-          conjurer: 'The whole sheet: every sprite.',
+          conjurer: 'The whole sheet, every sprite on it.',
         },
         layers: {
           chronicler: "A few seconds of footage, but the score runs under all of it.",

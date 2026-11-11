@@ -66,7 +66,7 @@ Mode is stored in game state.
 
 ### 3.2 Onboarding
 
-Adapted from v2’s onboarding: the player meets The Clerk, a small, rumpled, unauthorized stowaway with ink-stained fingers. The scene is reframed from “the place where all audio lives” to “the place where everything anyone ever made ends up.” The first orphan-work clue is planted here (§6.2).
+Adapted from v2’s onboarding: the player meets The Clerk, a small, rumpled, unauthorized stowaway with ink-stained fingers. The scene opens by establishing the player’s purpose: they’re a creator who needs material for a project, and they’ve come to the Archive, where a copy of almost everything ends up sooner or later, including most of what’s ever been posted online. The first orphan-work clue is planted here (§6.2).
 
 ### 3.3 Persona select
 

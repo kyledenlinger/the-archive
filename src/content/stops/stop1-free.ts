@@ -4,25 +4,25 @@ export const stop1Free: StandardStop = {
   id: 'free',
   title: 'The “Free” Thing That Isn’t',
   clerkIntro:
-    'First stop. Popular section, this one. Everything here is out in the open: posted, pinned, re-uploaded, shared ten thousand times. People assume that if they can reach it, they can use it. It’s a very understandable assumption.',
+    'First stop. This section gets a lot of visitors. Everything on these shelves was posted and reposted so many times that nobody remembers where it started. People assume that if they can reach something, they can use it. It’s a very understandable assumption.',
   clerkClue:
-    'He reads the little card beside one item aloud: “No license stated.” Then he goes quiet for a moment. When he starts walking again, he’s humming something, a tune he doesn’t seem able to place.',
+    'He stops at a shelf and reads a small card out loud: “No license stated.” For a moment he doesn’t say anything. When he starts walking again, he’s humming a tune, and he frowns a little, as if he can’t remember where he heard it.',
   setup: {
     chronicler:
-      'Your documentary is about a 1970s flood that reshaped your town. Deep in a video site you find exactly what you need: a local TV news clip from that week, water in the streets, a reporter in a soaked raincoat. It was uploaded by an account called vhs_rescues_77, which has nothing to do with the station. The station itself closed in 1994.',
+      'Your documentary is about a 1970s flood that reshaped your town, and you need footage from that week. On this shelf you find exactly that: a local TV news clip, with water in the streets and a reporter in a soaked raincoat. Its tag says it was uploaded to a video site by an account called vhs_rescues_77, which has nothing to do with the station. The station itself closed in 1994.',
     herald:
-      'A photo is everywhere this week: a raccoon staring into a vending machine, captioned a hundred different ways. It would be perfect for your organization’s post about late-night study hours. Nobody seems to know who took it. Every repost credits a different account, or no one.',
+      'You need an image for your organization’s post about late-night study hours, and this shelf has the one everyone is sharing this week: a raccoon staring into a vending machine, captioned a hundred different ways. Nobody seems to know who took it. Every copy credits a different account, or no one.',
     naturalist:
-      'You’re writing a blog post on how owls hunt in snow, and you find a stunning photo of a great gray owl mid-plunge on a hobbyist’s birding blog. The blog has a name, a few years of posts, and no license anywhere on the page.',
+      'You’re writing a blog post about how owls hunt in snow, and here is the photo you were hoping for: a great gray owl diving headfirst into a snowbank. Its tag says it comes from a hobbyist’s birding blog. The blog has a name and a few years of posts, but no license anywhere on the page.',
     artificer:
-      'For a new collage you want a delicate ink illustration of a moth. You find it on a pinboard site, pinned and re-pinned so many times that the trail back to its source has gone cold. The file is called moth_final_FINAL.jpg.',
+      'For a new collage you want a delicate ink drawing of a moth, and you find one here. Its tag shows it was pinned and re-pinned on a pinboard site so many times that the trail back to whoever drew it has gone cold. The file is called moth_final_FINAL.jpg.',
     bard:
-      'On a site called FreeLoopsForever you find a drum break with exactly the feel your track needs. The page says “royalty free!” But the sound (the snare, the room, the faint tape hiss) sounds a lot like a 1980s record. The uploader doesn’t say where it came from.',
+      'Your track needs a drum break, and this one has exactly the right feel. Its tag says it came from a site called FreeLoopsForever, which calls it “royalty free!” But the snare, the room, and the faint tape hiss sound a lot like a 1980s record, and the uploader doesn’t say where it came from.',
     conjurer:
-      'On a game-dev forum, someone posted a sprite sheet of pixel-art potions, beautifully animated. The whole post reads: “made these a while back, free to use lol.” The account hasn’t posted in four years.',
+      'Your game needs art for its potions, and here is a sprite sheet of pixel-art potions, beautifully animated. Its tag says it was posted on a game-dev forum, and the whole post read: “made these a while back, free to use lol.” The account hasn’t posted in four years.',
   },
   complication:
-    'It’s freely accessible. You can download it in one click. But nothing tells you who made it or what they’ve allowed. With no license, the default is all rights reserved: the creator, whoever they are, still holds the copyright.',
+    'It’s right there, free for anyone to look at, and copying it would take a moment. But nothing on it tells you who made it or what they allow. When there’s no license, the default is all rights reserved: the creator, whoever they are, still holds the copyright.',
   choices: [
     {
       id: 'take',
@@ -48,7 +48,7 @@ export const stop1Free: StandardStop = {
             'Owner search: photographer identified by reverse image search. No license stated. Use on hold pending a request. Credit and permission are now possible where before they weren’t.',
         },
         naturalist: {
-          text: 'The blog has a contact form and an “about” page with the photographer’s first name. You send a short note asking about the owl photo. A day passes. Then another.',
+          text: 'The blog has a contact form and an “about” page with the photographer’s first name. You send a short note asking about the owl photo. Two days go by without an answer.',
           cartNote:
             'Owner search: blogger identified and contacted through the site’s form. No reply yet. Photo on hold. No reply is not the same as permission.',
         },
@@ -75,7 +75,7 @@ export const stop1Free: StandardStop = {
       label: 'Leave it and find something you know is usable.',
       outcome: {
         chronicler: {
-          text: 'You find flood footage shot by a federal agency in the Internet Archive’s film collection, and a local historical society that licenses its news photos for a small fee. It’s not the same reporter in the same raincoat, but it’s the same water.',
+          text: 'You find flood footage shot by a federal agency in the Internet Archive’s film collection, and a local historical society that licenses its news photos for a small fee. There’s no reporter in a raincoat, but it’s the same flood.',
           cartNote:
             'Passed on the unlicensed clip. Sourced federal-agency flood footage (a U.S. government work, public domain) and noted a historical society that licenses photos. Less exact than the station footage, with clear rights.',
         },
@@ -85,7 +85,7 @@ export const stop1Free: StandardStop = {
             'Passed on the viral photo. Used a CC BY alternative from Openverse, credited in the caption. Clear rights; the meme’s particular joke is lost.',
         },
         naturalist: {
-          text: 'Wikimedia Commons has a CC BY-SA photo of a great gray owl hunting, from a named photographer. The blog photo was better, honestly.',
+          text: 'Wikimedia Commons has a CC BY-SA photo of a great gray owl hunting, from a named photographer. Honestly, the blog photo was better.',
           cartNote:
             'Passed on the blog photo. Used a CC BY-SA photo from Wikimedia Commons with credit. ShareAlike applies to adaptations of the photo, not to the whole blog post.',
         },
@@ -95,7 +95,7 @@ export const stop1Free: StandardStop = {
             'Passed on the untraceable illustration. Used a CC0 moth plate from Smithsonian Open Access. No conditions and no credit required, though crediting the source is still good practice.',
         },
         bard: {
-          text: 'You record your own break on a friend’s kit with a borrowed room mic. It takes an afternoon. It sounds different. It’s yours.',
+          text: 'You record your own break on a friend’s drum kit with a borrowed microphone. It takes an afternoon and sounds different, but it’s yours.',
           cartNote: 'Passed on the lifted break. Recorded an original drum break instead. Full rights; the cost was an afternoon and the exact sound.',
         },
         conjurer: {
