@@ -1,7 +1,52 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Playfair Display", serif;
+  --font-serif: "Libre Baskerville", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-stone-950 text-amber-50 antialiased;
+  }
+}
+
+@layer components {
+  .clerk-box {
+    @apply relative overflow-hidden;
+  }
+  
+  .clerk-box::before {
+    content: "";
+    @apply absolute inset-0 bg-amber-500/5 pointer-events-none;
+  }
+
+  .choice-btn {
+    @apply w-full text-left p-6 rounded-xl border border-amber-900/30 bg-stone-900/40 
+           hover:bg-amber-900/20 hover:border-amber-500/50 transition-all 
+           font-serif text-amber-100 flex items-center justify-between;
+  }
+
+  .choice-btn:hover::after {
+    @apply opacity-100;
+  }
+
+  .choice-btn::after {
+    content: "→";
+    @apply opacity-0 transition-opacity text-amber-500 ml-4;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-stone-950;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-amber-900/50 rounded-full hover:bg-amber-800/50 transition-colors;
 }
