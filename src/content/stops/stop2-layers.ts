@@ -4,22 +4,22 @@ export const stop2Layers: StandardStop = {
   id: 'layers',
   title: 'The Public Domain Trap',
   clerkIntro:
-    'Tricky one. Everything in this wing is old. Public domain, by any measure: the copyright ran out long ago. That part is genuinely free. Anyone can use it, build on it, remake it. But old things get handled. Restored, recorded, scanned, colorized, adapted, printed on lunchboxes. Each of those can be a separate object, legally speaking. Separate rights. Separate clock. A century-old work can sit inside something made last Tuesday, and the new part is protected. I probably should have mentioned this earlier. Apologies.',
+    'This one’s tricky. The works at the heart of this wing are old, and they’re in the public domain by any measure: the copyright ran out long ago. That part is genuinely free. Anyone can use it, build on it, or remake it. But old things get handled. People restore them, record them, scan them, colorize them, adapt them, and put them on lunchboxes, and each of those can be a separate thing, legally speaking, with its own rights and its own clock. A century-old work can sit inside something made last Tuesday, and the new part is protected. I probably should have mentioned this earlier. Sorry.',
   clerkClue:
-    'He runs a thumb along the curled edge of a faded print and says, almost to himself, “I was developed once, you know. Long ago.” Then, quickly: “Never mind. Where were we.”',
+    'He runs a thumb along the curled edge of a faded print and says, mostly to himself, “I was developed once, you know. Long ago.” Then, quickly: “Never mind. Where were we?”',
   setup: {
     chronicler:
-      'Your film needs a shot of the town before the flood. You find 1920s newsreel footage of Main Street, old enough to be in the public domain. The only copy you can get is a 2010 remastered release: cleaned up, stabilized, and set to a new orchestral score composed for that release.',
+      'Your film needs a shot of the town before the flood, and on this shelf you find 1920s newsreel footage of Main Street, old enough to be in the public domain. The only copy here is a 2010 remastered release. It has been cleaned up and stabilized, and it’s set to a new orchestral score composed for that release.',
     herald:
-      'A sponsor wants a playful post for its spring campaign, and you have an idea: Mickey Mouse at the wheel of a steamboat, whistling. Since January 1, 2024, the Mickey of the 1928 cartoon Steamboat Willie has been in the U.S. public domain. But the Mickey everyone pictures (red shorts, white gloves, big shiny eyes) came later. And Disney still uses Mickey as its brand.',
+      'A sponsor wants a playful post for its spring campaign, and a film reel on this shelf gives you an idea: Mickey Mouse at the wheel of a steamboat, whistling. Since January 1, 2024, the Mickey of the 1928 cartoon Steamboat Willie has been in the U.S. public domain. But the Mickey most people picture, with red shorts, white gloves, and big shiny eyes, came later. And Disney still uses Mickey as its brand.',
     naturalist:
-      'For a video about the Moon’s craters, you pull images from a NASA web page. Most are images NASA made, and works made by the U.S. federal government have no copyright at all. One striking image on the same page carries a different credit line: a partner agency, the European Space Agency.',
+      'For a video about the Moon’s craters, you find a folder of images copied from a NASA web page. Most are images NASA made, and works made by the U.S. federal government have no copyright at all. But one striking image from the same page carries a different credit line: a partner agency, the European Space Agency.',
     artificer:
-      'You want a 19th-century botanical illustration of a foxglove for a print series. The original has been in the public domain for a very long time. The best scan you can find is on a stock image site that stamps it “© PlateHouse Images. All rights reserved.” You also find a gorgeous colorized version, made in 2020 by a digital artist.',
+      'You want a 19th-century botanical illustration of a foxglove for a series of prints. The original has been in the public domain for a very long time. The best copy on this shelf is a scan from a stock image site, stamped “© PlateHouse Images. All rights reserved.” Next to it is a gorgeous colorized version, made in 2020 by a digital artist.',
     bard:
-      'You want to build a track on Beethoven’s Für Elise. The composition has been in the public domain for well over a century. The recording you love is a 2019 orchestral version, which is protected. You also find a piano recording published in 1924, and as of January 1, 2026, U.S. sound recordings published in 1925 or earlier are in the public domain.',
+      'You want to build a track on Beethoven’s Für Elise, and this shelf holds several recordings of it. The composition has been in the public domain for well over a century. The recording you love is a 2019 orchestral version, which is protected. There’s also a piano recording published in 1924, and as of January 1, 2026, U.S. sound recordings published in 1925 or earlier are in the public domain.',
     conjurer:
-      'Your game is a small detective mystery, and you want Sherlock Holmes as the lead. The original stories are in the U.S. public domain; the last of them entered it in 2023. But the Holmes in your head looks a lot like the one from a recent TV series: the long coat, the scarf, the smartphone.',
+      'Your game is a small detective mystery, and you want Sherlock Holmes as the lead. The original stories on this shelf are in the U.S. public domain; the last of them entered it in 2023. But the Holmes you picture looks a lot like the one from a recent TV series, with the long coat, the scarf, and the smartphone.',
   },
   complication:
     'The oldest layer is free. The question is what has been added on top of it, and whether you can reach the old layer without taking the new one along with it.',
@@ -29,12 +29,12 @@ export const stop2Layers: StandardStop = {
       label: 'Find a version that’s clean all the way down.',
       outcome: {
         chronicler: {
-          text: 'A film archive holds an earlier transfer of the same newsreel: silent, unrestored, a little shaky. Public domain all the way down. You add your own sound.',
+          text: 'A film archive holds an earlier transfer of the same newsreel. It’s silent, unrestored, and a little shaky, but it’s public domain all the way down. You add your own sound.',
           cartNote:
             'Clean version: an unrestored public-domain transfer of the 1920s newsreel, with no new score. Avoided the 2010 release’s new soundtrack (protected) and any question about the restoration. Rougher picture, clear rights.',
         },
         herald: {
-          text: 'You work only from the 1928 film itself: the black-and-white, pie-eyed, rubber-hose Mickey. No gloves, no red shorts. Your post makes clear it’s yours and your sponsor’s, not Disney’s, and Mickey isn’t standing in as the sponsor’s mascot.',
+          text: 'You work only from the 1928 film itself, with its black-and-white, pie-eyed, rubber-limbed Mickey and no gloves or red shorts. Your post makes clear that it’s yours and your sponsor’s, not Disney’s, and Mickey isn’t standing in as the sponsor’s mascot.',
           cartNote:
             'Clean version: used only the 1928 Steamboat Willie Mickey (public domain since 2024), not later protected designs. Avoided suggesting Disney made or endorsed the post, and didn’t use Mickey as a brand. Trademark exposure reduced, not erased: a sponsored post invites a closer look.',
         },
@@ -49,12 +49,12 @@ export const stop2Layers: StandardStop = {
             'Clean version: used a museum’s CC0 scan of the public-domain illustration. A faithful scan of a 2D public-domain work likely carries no new U.S. copyright (Bridgeman v. Corel), and the CC0 scan also sidesteps the stock site’s terms of use. The 2020 colorization is new work and stays off-limits.',
         },
         bard: {
-          text: 'You build the track on the 1924 piano recording, public domain as of this year, playing a composition that’s been free for over a century.',
+          text: 'You build the track on the 1924 piano recording, which is public domain as of this year, playing a composition that has been free for over a century.',
           cartNote:
             'Clean version: used a 1924 recording (U.S. public domain as of 2026) of a public-domain composition. Both layers free. The 2019 orchestral recording stays protected even though the music it plays is not.',
         },
         conjurer: {
-          text: 'You go back to the stories and design your own Holmes from the text and its original illustrations: deerstalker, pipe, gaslit London. Nothing from the TV series.',
+          text: 'You go back to the stories and design your own Holmes from the text and its original illustrations, with a deerstalker cap, a pipe, and gaslit London. You take nothing from the TV series.',
           cartNote:
             'Clean version: built Holmes from the public-domain stories and their original illustrations. Avoided the TV series’ designs and new story elements, which are protected. The character is free; a particular adaptation’s additions are not.',
         },
@@ -70,7 +70,7 @@ export const stop2Layers: StandardStop = {
             'Contacted the rights holder of the 2010 release. Offered a festival-only license, with a separate streaming fee. Pays for the protected layers (the new score, and any creative restoration) on top of public-domain footage. Budget for the streaming fee if the film goes further.',
         },
         herald: {
-          text: 'You write to Disney’s licensing department about using Mickey in a sponsored post. A form reply arrives: no.',
+          text: 'You write to Disney’s licensing department about using Mickey in a sponsored post. A form reply arrives, and the answer is no.',
           cartNote:
             'Asked Disney; declined by form reply. Permission isn’t needed for the 1928 Mickey itself, but the reply is a reminder that the trademark layer is actively guarded. Going ahead would mean staying strictly within the public-domain version and away from any hint of endorsement.',
         },
@@ -90,7 +90,7 @@ export const stop2Layers: StandardStop = {
             'Contacted the label for the 2019 recording. Licensing is available for a fee, after review. Paying would cover the recording layer; the composition needs no permission.',
         },
         conjurer: {
-          text: 'You write to the studio behind the TV series. Two weeks pass. No reply.',
+          text: 'You write to the studio behind the TV series. Two weeks pass with no reply.',
           cartNote:
             'Contacted the studio about the series’ Holmes designs. No reply. Silence isn’t permission: the series’ designs stay off-limits, while the public-domain Holmes stays available.',
         },
@@ -101,7 +101,7 @@ export const stop2Layers: StandardStop = {
       id: 'pass',
       label: 'Pass on it.',
       outcome: {
-        text: 'You set it back on the shelf. There will be something else, somewhere, with fewer layers.',
+        text: 'You put it back on the shelf. There will be something else, somewhere, with fewer layers.',
         cartNote:
           'Passed. The layers made the rights picture too tangled for the time available. The cost: time, and a lost opportunity, since the public-domain layer was free all along.',
       },

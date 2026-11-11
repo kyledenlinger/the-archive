@@ -83,12 +83,12 @@ export const fairUse: FairUseContent = {
           conjurer: 'The whole sheet, every sprite on it.',
         },
         layers: {
-          chronicler: "A few seconds of footage, but the score runs under all of it.",
+          chronicler: "Only a few seconds of footage, but the score runs under all of it.",
           herald: "If you use the later look, you’d take its most recognizable features: the heart of the character design.",
-          naturalist: "One full image.",
-          artificer: "The whole colorized image.",
-          bard: "Several bars of the recording, maybe its most memorable passage.",
-          conjurer: "The look of the character: the elements that make this adaptation’s Holmes recognizable.",
+          naturalist: "You’d use one full image.",
+          artificer: "You’d use the whole colorized image.",
+          bard: "You’d use several bars of the recording, maybe its most memorable passage.",
+          conjurer: "You’d take the character’s look: the elements that make this adaptation’s Holmes recognizable.",
         },
         permission: {
           chronicler: "One short clip, used whole.",
