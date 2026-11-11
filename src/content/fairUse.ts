@@ -1,7 +1,4 @@
-import { FairUseContent, PersonaId } from './types';
-
-// `layers` and `permission` entries are filled in Tasks 7 and 8.
-const todo = (): Record<PersonaId, string> => ({ chronicler: '', herald: '', naturalist: '', artificer: '', bard: '', conjurer: '' });
+import { FairUseContent } from './types';
 
 export const fairUse: FairUseContent = {
   factors: [
@@ -32,7 +29,14 @@ export const fairUse: FairUseContent = {
           bard: "You’d sample the 2019 orchestral recording as raw material for a new track. Some transformation, but it’s music used as music, on a commercial release.",
           conjurer: "You’d borrow the TV series’ look for your own story. A new game is a new work, but borrowing a character design to play the same role isn’t strongly transformative.",
         },
-        permission: todo(),
+        permission: {
+          chronicler: "The clip would illustrate your film’s account of the flood, which is documentary use. But you already licensed this clip. The real question is whether the license covers you, and fair use can’t cure a breach of a license you agreed to.",
+          herald: "The song would play as the soundtrack to a promotion. That’s music used for exactly what music is for, in an ad.",
+          naturalist: "Fair use is a defense for using someone else’s copyrighted work. With an AI image, the limit comes mostly from the tool’s terms, not from copyright. Your purpose is educational, but the contract governs.",
+          artificer: "A collage that recontextualizes the greenhouse photo, or comments on it, could be transformative. A print that keeps it mostly intact, less so.",
+          bard: "As with an AI image, the limit on the AI track comes from the terms you accepted. Fair use doesn’t override a contract.",
+          conjurer: "Putting the assets in an open-source repository isn’t a new purpose. It’s redistributing the same files.",
+        },
       },
     },
     {
@@ -56,7 +60,14 @@ export const fairUse: FairUseContent = {
           bard: "A recorded orchestral performance is creative expression.",
           conjurer: "A TV series’ character designs are highly creative.",
         },
-        permission: todo(),
+        permission: {
+          chronicler: "Footage of water in a culvert: fairly factual.",
+          herald: "A popular song is highly creative.",
+          naturalist: "If purely AI-generated output isn’t protected by copyright at all, there may be little here to weigh. The terms remain.",
+          artificer: "An artistic photograph is creative work.",
+          bard: "As with an AI image: copyright in purely AI-generated material is doubtful, and the terms remain.",
+          conjurer: "Art assets are creative. In the U.S., typeface designs get little protection, but font files are protected as software.",
+        },
       },
     },
     {
@@ -79,7 +90,14 @@ export const fairUse: FairUseContent = {
           bard: "Several bars of the recording, maybe its most memorable passage.",
           conjurer: "The look of the character: the elements that make this adaptation’s Holmes recognizable.",
         },
-        permission: todo(),
+        permission: {
+          chronicler: "One short clip, used whole.",
+          herald: "Probably the hook: the part that’s trending.",
+          naturalist: "One full image.",
+          artificer: "Possibly the whole photograph, or a recognizable part of it.",
+          bard: "The whole backing track.",
+          conjurer: "Every file in the pack, plus the font file itself.",
+        },
       },
     },
     {
@@ -103,7 +121,14 @@ export const fairUse: FairUseContent = {
           bard: "Labels license recordings for sampling. An unlicensed sample takes the place of that license.",
           conjurer: "Studios license their character designs for games. Using them takes that market.",
         },
-        permission: todo(),
+        permission: {
+          chronicler: "The agency sells commercial licenses for exactly this situation.",
+          herald: "Labels license songs for ads. An unlicensed promotion takes the place of that license.",
+          naturalist: "The tool sells paid plans that include commercial rights. Using free output commercially stands in for that.",
+          artificer: "The artist may license or sell this photo, and your prints could compete.",
+          bard: "The generator sells plans with commercial rights. Using free output commercially stands in for that.",
+          conjurer: "Free copies in a public repository directly replace sales of the pack and the font.",
+        },
       },
     },
   ],
@@ -127,6 +152,13 @@ export const fairUse: FairUseContent = {
       bard: "A weak argument for sampling the 2019 recording on a commercial release. The public-domain composition and the 1924 recording need none.",
       conjurer: "A weak argument for the TV series’ designs. The original Holmes is free; the adaptation’s additions are where the exposure is.",
     },
-    permission: todo(),
+    permission: {
+      chronicler: "Fair use isn’t the main question. You hold a license with limits; staying within it, or upgrading it, is the cleaner path.",
+      herald: "A weak argument. A hit song in a paid promotion is a classic licensing situation.",
+      naturalist: "Fair use doesn’t fit well here. The tool’s terms decide this, and they say non-commercial. Upgrade, ask, or replace.",
+      artificer: "A moderate argument if the collage genuinely transforms the photograph, weaker for prints that keep it recognizable. The artist is reachable, which makes asking easy.",
+      bard: "Fair use doesn’t fit well here. The generator’s terms decide this. Upgrade, ask, or replace.",
+      conjurer: "A weak argument. Redistributing the assets themselves is exactly what both licenses forbid.",
+    },
   },
 };

@@ -14,7 +14,7 @@ export function CartBar({ cart, content, personaName }: { cart: Partial<Record<S
         {STOP_ORDER.map((id, i) => {
           const has = Boolean(cart[id]);
           return (
-            <li key={id} className={`flex items-center gap-1.5 ${has ? 'text-amber-300' : 'text-amber-200/50'}`} data-testid={`cart-slot-${id}`} data-filled={has}>
+            <li key={id} className={`flex items-center gap-1.5 ${has ? 'text-amber-300' : 'text-amber-200/50'}`} data-testid={`cart-slot-${id}`} data-filled={has} title={cart[id]}>
               <span aria-hidden="true">{has ? '■' : '□'}</span>
               <span>
                 {i + 1}. {content.stops[id].title}

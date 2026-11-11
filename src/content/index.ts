@@ -6,8 +6,10 @@ import { resources } from './resources';
 import { interstitial } from './interstitial';
 import { stop1Free } from './stops/stop1-free';
 import { stop2Layers } from './stops/stop2-layers';
+import { stop3Permission } from './stops/stop3-permission';
+import { ask } from './ask';
 import { fairUse } from './fairUse';
-import { placeholderAsk, placeholderClerk, placeholderFlip, placeholderStop } from './placeholders';
+import { placeholderClerk, placeholderFlip } from './placeholders';
 
 export const content: GameContent = {
   personas,
@@ -15,11 +17,11 @@ export const content: GameContent = {
   stops: {
     free: stop1Free,
     layers: stop2Layers,
-    permission: placeholderStop('permission'),
+    permission: stop3Permission,
     flip: placeholderFlip,
   },
   fairUse,
-  ask: placeholderAsk,
+  ask,
   clerk: placeholderClerk,
   reference,
   resources,
