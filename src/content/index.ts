@@ -4,18 +4,20 @@ import { onboarding } from './onboarding';
 import { reference } from './reference';
 import { resources } from './resources';
 import { interstitial } from './interstitial';
-import { placeholderAsk, placeholderClerk, placeholderFairUse, placeholderFlip, placeholderStop } from './placeholders';
+import { stop1Free } from './stops/stop1-free';
+import { fairUse } from './fairUse';
+import { placeholderAsk, placeholderClerk, placeholderFlip, placeholderStop } from './placeholders';
 
 export const content: GameContent = {
   personas,
   onboarding,
   stops: {
-    free: placeholderStop('free'),
+    free: stop1Free,
     layers: placeholderStop('layers'),
     permission: placeholderStop('permission'),
     flip: placeholderFlip,
   },
-  fairUse: placeholderFairUse,
+  fairUse,
   ask: placeholderAsk,
   clerk: placeholderClerk,
   reference,

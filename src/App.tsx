@@ -9,6 +9,8 @@ import { ScreenHeading } from './components/ScreenHeading';
 import { ModeSelect } from './screens/ModeSelect';
 import { Onboarding } from './screens/Onboarding';
 import { PersonaSelect } from './screens/PersonaSelect';
+import { Stop } from './screens/Stop';
+import { Interstitial } from './screens/Interstitial';
 import { ScreenProps } from './screens/types';
 
 function NotYetBuilt(_: ScreenProps) {
@@ -27,6 +29,10 @@ function CurrentScreen(props: ScreenProps) {
       return <Onboarding {...props} />;
     case 'persona':
       return <PersonaSelect {...props} />;
+    case 'stop':
+      return <Stop {...props} />;
+    case 'interstitial':
+      return <Interstitial {...props} />;
     default:
       return <NotYetBuilt {...props} />;
   }
