@@ -4,6 +4,8 @@ import { ChevronRight } from 'lucide-react';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ChoiceButton } from '../components/ChoiceButton';
 import { btnPrimary, eyebrow, narration, page } from '../components/styles';
+import { CartSoFar } from '../components/CartSoFar';
+import { STOP_ORDER } from '../content/types';
 import { ScreenProps } from './types';
 
 export function Ending({ state, dispatch, content }: ScreenProps) {
@@ -17,9 +19,10 @@ export function Ending({ state, dispatch, content }: ScreenProps) {
     </ChoiceButton>
   );
 
+  // Each phase gets its own key so its one-shot Continue button is never reused from the previous phase.
   if (phase === 'scene') {
     return (
-      <div className={`${page} space-y-10`}>
+      <div key="scene" className={`${page} space-y-10`}>
         <ScreenHeading className="text-3xl sm:text-4xl font-serif italic text-amber-100">{ending.label}</ScreenHeading>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={narration}>{ending.scene}</motion.p>
         {state.flip.license && <p className={narration}>{clerk.codaShade[state.flip.license]}</p>}
@@ -35,7 +38,7 @@ export function Ending({ state, dispatch, content }: ScreenProps) {
 
   if (state.mode === 'independent') {
     return (
-      <div className={`${page} space-y-10`}>
+      <div key="debrief" className={`${page} space-y-10`}>
         <ScreenHeading>
           <span className={`block ${eyebrow} mb-3`}>Debrief</span>
           <span className="block text-3xl sm:text-4xl font-serif italic text-amber-100">{flip.title}</span>
@@ -47,16 +50,18 @@ export function Ending({ state, dispatch, content }: ScreenProps) {
             {flip.debrief.prompts.map((p) => <li key={p}>{p}</li>)}
           </ul>
         </section>
+        <CartSoFar cart={state.cart} content={content} stops={STOP_ORDER} />
         <div className="flex justify-center">{advance}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-24 text-center">
+    <div key="wait" className="min-h-screen flex flex-col items-center justify-center px-6 py-24 text-center">
       <div className="max-w-2xl space-y-10">
         <ScreenHeading className="text-5xl font-serif italic text-amber-100">{content.interstitial.waitTitle}</ScreenHeading>
         <p className="text-amber-50/80 font-serif text-lg italic leading-relaxed">{content.interstitial.waitBody}</p>
+        <CartSoFar cart={state.cart} content={content} stops={STOP_ORDER} />
         <div className="flex justify-center">{advance}</div>
       </div>
     </div>

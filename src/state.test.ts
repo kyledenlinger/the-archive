@@ -119,3 +119,22 @@ test('guess, reveal, ending, cart', () => {
 test('RESET returns to the initial state with the new seed', () => {
   expect(reducer(atFlip(), { type: 'RESET', seed: 9 })).toEqual(initialState(9));
 });
+
+test('REVISIT_STOP returns from the interstitial to the same stop, keeping one cart slot', () => {
+  let s = run(atStop(), { type: 'RECORD_STOP', stopId: 'free', cartNote: 'a' });
+  s = reducer(s, { type: 'REVISIT_STOP' });
+  expect(s.screen).toBe('stop');
+  expect(s.stopIndex).toBe(0);
+  expect(s.cart.free).toBe('a');
+  s = reducer(s, { type: 'RECORD_STOP', stopId: 'free', cartNote: 'b' });
+  expect(s.cart.free).toBe('b');
+  expect(Object.keys(s.cart)).toHaveLength(1);
+  expect(s.screen).toBe('interstitial');
+});
+
+test('REVISIT_STOP is ignored anywhere but the interstitial', () => {
+  const s = atStop();
+  expect(reducer(s, { type: 'REVISIT_STOP' })).toBe(s);
+  const flip = atFlip();
+  expect(reducer(flip, { type: 'REVISIT_STOP' })).toBe(flip);
+});

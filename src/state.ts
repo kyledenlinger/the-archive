@@ -26,6 +26,7 @@ export type Action =
   | { type: 'CHOOSE_PERSONA'; persona: PersonaId }
   | { type: 'RECORD_STOP'; stopId: StandardStopId; cartNote: string }
   | { type: 'ADVANCE' }
+  | { type: 'REVISIT_STOP' }
   | { type: 'SET_LICENSE'; license: LicenseId }
   | { type: 'RECORD_REUSE'; kind: ReuseEventKind; response: ReuseResponse }
   | { type: 'FINISH_FLIP'; cartNote: string }
@@ -78,6 +79,11 @@ export function reducer(state: GameState, action: Action): GameState {
       }
       if (state.screen === 'ending') return { ...state, screen: 'cart' };
       return state;
+
+    case 'REVISIT_STOP':
+      // From a stop's interstitial back to that stop's choices; re-recording replaces the cart note.
+      if (state.screen !== 'interstitial') return state;
+      return { ...state, screen: 'stop' };
 
     case 'SET_LICENSE':
       if (state.screen !== 'flip') return state;

@@ -21,7 +21,8 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
   const stopId = STOP_ORDER[state.stopIndex] as StandardStopId;
   const stop: StandardStop = content.stops[stopId];
   const persona = state.persona!;
-  const [sub, setSub] = useState<Sub>({ kind: 'intro' });
+  // Revisiting a stop already in the cart opens straight on the choices.
+  const [sub, setSub] = useState<Sub>(state.cart[stopId] ? { kind: 'choices' } : { kind: 'intro' });
   const record = (cartNote: string) => dispatch({ type: 'RECORD_STOP', stopId, cartNote });
   const back = () => setSub({ kind: 'choices' });
 
