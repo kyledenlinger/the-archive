@@ -1,7 +1,7 @@
 import { ClerkContent, FateId, LICENSE_IDS, PERSONA_IDS, PersonaId, ReuseResponse, VisionBand } from './types';
 
 // Revision 2: the orphan-work mystery is gone. Everything below is PLACEHOLDER text until its task
-// writes it (Task 7: briefIntro; Task 9: coachInvite; Task 12: the shelf). The validator reports
+// writes it (Task 9: coachInvite; Task 12: the shelf). The validator reports
 // these as errors; `npm run validate -- --allow-placeholder` lists them as warnings instead.
 const tbd = (task: number, what: string) => `PLACEHOLDER (Task ${task}): ${what}`;
 const FATES: FateId[] = ['pulled', 'asPlanned', 'underCloud', 'late', 'smaller', 'compromised'];
@@ -12,7 +12,8 @@ const byKey = <K extends string>(keys: readonly K[], fn: (k: K) => string) =>
   Object.fromEntries(keys.map((k) => [k, fn(k)])) as Record<K, string>;
 
 export const clerk: ClerkContent = {
-  briefIntro: tbd(7, 'the Clerk presents the brief'),
+  briefIntro:
+    'Here’s what you came for, then. I’ve put it all on one card: what you’re making, who’s waiting on it, when it’s due, and the three things you need from these shelves. At the bottom is where your project stands before you’ve touched anything. That part tends to change. Sorry in advance.',
   coachInvite: tbd(9, 'the Clerk offers to think it through together'),
   shelf: {
     intro: [tbd(12, 'the Clerk walks you to the shelf')],

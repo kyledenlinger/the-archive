@@ -14,6 +14,14 @@ export const ui = {
   personaHeading: 'Who are you?',
   personaIntro: 'Pick the creator you’ll play. It decides what you’re looking for, and what’s at stake when you find it.',
   briefHeading: 'Your brief',
+  /** Section labels on the brief card (revision spec §3). */
+  brief: {
+    making: 'What you’re making',
+    answersTo: 'Who you answer to',
+    deadline: 'Your deadline',
+    items: 'What you need',
+    start: 'Where you’re starting',
+  },
   shelfHeading: 'The shelf',
 
   /** The Clerk's label on every line he speaks. */

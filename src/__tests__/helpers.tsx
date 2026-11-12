@@ -12,7 +12,7 @@ export async function startAs(persona: PersonaId, mode: Mode = 'class') {
   await user.click(screen.getByRole('button', { name: /Choose who you are/ }));
   const name = content.personas.find((p) => p.id === persona)!.name;
   await user.click(screen.getByRole('button', { name: new RegExp(name) }));
-  // revision-2: the brief is a stub until Task 7; pass it.
+  // Pass the brief.
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
   return user;
 }
