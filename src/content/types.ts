@@ -111,6 +111,8 @@ export interface InterstitialCopy {
   continueLabel: string;
   /** Class mode: the outcome button that records the stop and goes to the pause card. */
   pauseLabel: string;
+  /** Class mode: the other buttons that record a stop and go straight to the pause card. */
+  pauseLabels: { fairUse: string; askUse: string; askDont: string };
   /** Class mode: asked before leaving the pause card. */
   confirmMoveOn: { question: string; confirm: string; cancel: string };
 }

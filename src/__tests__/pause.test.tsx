@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react';
 import { content } from '../content';
 import { btnPrimary } from '../components/styles';
-import { cartButton, enterStop, startAs } from './helpers';
+import { cartButton, enterStop, passStopWithFirstChoice, startAs } from './helpers';
 
 const copy = content.interstitial;
 const plain = content.stops.free.choices.find((c) => !c.mechanic)!.label;
@@ -66,4 +66,82 @@ test('independent mode has neither the pause button nor the confirm', async () =
   await user.click(screen.getByRole('button', { name: copy.continueLabel }));
   expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Stop 2 of 4');
+});
+
+describe('every route into the class pause uses the pause button', () => {
+  type User = Awaited<ReturnType<typeof startAs>>;
+  const pauseStyled = (button: HTMLElement) => {
+    expect(button.querySelector('svg.lucide-pause')).not.toBeNull();
+    expect(button).toHaveClass('border-dashed');
+  };
+  /** From the start, to stop 3's Ask reply (passing stops 1 and 2 with their first plain choice). */
+  async function toAskReply(mode: 'class' | 'independent') {
+    const user = await startAs('artificer', mode);
+    await passStopWithFirstChoice(user);
+    await passStopWithFirstChoice(user);
+    await enterStop(user);
+    await user.click(screen.getByRole('button', { name: /Ask for permission/ }));
+    await user.click(screen.getByRole('button', { name: /Send the request/ }));
+    return user;
+  }
+  async function throughFairUse(user: User) {
+    for (let i = 0; i < 4; i++) await user.click(screen.getByRole('button', { name: /Not sure yet/ }));
+  }
+  const expectPause = () => expect(screen.getByRole('heading', { level: 1, name: copy.waitTitle })).toBeInTheDocument();
+
+  test('a plain choice’s outcome', async () => {
+    const user = await startAs('herald', 'class');
+    await enterStop(user);
+    await user.click(screen.getByRole('button', { name: plain }));
+    const button = screen.getByRole('button', { name: copy.pauseLabel });
+    pauseStyled(button);
+    await user.click(button);
+    expectPause();
+  });
+
+  test('the fair use summary', async () => {
+    const user = await startAs('herald', 'class');
+    await enterStop(user);
+    await user.click(screen.getByRole('button', { name: content.stops.free.choices.find((c) => c.mechanic === 'fairUse')!.label }));
+    await throughFairUse(user);
+    expect(screen.queryByRole('button', { name: /^Add to cart on a fair use basis$/ })).not.toBeInTheDocument();
+    const button = screen.getByRole('button', { name: copy.pauseLabels.fairUse });
+    pauseStyled(button);
+    await user.click(button);
+    expectPause();
+  });
+
+  test.each([
+    ['use it', copy.pauseLabels.askUse],
+    ['don’t use it', copy.pauseLabels.askDont],
+  ])('the Ask follow-up “%s”', async (_, name) => {
+    const user = await toAskReply('class');
+    expect(screen.queryByRole('button', { name: /^Use it$/ })).not.toBeInTheDocument();
+    const button = screen.getByRole('button', { name });
+    pauseStyled(button);
+    // Running a fair use analysis doesn't pause yet, so it keeps its plain look.
+    expect(screen.getByRole('button', { name: /Run a fair use analysis/ }).querySelector('svg.lucide-pause')).toBeNull();
+    await user.click(button);
+    expectPause();
+  });
+
+  test('the fair use summary reached from the Ask', async () => {
+    const user = await toAskReply('class');
+    await user.click(screen.getByRole('button', { name: /Run a fair use analysis/ }));
+    await throughFairUse(user);
+    const button = screen.getByRole('button', { name: copy.pauseLabels.fairUse });
+    pauseStyled(button);
+    await user.click(button);
+    expectPause();
+  });
+
+  test('independent mode keeps the plain labels and no pause icons', async () => {
+    const user = await toAskReply('independent');
+    for (const name of [/^Use it$/, /^Don’t use it$/]) expect(screen.getByRole('button', { name }).querySelector('svg.lucide-pause')).toBeNull();
+    await user.click(screen.getByRole('button', { name: /Run a fair use analysis/ }));
+    await throughFairUse(user);
+    const button = screen.getByRole('button', { name: /^Add to cart on a fair use basis$/ });
+    expect(button.querySelector('svg.lucide-pause')).toBeNull();
+    expect(document.querySelector('svg.lucide-pause')).toBeNull();
+  });
 });

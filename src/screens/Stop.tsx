@@ -102,6 +102,7 @@ export function Stop(props: ScreenProps) {
           factor={page.factor}
           answers={FACTORS.map((i) => state.decisions[decisionKey.factor(stopId, i)] as Lean | undefined)}
           reviewing={reviewing}
+          pauseLabel={pause ? content.interstitial.pauseLabels.fairUse : undefined}
           meters={page.via === 'ask' || reviewing ? undefined : state.meters}
           onAnswer={(lean) =>
             dispatch(

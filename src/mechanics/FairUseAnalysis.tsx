@@ -5,7 +5,8 @@ import { ChangeLines } from '../components/MeterDisplay';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
 import { ClerkSpeech } from '../components/ClerkSpeech';
-import { eyebrow } from '../components/styles';
+import { Pause } from 'lucide-react';
+import { btnPause, eyebrow } from '../components/styles';
 import { Lean } from '../state';
 
 const LEAN_LABEL: Record<Lean, string> = {
@@ -26,12 +27,14 @@ interface Props {
   reviewing: boolean;
   /** Current meters; when given, the summary previews what relying on the analysis changes. */
   meters?: Meters;
+  /** Class mode: the summary's button label, styled as a pause, since it leads straight to the pause card. */
+  pauseLabel?: string;
   onAnswer: (lean: Lean) => void;
   onDone: (cartNote: string, effects: Effects) => void;
 }
 
 /** The four factors, one page each, then the summary. There is no way out but through: starting it is a choice. */
-export function FairUseAnalysis({ stopId, persona, content, factor, answers, reviewing, meters, onAnswer, onDone }: Props) {
+export function FairUseAnalysis({ stopId, persona, content, factor, answers, reviewing, meters, pauseLabel, onAnswer, onDone }: Props) {
   const { factors, assessments } = content.fairUse;
   const step = Math.min(factor, 4);
   const assessment = assessments[stopId][persona];
@@ -100,9 +103,16 @@ export function FairUseAnalysis({ stopId, persona, content, factor, answers, rev
       <ClerkSpeech text={assessment.text} />
       {meters && <ChangeLines changes={previewChanges(meters, effects)} />}
       <div className="flex flex-col gap-4">
-        <ChoiceButton className="choice-btn bg-amber-900/20 border-amber-500/50 justify-center text-center" onSelect={() => onDone('Fair use basis. ' + assessment.text, effects)}>
-          {reviewing ? 'Continue' : 'Add to cart on a fair use basis'}
-        </ChoiceButton>
+        {pauseLabel && !reviewing ? (
+          // Class mode: this records the stop and goes straight to the pause card.
+          <ChoiceButton className={`${btnPause} justify-center text-center`} onSelect={() => onDone('Fair use basis. ' + assessment.text, effects)}>
+            <Pause aria-hidden="true" /> {pauseLabel}
+          </ChoiceButton>
+        ) : (
+          <ChoiceButton className="choice-btn bg-amber-900/20 border-amber-500/50 justify-center text-center" onSelect={() => onDone('Fair use basis. ' + assessment.text, effects)}>
+            {reviewing ? 'Continue' : 'Add to cart on a fair use basis'}
+          </ChoiceButton>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,11 @@ export const interstitial: InterstitialCopy = {
   waitBody: 'Your facilitator will bring the room together to talk about this stop. When they say it’s time, continue.',
   continueLabel: 'Continue',
   pauseLabel: 'Add to cart and pause',
+  pauseLabels: {
+    fairUse: 'Add to cart on a fair use basis and pause',
+    askUse: 'Use it and pause',
+    askDont: 'Don’t use it and pause',
+  },
   confirmMoveOn: {
     question: 'Has your facilitator said it’s time to move on?',
     confirm: 'Yes, continue',

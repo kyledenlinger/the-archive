@@ -14,3 +14,5 @@ export const caseNote = 'font-mono text-amber-100/90 text-sm leading-relaxed bor
  */
 export const btnPause =
   'px-8 py-4 bg-stone-950 text-amber-100 rounded-lg font-serif text-xl hover:bg-amber-900/30 transition-all border-2 border-dashed border-amber-400 inline-flex items-center gap-3';
+/** The same pause treatment for a choice in a list that records the stop and goes straight to the pause card. */
+export const choicePause = 'choice-btn justify-start rounded-lg border-2 border-dashed border-amber-400 gap-3';

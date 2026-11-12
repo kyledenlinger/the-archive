@@ -127,6 +127,6 @@ export function makeValidContent(): GameContent {
     },
     reference: [{ id: 'x', title: 'x', body: 'x' }],
     resources: [{ name: 'x', url: 'x', description: 'x' }],
-    interstitial: { waitTitle: 'x', waitLead: 'x', waitBody: 'x', continueLabel: 'x', pauseLabel: 'x', confirmMoveOn: { question: 'x', confirm: 'x', cancel: 'x' } },
+    interstitial: { waitTitle: 'x', waitLead: 'x', waitBody: 'x', continueLabel: 'x', pauseLabel: 'x', pauseLabels: { fairUse: 'x', askUse: 'x', askDont: 'x' }, confirmMoveOn: { question: 'x', confirm: 'x', cancel: 'x' } },
   };
 }

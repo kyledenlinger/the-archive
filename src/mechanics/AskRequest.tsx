@@ -1,12 +1,12 @@
 import { Dispatch } from 'react';
 import { motion } from 'motion/react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Pause } from 'lucide-react';
 import { AskField, GameContent, StandardStopId } from '../content/types';
 import { askFollowUps } from '../content/ask';
 import { DEFAULT_ODDS, dealAskResponse, isWellFormed } from '../lib/ask';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
-import { btnPrimary, eyebrow } from '../components/styles';
+import { btnPrimary, choicePause, eyebrow } from '../components/styles';
 import { Action, GameState, decisionKey, isReviewing, onward } from '../state';
 
 const FIELDS: AskField[] = ['what', 'how', 'where', 'howLong'];
@@ -96,6 +96,8 @@ export function AskRequest({ state, dispatch, content, stopId, onRecord }: Props
   if (!sent) return null;
   const answer = ask.responses.permission![persona][sent.response]; // revision-2: Task 9/10 make this stop-aware
   const made = state.decisions[decisionKey.askFollowUp(stopId)];
+  const pause = state.mode === 'class';
+  const pl = content.interstitial.pauseLabels;
   const follow = (f: FollowUp) => {
     if (isReviewing(state)) return dispatch({ type: 'FORWARD' });
     if (f === 'fairUse') {
@@ -117,8 +119,22 @@ export function AskRequest({ state, dispatch, content, stopId, onRecord }: Props
         <h3 id="after-ask" className="text-amber-200 text-sm uppercase tracking-widest font-bold">
           {ask.afterPrompt}
         </h3>
-        <ChoiceButton {...decidedProps(made, 'use')} onSelect={() => follow('use')}>Use it</ChoiceButton>
-        <ChoiceButton {...decidedProps(made, 'dont')} onSelect={() => follow('dont')}>Don’t use it</ChoiceButton>
+        {/* Class mode: these two record the stop and go straight to the pause card, so they look and read as pauses. */}
+        {pause ? (
+          <>
+            <ChoiceButton className={choicePause} {...decidedProps(made, 'use')} onSelect={() => follow('use')}>
+              <Pause size={20} aria-hidden="true" /> {pl.askUse}
+            </ChoiceButton>
+            <ChoiceButton className={choicePause} {...decidedProps(made, 'dont')} onSelect={() => follow('dont')}>
+              <Pause size={20} aria-hidden="true" /> {pl.askDont}
+            </ChoiceButton>
+          </>
+        ) : (
+          <>
+            <ChoiceButton {...decidedProps(made, 'use')} onSelect={() => follow('use')}>Use it</ChoiceButton>
+            <ChoiceButton {...decidedProps(made, 'dont')} onSelect={() => follow('dont')}>Don’t use it</ChoiceButton>
+          </>
+        )}
         <ChoiceButton {...decidedProps(made, 'fairUse')} onSelect={() => follow('fairUse')}>Run a fair use analysis</ChoiceButton>
       </div>
     </motion.div>
