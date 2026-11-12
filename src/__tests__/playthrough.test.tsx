@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import { Mode, PERSONA_IDS, PersonaId, STOP_ORDER } from '../content/types';
 import { GROUP_SIZE_RE } from '../lib/validateContent';
-import { guessAndReveal, passStopWithFirstChoice, startAs, throughFlip } from './helpers';
+import { passStopWithFirstChoice, startAs, throughFlip } from './helpers';
 
 const cases: [PersonaId, Mode][] = PERSONA_IDS.flatMap((p) => (['class', 'independent'] as Mode[]).map((m): [PersonaId, Mode] => [p, m]));
 
@@ -25,10 +25,7 @@ test.each(cases)('%s in %s mode plays start to finish', async (persona, mode) =>
   }
   await throughFlip(user, 'cc-by', 'credit');
   snap();
-  await guessAndReveal(user); // revision-2: guess and reveal are stubs; the shelf replaces them in Task 12
-  snap();
-  await user.click(screen.getByRole('button', { name: /^Continue/ }));
-  snap();
+  // revision-2: the shelf is a stub until Task 12; its Continue goes to the project summary.
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
   snap();
 

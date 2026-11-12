@@ -15,7 +15,7 @@ export function PersonaSelect({ dispatch, content }: ScreenProps) {
         {content.personas.map((p) => (
           <ChoiceButton
             key={p.id}
-            onSelect={() => dispatch({ type: 'CHOOSE_PERSONA', persona: p.id })}
+            onSelect={() => dispatch({ type: 'CHOOSE_PERSONA', persona: p.id, startMeters: p.startMeters })}
             className="bg-stone-900/50 border border-amber-900/20 p-8 rounded-2xl text-left hover:border-amber-500/50 hover:-translate-y-1 transition-all group relative overflow-hidden"
           >
             <span className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity" aria-hidden="true">

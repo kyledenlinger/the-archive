@@ -67,7 +67,7 @@ export function Flip({ state, dispatch, content, openReference }: ScreenProps) {
           flip={flip}
           persona={persona}
           license={license}
-          onRespond={(i, response) => dispatch({ type: 'RECORD_REUSE', kind: REUSE_ORDER[i], response })}
+          onRespond={(i, response) => dispatch({ type: 'RECORD_REUSE', kind: REUSE_ORDER[i], response, effects: flip.responses[response].effects ?? [] })}
           onComplete={() => setPhase('askForHelp')}
         />
       )}

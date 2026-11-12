@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight, FileText } from 'lucide-react';
-import { Choice, Outcome, PersonaId, STOP_ORDER, StandardStop, StandardStopId } from '../content/types';
+import { Choice, Effects, Outcome, PersonaId, STOP_ORDER, StandardStop, StandardStopId } from '../content/types';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ClerkSpeech } from '../components/ClerkSpeech';
 import { ChoiceButton } from '../components/ChoiceButton';
@@ -23,7 +23,8 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
   const persona = state.persona!;
   // Revisiting a stop already in the cart opens straight on the choices.
   const [sub, setSub] = useState<Sub>(state.cart[stopId] ? { kind: 'choices' } : { kind: 'intro' });
-  const record = (cartNote: string) => dispatch({ type: 'RECORD_STOP', stopId, cartNote });
+  // revision-2: Task 8 passes each choice's effects here.
+  const record = (cartNote: string, effects: Effects = []) => dispatch({ type: 'RECORD_STOP', stopId, cartNote, effects });
   const back = () => setSub({ kind: 'choices' });
 
   const pick = (choice: Choice) => {
@@ -83,9 +84,9 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
         </motion.div>
       )}
 
-      {sub.kind === 'fairUse' && <FairUseAnalysis stopId={stopId} persona={persona} content={content} onDone={record} onBack={back} />}
+      {sub.kind === 'fairUse' && <FairUseAnalysis stopId={stopId} persona={persona} content={content} onDone={(note) => record(note)} onBack={back} />}
 
-      {sub.kind === 'ask' && <AskRequest content={content} persona={persona} seed={state.seed} onDone={record} onBack={back} />}
+      {sub.kind === 'ask' && <AskRequest content={content} persona={persona} seed={state.seed} onDone={(note) => record(note)} onBack={back} />}
     </div>
   );
 }

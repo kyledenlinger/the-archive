@@ -11,9 +11,8 @@ import { PersonaSelect } from './screens/PersonaSelect';
 import { Stop } from './screens/Stop';
 import { Interstitial } from './screens/Interstitial';
 import { Flip } from './screens/Flip';
-import { Guess } from './screens/Guess';
-import { Reveal } from './screens/Reveal';
-import { Ending } from './screens/Ending';
+import { Brief } from './screens/Brief';
+import { Shelf } from './screens/Shelf';
 import { CartReview } from './screens/CartReview';
 import { ScreenProps } from './screens/types';
 
@@ -25,19 +24,18 @@ function CurrentScreen(props: ScreenProps) {
       return <Onboarding {...props} />;
     case 'persona':
       return <PersonaSelect {...props} />;
+    case 'brief':
+      return <Brief {...props} />;
     case 'stop':
       return <Stop {...props} />;
     case 'interstitial':
       return <Interstitial {...props} />;
     case 'flip':
       return <Flip {...props} />;
-    case 'guess':
-      return <Guess {...props} />;
-    case 'reveal':
-      return <Reveal {...props} />;
-    case 'ending':
-      return <Ending {...props} />;
-    case 'cart':
+    case 'shelf':
+      return <Shelf {...props} />;
+    case 'project':
+      // revision-2: Task 12 replaces this with ProjectSummary.
       return <CartReview {...props} />;
   }
 }
@@ -47,7 +45,7 @@ export default function App({ seed, content = defaultContent }: { seed?: number;
   const [refOpen, setRefOpen] = useState(false);
   const openRef = useCallback(() => setRefOpen(true), []);
   const closeRef = useCallback(() => setRefOpen(false), []);
-  const showCart = !['mode', 'onboarding', 'persona'].includes(state.screen);
+  const showCart = !['mode', 'onboarding', 'persona', 'brief'].includes(state.screen);
   const persona = content.personas.find((p) => p.id === state.persona);
 
   return (

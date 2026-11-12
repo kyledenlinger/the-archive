@@ -12,6 +12,8 @@ export async function startAs(persona: PersonaId, mode: Mode = 'class') {
   await user.click(screen.getByRole('button', { name: /Choose who you are/ }));
   const name = content.personas.find((p) => p.id === persona)!.name;
   await user.click(screen.getByRole('button', { name: new RegExp(name) }));
+  // revision-2: the brief is a stub until Task 7; pass it.
+  await user.click(screen.getByRole('button', { name: /^Continue/ }));
   return user;
 }
 
@@ -40,7 +42,7 @@ export async function toFlip(persona: PersonaId, mode: Mode = 'class') {
   return user;
 }
 
-/** Play the flip with one license and the same response for every event, ending on the guess screen. */
+/** Play the flip with one license and the same response for every event, ending on the shelf. */
 export async function throughFlip(user: ReturnType<typeof userEvent.setup>, license: LicenseId = 'cc-by', response: ReuseResponse = 'credit') {
   const flip = content.stops.flip;
   await user.click(screen.getByRole('button', { name: /Start with your work/ }));
@@ -49,11 +51,5 @@ export async function throughFlip(user: ReturnType<typeof userEvent.setup>, lice
     await user.click(screen.getByRole('button', { name: flip.responses[response].label }));
     await user.click(screen.getByRole('button', { name: /^Next/ }));
   }
-  await user.click(screen.getByRole('button', { name: /^Continue/ }));
-}
-
-/** revision-2: the guess and reveal are pass-through stubs; this clicks through both to the ending. Task 12 replaces it with `toShelf`. */
-export async function guessAndReveal(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getByRole('button', { name: /^Continue/ }));
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
 }
