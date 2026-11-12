@@ -17,7 +17,7 @@ import { Interstitial } from './screens/Interstitial';
 import { Flip } from './screens/Flip';
 import { Brief } from './screens/Brief';
 import { Shelf } from './screens/Shelf';
-import { CartReview } from './screens/CartReview';
+import { ProjectSummary } from './screens/ProjectSummary';
 import { ScreenProps } from './screens/types';
 
 function CurrentScreen(props: ScreenProps) {
@@ -39,8 +39,7 @@ function CurrentScreen(props: ScreenProps) {
     case 'shelf':
       return <Shelf {...props} />;
     case 'project':
-      // revision-2: Task 12 replaces this with ProjectSummary.
-      return <CartReview {...props} />;
+      return <ProjectSummary {...props} />;
   }
 }
 

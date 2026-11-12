@@ -1,4 +1,5 @@
 import { alternateScene, assembleShelf, fateModifiers } from './epilogue';
+import { content } from '../content';
 import {
   FateId,
   LICENSE_IDS,
@@ -131,4 +132,24 @@ describe('alternateScene', () => {
   });
 });
 
-it.todo('every 2⁴ combination of underCloud/late/smaller/compromised gives non-empty text for every persona in real content');
+describe('real content', () => {
+  const shelf = content.clerk.shelf;
+  const MODS: FateId[] = ['underCloud', 'late', 'smaller', 'compromised'];
+  const subsets = Array.from({ length: 16 }, (_, mask) => MODS.filter((_, i) => mask & (1 << i)));
+
+  test('every 2⁴ combination of underCloud/late/smaller/compromised gives non-empty text for every persona', () => {
+    for (const p of PERSONA_IDS) {
+      for (const sub of subsets) {
+        const fate = sub.length ? sub : (['asPlanned'] as FateId[]);
+        const { fate: text } = assembleShelf(shelf, p, fate, 'cc-by', undefined, 6);
+        expect(text.trim().length).toBeGreaterThan(0);
+        for (const f of fate) expect(text).toContain(shelf.fate[p][f]);
+      }
+      expect(assembleShelf(shelf, p, ['pulled'], 'arr', undefined, 6).fate).toBe(shelf.fate[p].pulled);
+    }
+  });
+
+  test('every scene ends with a full stop, so an outside detail can follow it', () => {
+    for (const p of PERSONA_IDS) for (const l of LICENSE_IDS) expect(shelf.scenes[p][l]).toMatch(/\.$/);
+  });
+});

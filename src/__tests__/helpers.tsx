@@ -110,7 +110,7 @@ export async function toFlip(persona: PersonaId, mode: Mode = 'class') {
   return user;
 }
 
-/** Play the flip with one license and the same response for every event, ending on the shelf. */
+/** Play the flip with one license and the same response for every event: the shelf next (class) or the flip debrief (independent). */
 export async function throughFlip(user: ReturnType<typeof userEvent.setup>, license: LicenseId = 'cc-by', response: ReuseResponse = 'credit') {
   const flip = content.stops.flip;
   await user.click(screen.getByRole('button', { name: /Start with your work/ }));
@@ -119,4 +119,15 @@ export async function throughFlip(user: ReturnType<typeof userEvent.setup>, lice
     await user.click(screen.getByRole('button', { name: flip.responses[response].label }));
     await user.click(screen.getByRole('button', { name: /^Next/ }));
   }
+}
+
+/**
+ * Play from the start through the flip and land on the shelf's intro. Independent mode passes the flip's
+ * debrief on the way.
+ */
+export async function toShelf(persona: PersonaId, mode: Mode = 'class', license: LicenseId = 'cc-by', response: ReuseResponse = 'credit') {
+  const user = await toFlip(persona, mode);
+  await throughFlip(user, license, response);
+  if (mode === 'independent') await leaveInterstitial(user);
+  return user;
 }

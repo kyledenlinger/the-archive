@@ -32,7 +32,7 @@ test('the license picker can reveal what a license actually means', async () => 
   expect(screen.getByText(flip.licenses.cc0.summary)).toBeInTheDocument();
 });
 
-test('the last reuse event’s Next goes straight to the shelf and records Your work in the cart', async () => {
+test('in class mode the last reuse event’s Next goes straight to the shelf and records Your work in the cart', async () => {
   const user = await toFlip('artificer');
   await user.click(screen.getByRole('button', { name: /Start with your work/ }));
   await user.click(screen.getByRole('button', { name: `Choose ${flip.licenses['cc-by'].label}` }));
@@ -46,7 +46,7 @@ test('the last reuse event’s Next goes straight to the shelf and records Your 
   }
   // No in-between page: the shelf is next.
   expect(screen.queryByRole('button', { name: /^Next/ })).not.toBeInTheDocument();
-  expect(screen.getByText(content.clerk.shelf.closingLine)).toBeInTheDocument();
+  expect(screen.getByText(content.clerk.shelf.intro[0])).toBeInTheDocument();
   // The Cart panel shows the work and its license; the full note (with the responses) is in state.cart.flip.
   expect(await cartItemText(user, 'flip')).toContain(flip.licenses['cc-by'].label);
 });
@@ -152,5 +152,5 @@ describe('in state', () => {
 test('the full flip helper lands on the shelf', async () => {
   const user = await toFlip('bard');
   await throughFlip(user, 'cc0', 'negotiate');
-  expect(screen.getByText(content.clerk.shelf.closingLine)).toBeInTheDocument();
+  expect(screen.getByText(content.clerk.shelf.intro[0])).toBeInTheDocument();
 });

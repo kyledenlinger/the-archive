@@ -120,6 +120,7 @@ export interface ShelfContent {
   altFrame: string;                                             // contains "{license}"
   backToYours: string;
   closingLine: string;
+  reviewBy?: ReviewFlag;                                        // legal claims in the scenes that could change
 }
 export interface ClerkContent { briefIntro: string; coachInvite: string; shelf: ShelfContent }
 

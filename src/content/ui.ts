@@ -113,17 +113,32 @@ export const ui = {
   },
 };
 
-// End-of-game framing text (cart review).
-export const endUi = {
-  revealHeading: 'The answer',
-  endingQuestion: 'What do you do for him?',
-  guessHeading: 'What is the Clerk?',
-  cartHeading: 'Your cart',
-  guessLine: (guess: string) => `Your guess: ${guess}. The Clerk was a scrapbook.`,
-  facilitatorLine: 'Facilitator: use these cart notes as case documents for the full-room debrief.',
+/** The shelf (revision spec §7). */
+export const shelfUi = {
+  yourShelf: 'Your shelf',
+  fate: 'What became of your project',
+  scene: 'What’s next to it on the shelf',
+  lastWord: 'Your last word',
+  otherFutures: 'Other futures',
+  see: (label: string) => `See ${label}`,
+};
+
+/** Your project, after the shelf (revision spec §7.6). */
+export const projectUi = {
+  heading: 'Your project',
+  making: 'What you made',
+  answersTo: 'Who you answered to',
+  items: 'What you found',
+  stop: (n: number, title: string) => `Stop ${n}: ${title}`,
+  yourWork: 'Your work',
+  license: (label: string) => `License: ${label}`,
+  meters: 'Where your project ended up',
+  facilitatorLine: 'Facilitator: use these notes for the full-room debrief.',
+  debriefPrompt: 'Look at a future you didn’t choose. Would you trade?',
   independentSummary:
-    'You filled your cart with three things and chose how to share your own work, each with a reason behind it. None of them is the answer; each is a position you could explain and defend, which is most of what working with copyright comes down to.',
+    'You found three things for your project and decided on what terms to take each one, then chose how to share your own work and what to do when others used it. Every one of those decisions gained you something and cost you something. None of them is the answer; each is a position you could explain and defend, which is most of what working with copyright comes down to.',
   resourcesHeading: 'Where to find work you can use',
+  playAgain: 'Play again',
 };
 
 /** Labels for the flip's cart note, one per reuse event. */

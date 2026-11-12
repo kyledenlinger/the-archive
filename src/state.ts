@@ -45,7 +45,10 @@ export type Page =
   | { kind: 'askReply' }                                     // the reply; a conditional yes shows its terms here
   | { kind: 'askDeclined' }                                  // a conditional yes's terms turned down: the follow-ups
   | { kind: 'license' }                                      // the flip's license picker
-  | { kind: 'reuse'; index: number };                        // the flip's reuse events, 0–2; the last one's Next finishes the flip
+  | { kind: 'reuse'; index: number }                         // the flip's reuse events, 0–2; the last one's Next finishes the flip
+  | { kind: 'shelfMine' }                                    // the shelf: your fate, scene, last word, and the offer
+  | { kind: 'shelfAlt'; license: LicenseId }                 // a future under another license: looking only, never recorded
+  | { kind: 'closing' };                                     // the Clerk's closing line (the shelf's intro uses `intro`)
 
 /** A place in the game that Back can return to. */
 export interface Location { screen: Screen; stopIndex: number; page: Page }
@@ -125,6 +128,14 @@ export function initialState(seed: number): GameState {
   };
 }
 
+/**
+ * After the flip nothing is left to decide: the shelf's pages (alternate futures included) and the project
+ * summary are only looked at. While reviewing among them, moving to a new page is allowed and drops the
+ * places ahead.
+ */
+const freeRoam = (s: GameState) =>
+  (s.screen === 'shelf' || s.screen === 'project') && s.forward.every((l) => l.screen === 'shelf' || l.screen === 'project');
+
 /** True after Back, until the player has walked forward again to where they were. Pages show read-only. */
 export const isReviewing = (state: GameState) => state.forward.length > 0;
 
@@ -160,7 +171,7 @@ function play(state: GameState, action: Action): GameState {
 
     case 'GO_TO':
       // Moving between pages of the current screen. Recording happens in the other actions.
-      if (!['onboarding', 'stop', 'flip'].includes(state.screen) || samePage(state.page, action.page)) return state;
+      if (!['onboarding', 'stop', 'flip', 'shelf'].includes(state.screen) || samePage(state.page, action.page)) return state;
       return { ...state, page: action.page };
 
     case 'FINISH_ONBOARDING':
@@ -213,6 +224,8 @@ function play(state: GameState, action: Action): GameState {
 
     case 'ADVANCE':
       if (state.screen === 'interstitial') {
+        // After the flip's debrief (independent mode), the shelf.
+        if (STOP_ORDER[state.stopIndex] === 'flip') return { ...state, screen: 'shelf', page: { kind: 'intro' } };
         const next = state.stopIndex + 1;
         const toFlip = STOP_ORDER[next] === 'flip';
         return {
@@ -242,7 +255,11 @@ function play(state: GameState, action: Action): GameState {
     case 'FINISH_FLIP': {
       const r = state.flip.responses;
       if (state.screen !== 'flip' || !state.flip.license || !r.within || !r.outside || !r.beyond) return state;
-      return { ...state, cart: { ...state.cart, flip: action.cartNote }, screen: 'shelf', page: SINGLE };
+      // Independent mode reads the flip's debrief first; class mode goes straight to the shelf.
+      const cart = { ...state.cart, flip: action.cartNote };
+      return state.mode === 'independent'
+        ? { ...state, cart, screen: 'interstitial', page: SINGLE }
+        : { ...state, cart, screen: 'shelf', page: { kind: 'intro' } };
     }
 
     default:
@@ -254,7 +271,8 @@ function play(state: GameState, action: Action): GameState {
  * Pure reducer: the game plus navigation history. Every move to a new place (screen, stop, or page) pushes the
  * old place onto `history`, except choosing a mode (the game starts there) and typing into the Ask form.
  * BACK only moves: meters, cart, flip, searches, and decisions stay as they are. While reviewing (after BACK),
- * only BACK, FORWARD, and RESET do anything, so no decision can be made twice.
+ * only BACK, FORWARD, and RESET do anything, so no decision can be made twice (the shelf and summary excepted:
+ * they hold no decisions).
  */
 export function reducer(state: GameState, action: Action): GameState {
   switch (action.type) {
@@ -271,9 +289,9 @@ export function reducer(state: GameState, action: Action): GameState {
       return { ...at(state, next), history: [...state.history, here(state)], forward: state.forward.slice(0, -1) };
     }
   }
-  if (isReviewing(state)) return state;
+  if (isReviewing(state) && !freeRoam(state)) return state;
   const next = play(state, action);
   if (next === state || action.type === 'SET_MODE' || action.type === 'SET_ASK_DRAFT') return next;
   const moved = next.screen !== state.screen || next.stopIndex !== state.stopIndex || !samePage(next.page, state.page);
-  return moved ? { ...next, history: [...state.history, here(state)] } : next;
+  return moved ? { ...next, history: [...state.history, here(state)], forward: [] } : next;
 }

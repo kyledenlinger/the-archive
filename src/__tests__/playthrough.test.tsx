@@ -1,7 +1,9 @@
 import { screen } from '@testing-library/react';
 import { Mode, PERSONA_IDS, PersonaId } from '../content/types';
 import { GROUP_SIZE_RE } from '../lib/validateContent';
-import { cartButton, cartItemText, passStopWithFirstChoice, startAs, throughFlip } from './helpers';
+import { content } from '../content';
+import { projectUi } from '../content/ui';
+import { cartButton, cartItemText, leaveInterstitial, passStopWithFirstChoice, startAs, throughFlip } from './helpers';
 
 const cases: [PersonaId, Mode][] = PERSONA_IDS.flatMap((p) => (['class', 'independent'] as Mode[]).map((m): [PersonaId, Mode] => [p, m]));
 
@@ -25,14 +27,25 @@ test.each(cases)('%s in %s mode plays start to finish', async (persona, mode) =>
   }
   await throughFlip(user, 'cc-by', 'credit');
   snap();
-  // revision-2: the shelf is a stub until Task 12; its Continue goes to the project summary.
+  if (mode === 'independent') await leaveInterstitial(user);
+  // The shelf: the Clerk's intro, your shelf, one alternate future and back, the closing line.
+  expect(screen.getByText(content.clerk.shelf.intro[0])).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /^Continue/ }));
+  snap();
+  await user.click(screen.getByRole('button', { name: /^See CC0/ }));
+  snap();
+  await user.click(screen.getByRole('button', { name: content.clerk.shelf.backToYours }));
+  await user.click(screen.getByRole('button', { name: /^Continue/ }));
+  snap();
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
   snap();
 
-  expect(screen.getByRole('heading', { level: 1, name: /Your cart/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { level: 1, name: projectUi.heading })).toBeInTheDocument();
   expect(cartButton(3)).toBeInTheDocument();
   expect(await cartItemText(user, 'flip')).not.toBe('');
-  expect(screen.getAllByTestId('cart-review-note').every((n) => (n.textContent ?? '').trim().length > 0)).toBe(true);
+  const notes = [...screen.getAllByTestId('project-item'), screen.getByTestId('project-work')];
+  expect(notes).toHaveLength(4);
+  for (const n of notes) expect((n.textContent ?? '').trim().length).toBeGreaterThan(0);
   observer.disconnect();
   expect(seen.length).toBeGreaterThan(30);
   for (const text of seen) expect(text).not.toMatch(GROUP_SIZE_RE);

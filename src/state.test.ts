@@ -173,7 +173,7 @@ test('RECORD_REUSE applies effects once per event', () => {
   expect(reducer(s, { type: 'RECORD_REUSE', kind: 'beyond', response: 'credit', effects: [{ meter: 'budget', delta: 1 }] })).toBe(s);
 });
 
-test('FINISH_FLIP needs a license and all three responses, then goes to the shelf', () => {
+test('FINISH_FLIP needs a license and all three responses, then goes to the shelf (class mode)', () => {
   const s = atFlip();
   expect(reducer(s, { type: 'FINISH_FLIP', cartNote: 'n' })).toBe(s);
   const partial = run(s, { type: 'SET_LICENSE', license: 'cc-by' }, { type: 'RECORD_REUSE', kind: 'within', response: 'credit', effects: [] });
@@ -181,6 +181,7 @@ test('FINISH_FLIP needs a license and all three responses, then goes to the shel
   const done = flipDone();
   expect(done.cart.flip).toBe('n');
   expect(done.screen).toBe('shelf');
+  expect(done.page).toEqual({ kind: 'intro' });
 });
 
 test('ADVANCE from the shelf goes to the project summary', () => {
