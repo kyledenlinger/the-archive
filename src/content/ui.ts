@@ -1,4 +1,6 @@
-// Player-facing framing text that sits outside GameContent's schema (mode select, persona select).
+import { ExposureTag, MeterBand, MeterId } from './types';
+
+// Player-facing framing text that sits outside GameContent's schema (mode select, persona select, site chrome).
 export const ui = {
   title: 'The Archive',
   tagline: 'A text RPG about copyright, fair use, the public domain, and the rights you hold in your own work.',
@@ -11,6 +13,77 @@ export const ui = {
   onboardingFinish: 'Choose who you are',
   personaHeading: 'Who are you?',
   personaIntro: 'Pick the creator you’ll play. It decides what you’re looking for, and what’s at stake when you find it.',
+  briefHeading: 'Your brief',
+  shelfHeading: 'The shelf',
+
+  /** The Clerk's label on every line he speaks. */
+  clerkLabel: 'The Clerk',
+
+  /** Meter names and state words (revision spec §4.1). Never show the numbers. */
+  meterLabels: { time: 'Time', budget: 'Budget', exposure: 'Exposure', vision: 'Vision' } as Record<MeterId, string>,
+  meterWords: {
+    time: { best: 'Plenty', middle: 'Tight', worst: 'Out of time' },
+    budget: { best: 'Comfortable', middle: 'Stretched', worst: 'Broke' },
+    exposure: { best: 'Low', middle: 'Some', worst: 'High' },
+    vision: { best: 'Intact', middle: 'Compromised', worst: 'Lost' },
+  } as Record<MeterId, Record<MeterBand, string>>,
+  metersLabel: 'Your project',
+  /** A meter moved into a new band, e.g. “Time: Plenty → Tight”. */
+  meterChange: (label: string, from: string, to: string) => `${label}: ${from} → ${to}`,
+  /** A meter moved within its band, e.g. “Exposure rises (legal)”. */
+  meterNudge: (label: string, direction: 'up' | 'down', tag?: ExposureTag) =>
+    `${label} ${direction === 'up' ? 'rises' : 'falls'}${tag ? ` (${tag})` : ''}`,
+
+  /** Why a choice is locked (plan Global Constraints), verbatim. */
+  lockReasons: {
+    time: 'You’re out of time for this.',
+    budget: 'You’re already over budget.',
+    searched: 'You already looked. No luck.',
+  },
+
+  header: {
+    home: 'Home',
+    cart: 'Cart',
+    cartCount: (found: number) => `${found} of 3 found`,
+    reference: 'Reference',
+    about: 'About',
+  },
+
+  /** Home's confirmation (revision spec §2.1). */
+  confirmReset: {
+    question: 'Start over? You’ll lose your progress in this game.',
+    confirm: 'Start over',
+    cancel: 'Keep playing',
+  },
+
+  /** The cart, as the brief made concrete (revision spec §2.4). */
+  cartPanel: {
+    heading: 'Your cart',
+    close: 'Close cart',
+    making: 'What you’re making',
+    answersTo: 'Who you answer to',
+    items: 'What you need',
+    stop: (n: number, title: string) => `Stop ${n}: ${title}`,
+    notFound: 'Not yet found',
+    yourWork: 'Your work',
+    license: (label: string) => `License: ${label}`,
+    meters: 'Where your project stands',
+  },
+
+  /** About panel (revision spec §2.1). Kyle supplies the license and confirms the credit line before launch. */
+  about: {
+    heading: 'About The Archive',
+    close: 'Close about',
+    what: [
+      'The Archive is a text game about copyright, fair use, the public domain, and the rights you hold in your own work.',
+      'You play a creator gathering material for a project, and the choices you make about what to use shape how that project turns out.',
+    ],
+    notAdvice: 'This is a learning game, not legal advice.',
+    credit: 'Made by Kyle Denlinger, Z. Smith Reynolds Library, Wake Forest University.',
+    license: 'License: ABOUT_LICENSE_TBD',
+    sourceLabel: 'Source code on GitHub',
+    sourceUrl: 'https://github.com/kyledenlinger/the-archive',
+  },
 };
 
 // End-of-game framing text (cart review).

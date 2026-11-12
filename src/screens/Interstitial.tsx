@@ -4,7 +4,8 @@ import { review } from '../content/review';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ChoiceButton } from '../components/ChoiceButton';
 import { CartSoFar } from '../components/CartSoFar';
-import { btnLink, btnPrimary, eyebrow, page } from '../components/styles';
+import { ContinueBar } from '../components/ContinueBar';
+import { btnLink, btnPrimary, eyebrow, narrativePage } from '../components/styles';
 import { CaseNote } from './Stop';
 import { ScreenProps } from './types';
 
@@ -39,7 +40,7 @@ export function Interstitial(props: ScreenProps) {
 
   if (state.mode === 'independent') {
     return (
-      <div className={`${page} space-y-10`}>
+      <div className={`${narrativePage} space-y-10`}>
         <ScreenHeading>
           <span className={`block ${eyebrow} mb-3`}>Debrief</span>
           <span className="block text-3xl sm:text-4xl font-serif italic text-amber-100">{stop.title}</span>
@@ -52,20 +53,20 @@ export function Interstitial(props: ScreenProps) {
             {stop.debrief.prompts.map((p) => <li key={p}>{p}</li>)}
           </ul>
         </section>
-        <div className="flex justify-center">{advance}</div>
+        <ContinueBar>{advance}</ContinueBar>
       </div>
     );
   }
 
   return (
-    <div className={`${page} space-y-10`}>
+    <div className={`${narrativePage} space-y-10`}>
       <div className="text-center space-y-6">
         <div className={eyebrow}>Stop {state.stopIndex + 1} of 4: {stop.title}</div>
         <ScreenHeading className="text-5xl font-serif italic text-amber-100">{copy.waitTitle}</ScreenHeading>
         <p className="text-amber-50/80 font-serif text-lg italic leading-relaxed">{copy.waitBody}</p>
       </div>
       <ReviewPanel {...props} />
-      <div className="flex justify-center">{advance}</div>
+      <ContinueBar>{advance}</ContinueBar>
     </div>
   );
 }

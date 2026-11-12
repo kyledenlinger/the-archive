@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { content } from '../content';
 import { AskField } from '../content/types';
 import { dealAskResponse } from '../lib/ask';
-import { enterStop, passStopWithFirstChoice, startAs } from './helpers';
+import { cartButton, cartItemText, enterStop, passStopWithFirstChoice, startAs } from './helpers';
 
 type User = ReturnType<typeof userEvent.setup>;
 const FIELDS: AskField[] = ['what', 'how', 'where', 'howLong'];
@@ -56,8 +56,7 @@ test('following up fills cart slot 3 with the response cart note', async () => {
   await fill(user, 4);
   const note = content.ask.responses.permission!.artificer[dealAskResponse(1, 'artificer', 'permission', true, content.ask.odds?.permission?.artificer)].cartNote;
   await user.click(screen.getByRole('button', { name: /^Don’t use it/ }));
-  expect(screen.getByTestId('cart-slot-permission')).toHaveAttribute('data-filled', 'true');
+  expect(cartButton(3)).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 1, name: content.interstitial.waitTitle })).toBeInTheDocument();
-  // the cart note is shown on the cart review later; check state through the slot's title attribute
-  expect(screen.getByTestId('cart-slot-permission').getAttribute('title')).toContain(note);
+  expect(await cartItemText(user, 'permission')).toContain(note);
 });

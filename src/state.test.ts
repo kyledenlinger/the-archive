@@ -284,3 +284,18 @@ test('ADVANCE from the shelf goes to the project summary', () => {
 test('RESET returns to the initial state with the new seed', () => {
   expect(reducer(flipDone(), { type: 'RESET', seed: 9 })).toEqual(initialState(9));
 });
+
+test('lastChanges tags an exposure rise when one tag accounts for it', () => {
+  const s = reducer(atStop(), { type: 'RECORD_STOP', stopId: 'free', cartNote: 'n', effects: [{ meter: 'exposure', delta: 1, tag: 'reputational' }] });
+  expect(s.lastChanges?.changes).toEqual([{ meter: 'exposure', from: 'best', to: 'middle', direction: 'up', tag: 'reputational' }]);
+  const both = reducer(atStop(), {
+    type: 'RECORD_STOP',
+    stopId: 'free',
+    cartNote: 'n',
+    effects: [
+      { meter: 'exposure', delta: 1, tag: 'legal' },
+      { meter: 'exposure', delta: 1, tag: 'reputational' },
+    ],
+  });
+  expect(both.lastChanges?.changes[0].tag).toBeUndefined();
+});

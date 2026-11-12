@@ -5,7 +5,8 @@ import { Choice, Effects, Outcome, PersonaId, STOP_ORDER, StandardStop, Standard
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ClerkSpeech } from '../components/ClerkSpeech';
 import { ChoiceButton } from '../components/ChoiceButton';
-import { btnLink, btnPrimary, caseNote, eyebrow, page } from '../components/styles';
+import { ContinueBar } from '../components/ContinueBar';
+import { btnLink, btnPrimary, caseNote, eyebrow, narrativePage, page } from '../components/styles';
 import { FairUseAnalysis } from '../mechanics/FairUseAnalysis';
 import { AskRequest } from '../mechanics/AskRequest';
 import { ScreenProps } from './types';
@@ -34,7 +35,7 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
   };
 
   return (
-    <div className={page}>
+    <div className={sub.kind === 'intro' || sub.kind === 'outcome' ? narrativePage : page}>
       <ScreenHeading focusKey={sub.kind} className="mb-10">
         <span className={`block ${eyebrow} mb-3`}>Stop {state.stopIndex + 1} of 4</span>
         <span className="block text-3xl sm:text-4xl font-serif italic text-amber-100">{stop.title}</span>
@@ -43,11 +44,11 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
       {sub.kind === 'intro' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
           <ClerkSpeech text={stop.clerkIntro} />
-          <div className="flex justify-end">
-            <button type="button" className={btnLink} onClick={() => setSub({ kind: 'choices' })}>
+          <ContinueBar>
+            <button type="button" className={btnPrimary} onClick={() => setSub({ kind: 'choices' })}>
               Look closer <ChevronRight aria-hidden="true" />
             </button>
-          </div>
+          </ContinueBar>
         </motion.div>
       )}
 
@@ -73,14 +74,14 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
           <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{sub.outcome.text}</p>
           <CaseNote note={sub.outcome.cartNote} />
-          <div className="flex flex-wrap gap-6 items-center justify-between">
-            <button type="button" className={btnLink} onClick={back}>
-              Choose again
-            </button>
+          <button type="button" className={btnLink} onClick={back}>
+            Choose again
+          </button>
+          <ContinueBar>
             <ChoiceButton className={btnPrimary} onSelect={() => record(sub.outcome.cartNote)}>
               Add to cart <ChevronRight aria-hidden="true" />
             </ChoiceButton>
-          </div>
+          </ContinueBar>
         </motion.div>
       )}
 

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import { content } from '../content';
 import { PersonaId } from '../content/types';
 import { review } from '../content/review';
-import { enterStop, startAs } from './helpers';
+import { cartItemText, enterStop, startAs } from './helpers';
 
 const stop = content.stops.free;
 const label = (id: string) => stop.choices.find((c) => c.id === id)!.label;
@@ -31,7 +31,7 @@ test('going back to the stop and choosing again replaces the cart note', async (
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
   expect(screen.getByText(note('leave', 'herald'))).toBeInTheDocument();
   expect(screen.queryByText(note('take', 'herald'))).not.toBeInTheDocument();
-  expect(screen.getByTestId('cart-slot-free').getAttribute('title')).toBe(note('leave', 'herald'));
+  expect(await cartItemText(user, 'free')).toContain(note('leave', 'herald'));
 });
 
 test('the cart so far lists earlier stops behind a toggle', async () => {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BookOpen } from 'lucide-react';
 import { FlipStop, LICENSE_IDS, LicenseId } from '../content/types';
 import { ChoiceButton } from '../components/ChoiceButton';
+import { ClerkSpeech } from '../components/ClerkSpeech';
 
 interface Props {
   flip: FlipStop;
@@ -28,9 +29,7 @@ export function LicensePicker({ flip, onChoose, openReference }: Props) {
           return (
             <li key={id} className="bg-stone-900/50 border border-amber-900/30 rounded-2xl p-6 space-y-4">
               <h3 className="text-amber-100 font-serif text-2xl">{l.label}</h3>
-              <p className="font-serif italic text-amber-50/80">
-                <span className="not-italic text-[10px] font-bold tracking-[0.3em] text-amber-500 uppercase mr-2">The Clerk:</span>“{l.clerkGloss}”
-              </p>
+              <ClerkSpeech compact text={l.clerkGloss} />
               <button
                 type="button"
                 aria-expanded={Boolean(shown[id])}

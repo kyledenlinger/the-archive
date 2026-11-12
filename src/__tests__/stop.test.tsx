@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react';
 import { content } from '../content';
 import { PersonaId } from '../content/types';
-import { startAs, enterStop } from './helpers';
+import { cartButton, startAs, enterStop } from './helpers';
 
 const stop = content.stops.free;
 const leaveLabel = stop.choices.find((c) => c.id === 'leave')!.label;
@@ -24,7 +24,7 @@ test('a plain choice shows its outcome and lands on the class-mode wait screen',
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
   expect(screen.getByRole('heading', { level: 1, name: content.interstitial.waitTitle })).toBeInTheDocument();
   expect(screen.queryByText(stop.debrief.lesson)).not.toBeInTheDocument();
-  expect(screen.getByTestId('cart-slot-free')).toHaveAttribute('data-filled', 'true');
+  expect(cartButton(1)).toBeInTheDocument();
 });
 
 test('independent mode shows the debrief lesson and prompts', async () => {
@@ -48,9 +48,9 @@ test('fair use walks four factors, then the assessment, then records a fair-use 
     await user.click(screen.getByRole('button', { name: /supports fair use/ }));
   }
   expect(screen.getByText(content.fairUse.assessments.free.chronicler.text)).toBeInTheDocument();
-  expect(screen.getByTestId('cart-slot-free')).toHaveAttribute('data-filled', 'false');
+  expect(cartButton(0)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Add to cart on a fair use basis/ }));
-  expect(screen.getByTestId('cart-slot-free')).toHaveAttribute('data-filled', 'true');
+  expect(cartButton(1)).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 1, name: content.interstitial.waitTitle })).toBeInTheDocument();
 });
 
@@ -62,5 +62,5 @@ test('going back from the fair use assessment returns to the choices with the ca
   await user.click(screen.getByRole('button', { name: /Go back to the choices/ }));
   const choices = screen.getByRole('group', { name: /What do you do/ });
   expect(within(choices).getByRole('button', { name: leaveLabel })).toBeInTheDocument();
-  expect(screen.getByTestId('cart-slot-free')).toHaveAttribute('data-filled', 'false');
+  expect(cartButton(0)).toBeInTheDocument();
 });

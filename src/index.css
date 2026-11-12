@@ -4,6 +4,8 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Libre Baskerville", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  /* The Clerk's typewriter voice. Not loaded from the web: the system fallback is fine. */
+  --font-clerk: "Courier Prime", "Courier New", ui-monospace, monospace;
 }
 
 @layer base {
@@ -23,13 +25,22 @@
   }
 
   .choice-btn {
-    @apply disabled:opacity-50 w-full text-left p-6 rounded-xl border border-amber-900/30 bg-stone-900/40 
+    @apply w-full text-left p-6 rounded-xl border border-amber-900/30 bg-stone-900/40 
            hover:bg-amber-900/20 hover:border-amber-500/50 transition-all 
            font-serif text-amber-100 flex items-center justify-between;
   }
 
   .choice-btn:hover::after {
     @apply opacity-100;
+  }
+
+  /* Locked choices stay focusable and readable, just greyed, with no hover cue. */
+  .choice-btn[aria-disabled="true"] {
+    @apply opacity-60 cursor-not-allowed hover:bg-stone-900/40 hover:border-amber-900/30;
+  }
+
+  .choice-btn[aria-disabled="true"]::after {
+    content: none;
   }
 
   .choice-btn::after {

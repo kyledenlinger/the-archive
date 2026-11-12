@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import { content } from '../content';
-import { toFlip } from './helpers';
+import { cartItemText, toFlip } from './helpers';
 
 const flip = content.stops.flip;
 
@@ -34,7 +34,5 @@ test('three responses lead to Continue, with no way back to the picker', async (
   }
   // revision-2: the Clerk's askForHelp line is gone (Task 11 removes the phase).
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
-  const slot = screen.getByTestId('cart-slot-flip');
-  expect(slot).toHaveAttribute('data-filled', 'true');
-  expect(slot.getAttribute('title')).toContain(flip.licenses['cc-by'].label);
+  expect(await cartItemText(user, 'flip')).toContain(flip.licenses['cc-by'].label);
 });

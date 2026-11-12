@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
-import { Mode, PERSONA_IDS, PersonaId, STOP_ORDER } from '../content/types';
+import { Mode, PERSONA_IDS, PersonaId } from '../content/types';
 import { GROUP_SIZE_RE } from '../lib/validateContent';
-import { passStopWithFirstChoice, startAs, throughFlip } from './helpers';
+import { cartButton, cartItemText, passStopWithFirstChoice, startAs, throughFlip } from './helpers';
 
 const cases: [PersonaId, Mode][] = PERSONA_IDS.flatMap((p) => (['class', 'independent'] as Mode[]).map((m): [PersonaId, Mode] => [p, m]));
 
@@ -30,7 +30,8 @@ test.each(cases)('%s in %s mode plays start to finish', async (persona, mode) =>
   snap();
 
   expect(screen.getByRole('heading', { level: 1, name: /Your cart/ })).toBeInTheDocument();
-  for (const id of STOP_ORDER) expect(screen.getByTestId(`cart-slot-${id}`)).toHaveAttribute('data-filled', 'true');
+  expect(cartButton(3)).toBeInTheDocument();
+  expect(await cartItemText(user, 'flip')).not.toBe('');
   expect(screen.getAllByTestId('cart-review-note').every((n) => (n.textContent ?? '').trim().length > 0)).toBe(true);
   observer.disconnect();
   expect(seen.length).toBeGreaterThan(30);

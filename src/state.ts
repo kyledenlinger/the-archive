@@ -1,5 +1,6 @@
 import {
   Effects,
+  ExposureTag,
   LicenseId,
   Meters,
   Mode,
@@ -15,6 +16,8 @@ import { applyEffects, meterChanges } from './lib/meters';
 export type Screen = 'mode' | 'onboarding' | 'persona' | 'brief' | 'stop' | 'interstitial' | 'flip' | 'shelf' | 'project';
 export interface FlipRecord { license: LicenseId | null; responses: Partial<Record<ReuseEventKind, ReuseResponse>> }
 export interface ExposureTags { legal: number; reputational: number }
+/** One meter change for the live region. `tag` is set when exposure rose and all of the rise came from one tag. */
+export type MeterChange = ReturnType<typeof meterChanges>[number] & { tag?: ExposureTag };
 export interface GameState {
   screen: Screen; mode: Mode | null; persona: PersonaId | null;
   stopIndex: number;                               // index into STOP_ORDER
@@ -28,7 +31,7 @@ export interface GameState {
   searches: Partial<Record<StandardStopId, 'found' | 'notFound'>>;   // persists through REVISIT_STOP
   sunk: Effects;                                   // mid-stop costs already paid at this stop
   sunkKeys: string[];                              // which one-time costs were paid ('search', 'fairUse', 'send')
-  lastChanges: { id: number; changes: ReturnType<typeof meterChanges> } | null;   // for the live region
+  lastChanges: { id: number; changes: MeterChange[] } | null;   // for the live region
   seed: number;
 }
 export type Action =
@@ -72,12 +75,18 @@ export function initialState(seed: number): GameState {
 
 /** New meters and exposure tags, plus a fresh `lastChanges` entry (diffed against the current meters) for the live region. */
 function withMeters(state: GameState, meters: Meters, tags: ExposureTags): GameState {
+  const legal = tags.legal > state.exposureLegal;
+  const reputational = tags.reputational > state.exposureReputational;
+  const tag: ExposureTag | undefined = legal === reputational ? undefined : legal ? 'legal' : 'reputational';
+  const changes: MeterChange[] = meterChanges(state.meters, meters).map((c) =>
+    c.meter === 'exposure' && c.direction === 'up' && tag ? { ...c, tag } : c,
+  );
   return {
     ...state,
     meters,
     exposureLegal: tags.legal,
     exposureReputational: tags.reputational,
-    lastChanges: { id: (state.lastChanges?.id ?? 0) + 1, changes: meterChanges(state.meters, meters) },
+    lastChanges: { id: (state.lastChanges?.id ?? 0) + 1, changes },
   };
 }
 

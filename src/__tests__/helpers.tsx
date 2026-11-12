@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { content } from '../content';
-import { LicenseId, Mode, PersonaId, ReuseResponse } from '../content/types';
+import { LicenseId, Mode, PersonaId, ReuseResponse, StopId } from '../content/types';
 
 export async function startAs(persona: PersonaId, mode: Mode = 'class') {
   const user = userEvent.setup();
@@ -15,6 +15,17 @@ export async function startAs(persona: PersonaId, mode: Mode = 'class') {
   // revision-2: the brief is a stub until Task 7; pass it.
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
   return user;
+}
+
+/** The header's Cart button, by its count (“2 of 3 found”). */
+export const cartButton = (found?: number) => screen.getByRole('button', { name: found === undefined ? /of 3 found/ : new RegExp(`${found} of 3 found`) });
+
+/** Open the Cart panel, read one item's text (empty if it isn't there), and close the panel again. */
+export async function cartItemText(user: ReturnType<typeof userEvent.setup>, id: StopId): Promise<string> {
+  await user.click(cartButton());
+  const text = screen.queryByTestId(`cart-item-${id}`)?.textContent ?? '';
+  await user.keyboard('{Escape}');
+  return text;
 }
 
 /** From a stop's Clerk intro, step into its setup and choices. */

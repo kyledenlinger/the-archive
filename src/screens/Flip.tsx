@@ -6,7 +6,8 @@ import { flipCartNote, REUSE_ORDER } from '../lib/flip';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ClerkSpeech } from '../components/ClerkSpeech';
 import { ChoiceButton } from '../components/ChoiceButton';
-import { btnLink, btnPrimary, eyebrow, page } from '../components/styles';
+import { ContinueBar } from '../components/ContinueBar';
+import { btnPrimary, eyebrow, narrativePage, page } from '../components/styles';
 import { LicensePicker } from '../mechanics/LicensePicker';
 import { ReuseEvents } from '../mechanics/ReuseEvents';
 import { flipNoteLabels } from '../content/ui';
@@ -27,7 +28,7 @@ export function Flip({ state, dispatch, content, openReference }: ScreenProps) {
   };
 
   return (
-    <div className={page}>
+    <div className={phase === 'intro' || phase === 'askForHelp' ? narrativePage : page}>
       <ScreenHeading focusKey={phase} className="mb-10">
         <span className={`block ${eyebrow} mb-3`}>Stop 4 of 4</span>
         <span className="block text-3xl sm:text-4xl font-serif italic text-amber-100">{flip.title}</span>
@@ -36,11 +37,11 @@ export function Flip({ state, dispatch, content, openReference }: ScreenProps) {
       {phase === 'intro' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
           <ClerkSpeech text={flip.clerkIntro} />
-          <div className="flex justify-end">
-            <button type="button" className={btnLink} onClick={() => setPhase('license')}>
+          <ContinueBar>
+            <button type="button" className={btnPrimary} onClick={() => setPhase('license')}>
               Start with your work <ChevronRight aria-hidden="true" />
             </button>
-          </div>
+          </ContinueBar>
         </motion.div>
       )}
 
@@ -75,11 +76,11 @@ export function Flip({ state, dispatch, content, openReference }: ScreenProps) {
       {phase === 'askForHelp' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
           {/* revision-2: the Clerk's askForHelp line is gone; Task 11 removes this phase. */}
-          <div className="flex justify-center">
+          <ContinueBar>
             <ChoiceButton className={btnPrimary} onSelect={finish}>
               Continue <ChevronRight aria-hidden="true" />
             </ChoiceButton>
-          </div>
+          </ContinueBar>
         </motion.div>
       )}
     </div>
