@@ -541,8 +541,8 @@ export const ask: AskContent = {
       ],
       bard: [
         smallFee(
-          'Their terms: a month on the paid plan. Regenerate the backing track while you’re on it, and the new version comes with commercial rights.',
-          'Accepted: paid for a month on the paid plan and regenerated the backing track, which comes with commercial rights. Receipt saved.',
+          'Their terms: a month on the paid plan, $12. Regenerate the backing track while you’re on it, and the new version comes with commercial rights.',
+          'Accepted: paid $12 for a month on the paid plan and regenerated the backing track, which comes with commercial rights. Receipt saved.',
           3,
         ),
         largeFee(
@@ -574,7 +574,7 @@ export const ask: AskContent = {
         ),
         restriction(
           'Their terms: both say yes to the game, but the tile art and the font file can’t sit in a public repository. The open-source release has to ship without them, with instructions for getting them separately.',
-          'Accepted: the game’s code is open-source, but the tile art and the font file stay out of the public repository, and players get them separately. Not quite the open release you planned.',
+          'Accepted: the game’s code is open-source, but the tile art and the font file stay out of the public repository, and players get them separately.',
           3,
         ),
         credit(
