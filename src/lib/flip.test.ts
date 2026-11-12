@@ -1,4 +1,4 @@
-import { resolveReuse, flipCartNote } from './flip';
+import { resolveReuse, flipCartNote, reuseEffects } from './flip';
 import { makeValidContent } from './testFixtures';
 
 test('resolveReuse returns the situation cell', () => {
@@ -25,4 +25,12 @@ test('flipCartNote labels each response with its event when labels are given', (
   flip.responses.negotiate.cartNote = 'Negotiated.';
   const note = flipCartNote(flip, 'cc0', { within: 'negotiate', outside: 'negotiate', beyond: 'negotiate' }, { within: 'W:', outside: 'O:', beyond: 'B:' });
   expect(note).toBe('CC0. W: Negotiated. O: Negotiated. B: Negotiated.');
+});
+
+test('reuseEffects uses the event override when there is one, and the response default otherwise', () => {
+  const flip = makeValidContent().stops.flip;
+  flip.responses['let-go'].effects = [{ meter: 'vision', delta: -1 }];
+  flip.events.bard.within.effects = { 'let-go': [] };
+  expect(reuseEffects(flip, 'bard', 'within', 'let-go')).toEqual([]);
+  expect(reuseEffects(flip, 'bard', 'outside', 'let-go')).toEqual([{ meter: 'vision', delta: -1 }]);
 });

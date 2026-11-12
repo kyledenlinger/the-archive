@@ -190,7 +190,7 @@ test('Back from the reuse events shows the license chosen and the others locked'
   await user.click(backButton());
   expect(screen.getByRole('button', { name: `Choose ${flip.licenses.cc0.label}` })).toHaveAttribute('aria-disabled', 'true');
   await user.click(screen.getByRole('button', { name: `Choose ${flip.licenses['cc-by'].label}` }));
-  expect(screen.getByText(`You chose: ${flip.responses.credit.label}.`)).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: flip.responses.credit.label })).toHaveAccessibleDescription(ui.yourChoice);
 });
 
 test('Start over clears the history', async () => {

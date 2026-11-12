@@ -331,7 +331,6 @@ describe('the Clerk speaks in his own block', () => {
       await user.click(screen.getByRole('button', { name: content.stops.flip.responses['let-go'].label }));
       await user.click(screen.getByRole('button', { name: /^Next/ }));
     }
-    await user.click(screen.getByRole('button', { name: /^Continue/ }));
     expectClerk(content.clerk.shelf.closingLine);
   });
 });

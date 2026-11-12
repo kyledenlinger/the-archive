@@ -94,12 +94,20 @@ export interface AskContent {
   followUps: Record<AskFollowUpId, AskFollowUp>;
 }
 
+export interface ReuseEvent {
+  setup: string;
+  situation: Record<LicenseId, string>;
+  /** Per-response effects for this event only, replacing `FlipStop.responses[r].effects`. */
+  effects?: Partial<Record<ReuseResponse, Effects>>;
+}
+
 export interface FlipStop extends StopBase {
   id: 'flip';
   work: Record<PersonaId, string>;    // what “your work” is
   licenses: Record<LicenseId, { label: string; clerkGloss: string; summary: string }>;
-  events: Record<PersonaId, Record<ReuseEventKind, { setup: string; situation: Record<LicenseId, string> }>>;
-  responses: Record<ReuseResponse, { label: string; cartNote: string; effects?: Effects }>;
+  events: Record<PersonaId, Record<ReuseEventKind, ReuseEvent>>;
+  /** `effects` are the defaults; an event can override them for one response (see `ReuseEvent.effects`). */
+  responses: Record<ReuseResponse, { label: string; cartNote: string; effects: Effects }>;
 }
 
 export interface ShelfContent {

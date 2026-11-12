@@ -2,6 +2,13 @@ import { FlipStop, LicenseId } from '../types';
 import { LICENSE_DEFINITIONS } from '../reference';
 
 /** One situation per license, in the order: all rights reserved, CC BY, CC BY-SA, CC BY-NC, CC0. */
+/**
+ * “Let it go” costs Vision only when the reuse changed what the work means (revision spec §5.5). An event that
+ * leaves the meaning intact (a credited clip, a repost, an uncredited copy shown as is, an offer you pass on)
+ * overrides that default with this, so letting it go there costs nothing.
+ */
+const MEANING_INTACT = { 'let-go': [] };
+
 const sit = (arr: string, by: string, bysa: string, bync: string, cc0: string): Record<LicenseId, string> => ({
   arr,
   'cc-by': by,
@@ -34,7 +41,7 @@ export const stop4Flip: FlipStop = {
   licenses: {
     arr: {
       label: 'All rights reserved',
-      clerkGloss: 'The classic. Nobody touches it. Very secure. Very lonely, sometimes.',
+      clerkGloss: 'The classic. Nobody uses it without asking you first, more or less. Very secure, though fewer people ever come across it.',
       summary: LICENSE_DEFINITIONS.arr,
     },
     'cc-by': {
@@ -61,6 +68,7 @@ export const stop4Flip: FlipStop = {
   events: {
     chronicler: {
       within: {
+        effects: MEANING_INTACT,
         setup: 'A local TV station runs a 15-second clip from your film in a story about the festival, with your name on screen.',
         situation: sit(
           'You reserved all rights, and this still needs no permission: a short, credited clip in a news story about the festival is the kind of news reporting fair use exists for.',
@@ -71,6 +79,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       outside: {
+        effects: MEANING_INTACT,
         setup: 'A video channel uploads your entire film under its own title, with no credit. It’s running ads.',
         situation: sit(
           'This is copying the whole film without permission, which is a clear infringement, and video platforms have a takedown process for exactly this.',
@@ -81,6 +90,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       beyond: {
+        effects: MEANING_INTACT,
         setup: 'A streaming service wants to license the film, on one condition: exclusive rights for five years.',
         situation: sit(
           'You’ve kept every right, so an exclusive license is yours to grant. Exclusivity means you can’t license the film anywhere else for five years.',
@@ -93,6 +103,7 @@ export const stop4Flip: FlipStop = {
     },
     herald: {
       within: {
+        effects: MEANING_INTACT,
         setup: 'A student club shares your graphic with the app’s built-in repost button, which credits you automatically.',
         situation: sit(
           'No permission needed: the platform’s terms, which you accepted when you posted, let other users share posts through the app’s own features.',
@@ -114,6 +125,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       beyond: {
+        effects: MEANING_INTACT,
         setup: 'A nonprofit asks to adapt your graphic, with new text, for a public-health campaign.',
         situation: sit(
           'They need your permission to adapt it. You can say yes, set conditions, or decline.',
@@ -126,6 +138,7 @@ export const stop4Flip: FlipStop = {
     },
     naturalist: {
       within: {
+        effects: MEANING_INTACT,
         setup: 'A high-school biology teacher shows your photo on the classroom screen during a lesson, with your name on the slide.',
         situation: sit(
           'No permission needed: U.S. copyright law specifically allows displaying a work during face-to-face teaching at a nonprofit school.',
@@ -136,6 +149,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       outside: {
+        effects: MEANING_INTACT,
         setup: 'A news site runs your photo at the top of an article about winter wildlife, with no credit.',
         situation: sit(
           'This uses your photo without permission. A story about the viral photo itself might support fair use, but using it simply as an illustration usually doesn’t.',
@@ -146,6 +160,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       beyond: {
+        effects: MEANING_INTACT,
         setup: 'A nature magazine offers you its cover, in exchange for exclusive rights to the photo for a year.',
         situation: sit(
           'You hold every right, so exclusive cover rights are yours to grant. The photo stays off other covers for the term you agree to.',
@@ -158,6 +173,7 @@ export const stop4Flip: FlipStop = {
     },
     artificer: {
       within: {
+        effects: MEANING_INTACT,
         setup: 'A fan posts a photo of your market table, your prints visible behind them, and tags you.',
         situation: sit(
           'Your prints appear incidentally in a photo of a market table, with a tag. That kind of incidental, credited use is very likely fair use. No permission needed.',
@@ -178,6 +194,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       beyond: {
+        effects: MEANING_INTACT,
         setup: 'An AI company emails: it would like to license your whole portfolio as training data, for a fee.',
         situation: sit(
           'They’re asking for a use you never granted. You can say yes, say no, or negotiate terms and a price. Whatever the law ends up saying about training without permission, a direct request is yours to answer.',
@@ -190,6 +207,7 @@ export const stop4Flip: FlipStop = {
     },
     bard: {
       within: {
+        effects: MEANING_INTACT,
         setup: 'A music blog reviews your track, embeds the official player from your streaming service, and quotes one line of your lyrics.',
         situation: sit(
           'No permission needed: the embed streams from the service you released on, under its terms, and quoting one line in a review is classic fair use.',
@@ -210,6 +228,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       beyond: {
+        effects: MEANING_INTACT,
         setup: 'An independent filmmaker asks to use your track in a feature film.',
         situation: sit(
           'Putting music in a film needs a license from you. You can name your terms and your price.',
@@ -222,6 +241,7 @@ export const stop4Flip: FlipStop = {
     },
     conjurer: {
       within: {
+        effects: MEANING_INTACT,
         setup: 'Players stream your game on Twitch, and one posts a review with screenshots.',
         situation: sit(
           'Reviews with screenshots are classic fair use. Streaming gameplay is a grayer area legally, which is why many developers post a streaming policy, and most welcome streams.',
@@ -232,6 +252,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       outside: {
+        effects: MEANING_INTACT,
         setup: 'Someone uploads your game, unchanged, to another storefront under their own name, and charges for it.',
         situation: sit(
           'This is copying and selling your game without permission, which is infringement. Storefronts have takedown processes for it.',
@@ -242,6 +263,7 @@ export const stop4Flip: FlipStop = {
         ),
       },
       beyond: {
+        effects: MEANING_INTACT,
         setup: 'A small publisher offers a deal: it will port the game to consoles in exchange for exclusive publishing rights.',
         situation: sit(
           'You hold every right, so exclusive publishing is yours to grant. Read what “exclusive” covers: which platforms, which regions, how many years.',
@@ -254,10 +276,18 @@ export const stop4Flip: FlipStop = {
     },
   },
   responses: {
-    takedown: { label: 'Send a takedown', cartNote: 'Sent a takedown.' },
-    credit: { label: 'Ask for credit', cartNote: 'Asked for credit.' },
-    negotiate: { label: 'Negotiate', cartNote: 'Negotiated.' },
-    'let-go': { label: 'Let it go', cartNote: 'Let it go.' },
+    takedown: { label: 'Send a takedown', cartNote: 'Sent a takedown.', effects: [{ meter: 'time', delta: -1 }] },
+    credit: { label: 'Ask for credit', cartNote: 'Asked for credit.', effects: [] },
+    negotiate: {
+      label: 'Negotiate',
+      cartNote: 'Negotiated.',
+      effects: [
+        { meter: 'budget', delta: 1 },
+        { meter: 'time', delta: -1 },
+      ],
+    },
+    // Vision −1 is for a reuse that changed the work's meaning; events that didn't override it with MEANING_INTACT.
+    'let-go': { label: 'Let it go', cartNote: 'Let it go.', effects: [{ meter: 'vision', delta: -1 }] },
   },
   debrief: {
     lesson:

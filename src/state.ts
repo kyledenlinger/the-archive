@@ -45,8 +45,7 @@ export type Page =
   | { kind: 'askReply' }                                     // the reply; a conditional yes shows its terms here
   | { kind: 'askDeclined' }                                  // a conditional yes's terms turned down: the follow-ups
   | { kind: 'license' }                                      // the flip's license picker
-  | { kind: 'reuse'; index: number }                         // the flip's reuse events, 0–2
-  | { kind: 'flipEnd' };                                     // revision-2: Task 11 removes this page
+  | { kind: 'reuse'; index: number };                        // the flip's reuse events, 0–2; the last one's Next finishes the flip
 
 /** A place in the game that Back can return to. */
 export interface Location { screen: Screen; stopIndex: number; page: Page }

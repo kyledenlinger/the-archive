@@ -30,6 +30,17 @@ test('flags flip event cell', () => {
   expect(validateContent(c).errors).toContain('stops.flip.events.naturalist.beyond.situation.cc-by-nc: missing');
 });
 
+test('flip responses need default effects, and per-event overrides follow the effect rules', () => {
+  const c = makeValidContent();
+  delete (c.stops.flip.responses.credit as { effects?: unknown }).effects;
+  c.stops.flip.events.bard.outside.effects = { 'let-go': [{ meter: 'exposure', delta: 1 }] };
+  (c.stops.flip.events.bard.within as { effects?: unknown }).effects = { shrug: [] };
+  const { errors } = validateContent(c);
+  expect(errors).toContain('stops.flip.responses.credit.effects: missing');
+  expect(errors).toContain('stops.flip.events.bard.outside.effects.let-go[0]: exposure increase needs a tag');
+  expect(errors).toContain('stops.flip.events.bard.within.effects.shrug: unknown response');
+});
+
 test('flags group-size wording', () => {
   const c = makeValidContent();
   c.stops.free.setup.chronicler = 'You two find a reel.';

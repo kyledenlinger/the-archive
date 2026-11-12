@@ -119,5 +119,4 @@ export async function throughFlip(user: ReturnType<typeof userEvent.setup>, lice
     await user.click(screen.getByRole('button', { name: flip.responses[response].label }));
     await user.click(screen.getByRole('button', { name: /^Next/ }));
   }
-  await user.click(screen.getByRole('button', { name: /^Continue/ }));
 }

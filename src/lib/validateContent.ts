@@ -164,11 +164,21 @@ export function validateContent(c: GameContent): ValidationResult {
   if (flip) {
     keys(flip.work, 'stops.flip.work', PERSONA_IDS);
     keys(flip.licenses, 'stops.flip.licenses', LICENSE_IDS);
-    keys(flip.responses, 'stops.flip.responses', REUSE_RESPONSES);
+    const responses = keys(flip.responses, 'stops.flip.responses', REUSE_RESPONSES);
+    // Every response has default effects (an empty list for none); the walker below checks each effect.
+    each(responses, 'stops.flip.responses', REUSE_RESPONSES, (r, rp) => {
+      if (!Array.isArray((r as Obj).effects)) errors.push(`${rp}.effects: missing`);
+    });
     const events = keys(flip.events, 'stops.flip.events', PERSONA_IDS);
     each(events, 'stops.flip.events', PERSONA_IDS, (pe, pp) => {
       const kinds = keys(pe, pp, REUSE_KINDS);
-      each(kinds, pp, REUSE_KINDS, (ev, ep) => keys((ev as Obj).situation, `${ep}.situation`, LICENSE_IDS));
+      each(kinds, pp, REUSE_KINDS, (ev, ep) => {
+        keys((ev as Obj).situation, `${ep}.situation`, LICENSE_IDS);
+        const over = (ev as Obj).effects;
+        if (isObj(over)) {
+          for (const k of Object.keys(over)) if (!(REUSE_RESPONSES as readonly string[]).includes(k)) errors.push(`${ep}.effects.${k}: unknown response`);
+        }
+      });
     });
   }
 

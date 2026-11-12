@@ -1,9 +1,14 @@
-import { FlipStop, LicenseId, PersonaId, ReuseEventKind, ReuseResponse } from '../content/types';
+import { Effects, FlipStop, LicenseId, PersonaId, ReuseEventKind, ReuseResponse } from '../content/types';
 
 export const REUSE_ORDER: ReuseEventKind[] = ['within', 'outside', 'beyond'];
 
 export function resolveReuse(flip: FlipStop, persona: PersonaId, kind: ReuseEventKind, license: LicenseId): string {
   return flip.events[persona][kind].situation[license];
+}
+
+/** What a response to one reuse event does to the meters: the event's own override, or the response's default. */
+export function reuseEffects(flip: FlipStop, persona: PersonaId, kind: ReuseEventKind, response: ReuseResponse): Effects {
+  return flip.events[persona][kind].effects?.[response] ?? flip.responses[response].effects;
 }
 
 export function flipCartNote(
