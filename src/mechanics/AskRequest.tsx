@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { AskField, AskResponse, GameContent, PersonaId } from '../content/types';
 import { askFollowUps } from '../content/ask';
-import { dealAskResponse, isWellFormed } from '../lib/ask';
+import { DEFAULT_ODDS, dealAskResponse, isWellFormed } from '../lib/ask';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ChoiceButton } from '../components/ChoiceButton';
 import { btnLink, btnPrimary, eyebrow } from '../components/styles';
@@ -30,7 +30,9 @@ export function AskRequest({ content, persona, seed, onDone, onBack }: Props) {
         className="space-y-8"
         onSubmit={(e) => {
           e.preventDefault();
-          setResponse(dealAskResponse(seed, persona, isWellFormed(request)));
+          setResponse(
+            dealAskResponse(seed, persona, 'permission', isWellFormed(request), ask.odds?.permission?.[persona] ?? DEFAULT_ODDS),
+          );
         }}
       >
         <ScreenHeading level={2} focusKey="ask-form" className={eyebrow}>
