@@ -35,6 +35,12 @@ export interface Choice {
   mechanic?: 'fairUse' | 'ask' | 'search';           // 'search' = track down, then ask; mechanic choices have no outcome
   outcome?: Outcome | Record<PersonaId, Outcome>;
   effects?: Effects | Record<PersonaId, Effects>;     // applied when the choice is recorded
+  /**
+   * 'fairUse': the choice relies on the stop's fair use assessment, so its effects come from that assessment's
+   * strength (`fairUseEffects`), not from `effects`. It has no static effects, and the validator skips the
+   * gain-and-cost rule for it (a strong assessment only gains).
+   */
+  effectsFrom?: 'fairUse';
   requires?: LockMeter[];
 }
 export interface Debrief { lesson: string; prompts: string[] }   // shown in independent mode

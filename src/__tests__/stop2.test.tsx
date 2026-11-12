@@ -3,9 +3,9 @@ import { content } from '../content';
 import { Effects, GameContent, Meters, PERSONA_IDS, PersonaId } from '../content/types';
 import { ui } from '../content/ui';
 import { describeChanges } from '../components/MeterDisplay';
-import { previewChanges } from '../lib/meters';
+import { applyEffects, previewChanges } from '../lib/meters';
 import { validateContent } from '../lib/validateContent';
-import { outcomeFor } from '../screens/Stop';
+import { choiceEffects, outcomeFor } from '../screens/Stop';
 import { enterStop, passStopWithFirstChoice, startAs } from './helpers';
 
 test.each(PERSONA_IDS)('stop 2 renders the %s setup', async (persona) => {
@@ -57,9 +57,11 @@ test('a choice previews its meter changes, the header meters change only on Add 
   await enterStop(user);
   const before = meterList();
   await user.click(screen.getByRole('button', { name: clean.label }));
-  // Stop 1's first choice leaves the start meters as they were, so stop 2 previews against them.
+  // Stop 2 previews against the meters stop 1's first choice left.
+  const first = content.stops.free.choices.find((c) => !c.mechanic)!;
   const start = content.personas.find((p) => p.id === 'chronicler')!.startMeters;
-  const lines = describeChanges(previewChanges(start, clean.effects ? (clean.effects as Record<PersonaId, Effects>).chronicler : []));
+  const afterStop1 = applyEffects(start, choiceEffects(first, 'free', 'chronicler', content)).meters;
+  const lines = describeChanges(previewChanges(afterStop1, clean.effects ? (clean.effects as Record<PersonaId, Effects>).chronicler : []));
   expect(lines.length).toBeGreaterThan(0);
   const shown = screen.getByRole('list', { name: ui.changesLabel });
   for (const line of lines) expect(within(shown).getByText(line)).toBeInTheDocument();

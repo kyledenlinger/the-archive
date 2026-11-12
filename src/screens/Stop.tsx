@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { ChevronRight, FileText, Pause } from 'lucide-react';
-import { Choice, Effects, Outcome, PersonaId, STOP_ORDER, StandardStop, StandardStopId } from '../content/types';
+import { Choice, Effects, GameContent, Outcome, PersonaId, STOP_ORDER, StandardStop, StandardStopId } from '../content/types';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ClerkSpeech } from '../components/ClerkSpeech';
 import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
@@ -8,7 +8,8 @@ import { ContinueBar } from '../components/ContinueBar';
 import { ChangeLines } from '../components/MeterDisplay';
 import { ui } from '../content/ui';
 import { askFollowUps } from '../content/ask';
-import { FAIR_USE_TIME_COST, effectsFor, lockReason, previewChanges } from '../lib/meters';
+import { FAIR_USE_TIME_COST, effectsFor, fairUseEffects, lockReason, previewChanges } from '../lib/meters';
+import { rollSearch } from '../lib/ask';
 import { btnPause, btnPrimary, caseNote, eyebrow, narrativePage, page as pageClass } from '../components/styles';
 import { FairUseAnalysis } from '../mechanics/FairUseAnalysis';
 import { AskRequest } from '../mechanics/AskRequest';
@@ -18,6 +19,12 @@ import { ScreenProps } from './types';
 export function outcomeFor(choice: Choice, persona: PersonaId): Outcome {
   const o = choice.outcome!;
   return 'cartNote' in o ? (o as Outcome) : (o as Record<PersonaId, Outcome>)[persona];
+}
+
+/** What recording a plain choice does to the meters: its own effects, or, when marked, the fair use strength's. */
+export function choiceEffects(choice: Choice, stopId: StandardStopId, persona: PersonaId, content: GameContent): Effects {
+  if (choice.effectsFrom === 'fairUse') return fairUseEffects(content.fairUse.assessments[stopId][persona].strength);
+  return effectsFor(choice.effects, persona);
 }
 
 const FACTORS = [0, 1, 2, 3];
@@ -42,16 +49,35 @@ export function Stop(props: ScreenProps) {
   const choose = (choice: Choice, next: Page) =>
     dispatch(onward(state, { type: 'DECIDE', key: decisionKey.choice(stopId), value: choice.id, page: next }));
 
+  const go = (next: Page) => dispatch(onward(state, { type: 'GO_TO', page: next }));
+
   const pick = (choice: Choice) => {
     if (choice.mechanic === 'fairUse') {
       // The time spent on the analysis is sunk once per stop; the reducer ignores it while reviewing.
       dispatch({ type: 'APPLY_EFFECTS', effects: FAIR_USE_TIME_COST, key: 'fairUse' });
       choose(choice, { kind: 'fairUse', factor: 0 });
     } else if (choice.mechanic === 'ask') choose(choice, { kind: 'askForm', draft: {} });
-    else choose(choice, { kind: 'outcome', choiceId: choice.id });
+    else if (choice.mechanic === 'search') {
+      if (reviewing) return dispatch({ type: 'FORWARD' });
+      // The search costs Time either way (revision spec §5.4), and its result is a seeded roll.
+      dispatch({ type: 'APPLY_EFFECTS', effects: [{ meter: 'time', delta: -2 }], key: 'search' });
+      const found = rollSearch(state.seed, persona, stopId, stop.searchFindChance?.[persona] ?? 0);
+      dispatch({ type: 'RECORD_SEARCH', stopId, found });
+      // Only a search that finds someone is the stop's decision; a failed one returns to the choices.
+      if (found) choose(choice, { kind: 'askForm', draft: {} });
+      else go({ kind: 'searchFail' });
+    } else choose(choice, { kind: 'outcome', choiceId: choice.id });
   };
 
-  const narrative = page.kind === 'intro' || page.kind === 'outcome';
+  const lockFor = (c: Choice): string | undefined => {
+    if (c.mechanic === 'search' && state.searches[stopId] === 'notFound') return ui.lockReasons.searched;
+    const lock = lockReason(c, state.meters);
+    return lock ? ui.lockReasons[lock] : undefined;
+  };
+  const coachedFairUse = page.kind === 'fairUse' && stop.coached && page.via !== 'ask';
+
+  const narrative = ['intro', 'outcome', 'setup', 'complication', 'coachInvite', 'searchFail'].includes(page.kind);
+  const copy = ui.coached;
 
   return (
     <div className={narrative ? narrativePage : pageClass}>
@@ -64,8 +90,40 @@ export function Stop(props: ScreenProps) {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
           <ClerkSpeech text={stop.clerkIntro} />
           <ContinueBar>
-            <button type="button" className={btnPrimary} onClick={() => dispatch(onward(state, { type: 'GO_TO', page: { kind: 'choices' } }))}>
+            <button type="button" className={btnPrimary} onClick={() => go({ kind: stop.coached ? 'setup' : 'choices' })}>
               Look closer <ChevronRight aria-hidden="true" />
+            </button>
+          </ContinueBar>
+        </motion.div>
+      )}
+
+      {page.kind === 'setup' && (
+        <NarrativeStep text={stop.setup[persona]} next={copy.toComplication} onNext={() => go({ kind: 'complication' })} />
+      )}
+
+      {page.kind === 'complication' && (
+        <NarrativeStep text={stop.complication} next={copy.toInvite} onNext={() => go({ kind: 'coachInvite' })} />
+      )}
+
+      {page.kind === 'coachInvite' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+          <ClerkSpeech text={content.clerk.coachInvite} />
+          <ContinueBar>
+            <button type="button" className={btnPrimary} onClick={() => go({ kind: 'fairUse', factor: 0 })}>
+              {copy.startAnalysis} <ChevronRight aria-hidden="true" />
+            </button>
+          </ContinueBar>
+        </motion.div>
+      )}
+
+      {page.kind === 'searchFail' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
+          <h2 className={eyebrow}>{copy.searchFailHeading}</h2>
+          <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{stop.searchFail?.[persona]}</p>
+          {!reviewing && state.lastChanges && <ChangeLines changes={state.lastChanges.changes} />}
+          <ContinueBar>
+            <button type="button" className={btnPrimary} onClick={() => go({ kind: 'choices' })}>
+              {copy.afterSearchFail} <ChevronRight aria-hidden="true" />
             </button>
           </ContinueBar>
         </motion.div>
@@ -73,21 +131,23 @@ export function Stop(props: ScreenProps) {
 
       {page.kind === 'choices' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10 font-serif text-amber-50/90 text-lg leading-relaxed">
-          <p>{stop.setup[persona]}</p>
-          <div className="h-px bg-amber-900/30" aria-hidden="true" />
-          <p>{stop.complication}</p>
+          {/* A coached stop showed these on their own pages before the analysis. */}
+          {!stop.coached && (
+            <>
+              <p>{stop.setup[persona]}</p>
+              <div className="h-px bg-amber-900/30" aria-hidden="true" />
+              <p>{stop.complication}</p>
+            </>
+          )}
           <div role="group" aria-labelledby="choices-label" className="flex flex-col gap-4">
             <h2 id="choices-label" className="text-amber-200 text-sm uppercase tracking-widest font-bold font-sans">
               What do you do?
             </h2>
-            {stop.choices.map((c) => {
-              const lock = lockReason(c, state.meters);
-              return (
-                <ChoiceButton key={c.id} onSelect={() => pick(c)} {...decidedProps(made, c.id, lock ? ui.lockReasons[lock] : undefined)}>
-                  {c.label}
-                </ChoiceButton>
-              );
-            })}
+            {stop.choices.map((c) => (
+              <ChoiceButton key={c.id} onSelect={() => pick(c)} {...decidedProps(made, c.id, lockFor(c))}>
+                {c.label}
+              </ChoiceButton>
+            ))}
           </div>
         </motion.div>
       )}
@@ -102,8 +162,9 @@ export function Stop(props: ScreenProps) {
           factor={page.factor}
           answers={FACTORS.map((i) => state.decisions[decisionKey.factor(stopId, i)] as Lean | undefined)}
           reviewing={reviewing}
+          coaching={coachedFairUse ? content.fairUse.coaching : undefined}
           pauseLabel={pause ? content.interstitial.pauseLabels.fairUse : undefined}
-          meters={page.via === 'ask' || reviewing ? undefined : state.meters}
+          meters={page.via === 'ask' || reviewing || coachedFairUse ? undefined : state.meters}
           onAnswer={(lean) =>
             dispatch(
               onward(state, {
@@ -114,18 +175,29 @@ export function Stop(props: ScreenProps) {
               }),
             )
           }
+          onContinue={() => go({ kind: 'choices' })}
           onDone={(note, effects) => {
             const ask = state.asks[stopId];
             if (page.via === 'ask' && ask) {
-              const answer = content.ask.responses.permission![persona][ask.response]; // revision-2: Task 9/10 make this stop-aware
-              record(`${answer.cartNote} ${askFollowUps.fairUse} ${note}`);
+              // revision-2: Task 10 adds the follow-up's own effects here.
+              const answer = content.ask.responses[stopId]![persona][ask.response];
+              record(`${answer.cartNote} ${askFollowUps.fairUse} ${note}`, answer.effects ?? []);
             } else record(note, effects);
           }}
         />
       )}
 
       {(page.kind === 'askForm' || page.kind === 'askReply') && (
-        <AskRequest state={state} dispatch={dispatch} content={content} stopId={stopId} onRecord={(note) => record(note)} />
+        <AskRequest
+          state={state}
+          dispatch={dispatch}
+          content={content}
+          stopId={stopId}
+          // After a search that found the owner, the search already paid for the request (revision spec §5.4).
+          sendCost={state.searches[stopId] === 'found' ? [] : undefined}
+          coached={stop.coached}
+          onRecord={record}
+        />
       )}
     </div>
   );
@@ -144,7 +216,7 @@ function OutcomePage({
   const choice = stop.choices.find((c) => c.id === choiceId);
   if (!choice?.outcome) return null;
   const outcome = outcomeFor(choice, state.persona!);
-  const effects = effectsFor(choice.effects, state.persona!);
+  const effects = choiceEffects(choice, stop.id, state.persona!, content);
   const copy = content.interstitial;
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
@@ -166,6 +238,20 @@ function OutcomePage({
             Add to cart <ChevronRight aria-hidden="true" />
           </ChoiceButton>
         )}
+      </ContinueBar>
+    </motion.div>
+  );
+}
+
+/** One paragraph of a coached stop, with its forward button in the Continue bar. */
+function NarrativeStep({ text, next, onNext }: { text: string; next: string; onNext: () => void }) {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+      <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{text}</p>
+      <ContinueBar>
+        <button type="button" className={btnPrimary} onClick={onNext}>
+          {next} <ChevronRight aria-hidden="true" />
+        </button>
       </ContinueBar>
     </motion.div>
   );

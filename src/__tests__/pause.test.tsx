@@ -1,14 +1,15 @@
 import { screen, within } from '@testing-library/react';
 import { content } from '../content';
 import { btnPrimary } from '../components/styles';
-import { cartButton, enterStop, passStopWithFirstChoice, startAs } from './helpers';
+import { cartButton, enterStop, passStopWithFirstChoice, seedWhereSearch, startAs, toChoices } from './helpers';
 
 const copy = content.interstitial;
 const plain = content.stops.free.choices.find((c) => !c.mechanic)!.label;
+const searchLabel = content.stops.free.choices.find((c) => c.mechanic === 'search')!.label;
 
 test('class mode: the outcome button reads “Add to cart and pause”, with a pause icon and its own style', async () => {
   const user = await startAs('bard', 'class');
-  await enterStop(user);
+  await toChoices(user);
   await user.click(screen.getByRole('button', { name: plain }));
   const button = screen.getByRole('button', { name: copy.pauseLabel });
   expect(button.querySelector('svg.lucide-pause')).not.toBeNull();
@@ -19,7 +20,7 @@ test('class mode: the outcome button reads “Add to cart and pause”, with a p
 
 test('class mode: the pause card says to stop, has no Continue bar, and keeps your choice and cart', async () => {
   const user = await startAs('bard', 'class');
-  await enterStop(user);
+  await toChoices(user);
   await user.click(screen.getByRole('button', { name: plain }));
   await user.click(screen.getByRole('button', { name: copy.pauseLabel }));
   expect(screen.getByRole('heading', { level: 1, name: copy.waitTitle })).toBeInTheDocument();
@@ -33,7 +34,7 @@ test('class mode: the pause card says to stop, has no Continue bar, and keeps yo
 
 test('class mode: leaving the pause needs the facilitator confirm; Not yet stays put, Yes moves on', async () => {
   const user = await startAs('bard', 'class');
-  await enterStop(user);
+  await toChoices(user);
   await user.click(screen.getByRole('button', { name: plain }));
   await user.click(screen.getByRole('button', { name: copy.pauseLabel }));
   const go = within(screen.getByTestId('pause-card')).getByRole('button', { name: copy.continueLabel });
@@ -55,7 +56,7 @@ test('class mode: leaving the pause needs the facilitator confirm; Not yet stays
 
 test('independent mode has neither the pause button nor the confirm', async () => {
   const user = await startAs('bard', 'independent');
-  await enterStop(user);
+  await toChoices(user);
   await user.click(screen.getByRole('button', { name: plain }));
   expect(screen.queryByRole('button', { name: copy.pauseLabel })).not.toBeInTheDocument();
   const add = screen.getByRole('button', { name: /^Add to cart/ });
@@ -91,7 +92,7 @@ describe('every route into the class pause uses the pause button', () => {
 
   test('a plain choice’s outcome', async () => {
     const user = await startAs('herald', 'class');
-    await enterStop(user);
+    await toChoices(user);
     await user.click(screen.getByRole('button', { name: plain }));
     const button = screen.getByRole('button', { name: copy.pauseLabel });
     pauseStyled(button);
@@ -99,12 +100,55 @@ describe('every route into the class pause uses the pause button', () => {
     expectPause();
   });
 
-  test('the fair use summary', async () => {
+  test.each(content.stops.free.choices.filter((c) => !c.mechanic).map((c) => [c.label]))('stop 1’s decision “%s”', async (label) => {
     const user = await startAs('herald', 'class');
+    await toChoices(user);
+    await user.click(screen.getByRole('button', { name: label }));
+    const button = screen.getByRole('button', { name: copy.pauseLabel });
+    pauseStyled(button);
+    await user.click(button);
+    expectPause();
+  });
+
+  test('the fair use summary (stop 2’s fair use choice)', async () => {
+    const user = await startAs('herald', 'class');
+    await passStopWithFirstChoice(user);
     await enterStop(user);
-    await user.click(screen.getByRole('button', { name: content.stops.free.choices.find((c) => c.mechanic === 'fairUse')!.label }));
+    await user.click(screen.getByRole('button', { name: content.stops.layers.choices.find((c) => c.mechanic === 'fairUse')!.label }));
     await throughFairUse(user);
     expect(screen.queryByRole('button', { name: /^Add to cart on a fair use basis$/ })).not.toBeInTheDocument();
+    const button = screen.getByRole('button', { name: copy.pauseLabels.fairUse });
+    pauseStyled(button);
+    await user.click(button);
+    expectPause();
+  });
+
+  /** Stop 1's search, with a seed that finds the owner, to the Ask reply. */
+  async function toStop1AskReply(mode: 'class' | 'independent') {
+    const user = await startAs('naturalist', mode, content, seedWhereSearch('naturalist', true));
+    await toChoices(user);
+    await user.click(screen.getByRole('button', { name: searchLabel }));
+    await user.click(screen.getByRole('button', { name: /Send the request/ }));
+    return user;
+  }
+
+  test.each([
+    ['use it', copy.pauseLabels.askUse],
+    ['don’t use it', copy.pauseLabels.askDont],
+  ])('stop 1’s search, then the Ask follow-up “%s”', async (_, name) => {
+    const user = await toStop1AskReply('class');
+    expect(screen.queryByRole('button', { name: /^Use it$/ })).not.toBeInTheDocument();
+    const button = screen.getByRole('button', { name });
+    pauseStyled(button);
+    expect(screen.getByRole('button', { name: /Run a fair use analysis/ }).querySelector('svg.lucide-pause')).toBeNull();
+    await user.click(button);
+    expectPause();
+  });
+
+  test('stop 1’s search, then the Ask’s fair use follow-up, which opens on the summary already answered', async () => {
+    const user = await toStop1AskReply('class');
+    await user.click(screen.getByRole('button', { name: /Run a fair use analysis/ }));
+    expect(screen.getByRole('heading', { name: /Fair use summary/ })).toBeInTheDocument();
     const button = screen.getByRole('button', { name: copy.pauseLabels.fairUse });
     pauseStyled(button);
     await user.click(button);

@@ -34,9 +34,13 @@ export type Page =
   | { kind: 'single' }
   | { kind: 'beat'; index: number }                          // onboarding
   | { kind: 'intro' }                                        // a stop's or the flip's Clerk intro
-  | { kind: 'choices' }                                      // a stop's setup, complication, and choices
+  | { kind: 'choices' }                                      // a stop's setup, complication, and choices (coached: choices only)
+  | { kind: 'setup' }                                        // coached stop: the persona setup
+  | { kind: 'complication' }                                 // coached stop: the complication
+  | { kind: 'coachInvite' }                                  // coached stop: the Clerk suggests thinking it through
+  | { kind: 'searchFail' }                                   // a search that found no one, before the choices again
   | { kind: 'outcome'; choiceId: string }                    // a plain choice's outcome, before Add to cart
-  | { kind: 'fairUse'; factor: number; via?: 'ask' }        // factor 0–3, or 4 for the summary
+  | { kind: 'fairUse'; factor: number; via?: 'ask' }        // factor 0–3, or 4 for the summary; coached in a coached stop
   | { kind: 'askForm'; draft: AskDraft }                     // the draft changes without adding history
   | { kind: 'askReply' }
   | { kind: 'license' }                                      // the flip's license picker

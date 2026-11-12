@@ -138,7 +138,11 @@ export function validateContent(c: GameContent): ValidationResult {
       }
       // Every choice must move two meters, one for the better and one for the worse. Mechanic choices
       // (fair use, ask, search) take their effects from the mechanic, so theirs are checked only if present.
-      if (Array.isArray(ch.effects) || (!ch.mechanic && ch.effects === undefined)) {
+      // A choice marked `effectsFrom: 'fairUse'` takes its effects from the assessment's strength instead.
+      if (ch.effectsFrom !== undefined) {
+        if (ch.effectsFrom !== 'fairUse') errors.push(`${cp}.effectsFrom: invalid value`);
+        if (ch.effects !== undefined) errors.push(`${cp}.effects: a choice with effectsFrom has no static effects`);
+      } else if (Array.isArray(ch.effects) || (!ch.mechanic && ch.effects === undefined)) {
         gainAndCost((ch.effects ?? []) as Obj[], cp);
       } else if (isObj(ch.effects)) {
         const per = keys(ch.effects, `${cp}.effects`, PERSONA_IDS);

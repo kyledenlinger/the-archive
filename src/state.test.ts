@@ -365,7 +365,7 @@ describe('Back is navigation only (Task 8b)', () => {
       { type: 'GO_TO', page: { kind: 'choices' } },
       { type: 'APPLY_EFFECTS', effects: [{ meter: 'time', delta: -2 }], key: 'search' },
       { type: 'RECORD_SEARCH', stopId: 'free', found: false },
-      { type: 'GO_TO', page: { kind: 'outcome', choiceId: 'search' } },
+      { type: 'GO_TO', page: { kind: 'searchFail' } },
     );
     const s = back(searched);
     expect(s.page).toEqual({ kind: 'choices' });

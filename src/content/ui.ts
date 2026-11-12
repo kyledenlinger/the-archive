@@ -54,6 +54,16 @@ export const ui = {
     decided: 'You’ve already decided this one.',
   },
 
+  /** Buttons in the coached stop (stop 1) and after a search that found no one. */
+  coached: {
+    toComplication: 'Continue',
+    toInvite: 'Continue',
+    startAnalysis: 'Think it through',
+    toDecision: 'Decide what to do',
+    afterSearchFail: 'Return to your choices',
+    searchFailHeading: 'No luck',
+  },
+
   /** Marks the option you chose, on a page revisited with Back. */
   yourChoice: 'Your choice',
 

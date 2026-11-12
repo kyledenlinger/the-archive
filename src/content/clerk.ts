@@ -1,7 +1,7 @@
 import { ClerkContent, FateId, LICENSE_IDS, PERSONA_IDS, PersonaId, ReuseResponse, VisionBand } from './types';
 
-// Revision 2: the orphan-work mystery is gone. Everything below is PLACEHOLDER text until its task
-// writes it (Task 9: coachInvite; Task 12: the shelf). The validator reports
+// Revision 2: the orphan-work mystery is gone. The shelf below is PLACEHOLDER text until Task 12
+// writes it. The validator reports
 // these as errors; `npm run validate -- --allow-placeholder` lists them as warnings instead.
 const tbd = (task: number, what: string) => `PLACEHOLDER (Task ${task}): ${what}`;
 const FATES: FateId[] = ['pulled', 'asPlanned', 'underCloud', 'late', 'smaller', 'compromised'];
@@ -14,7 +14,8 @@ const byKey = <K extends string>(keys: readonly K[], fn: (k: K) => string) =>
 export const clerk: ClerkContent = {
   briefIntro:
     'Here’s what you came for, then. I’ve put it all on one card: what you’re making, who’s waiting on it, when it’s due, and the three things you need from these shelves. At the bottom is where your project stands before you’ve touched anything. That part tends to change. Sorry in advance.',
-  coachInvite: tbd(9, 'the Clerk offers to think it through together'),
+  coachInvite:
+    'Before you decide, would you mind if we thought this one through together? There’s a test for exactly this question, called fair use. It has four parts, and I’ll tell you what each one is really asking. It won’t hand you a yes or a no, I’m afraid, but you’ll have a much better idea of where you stand.',
   shelf: {
     intro: [tbd(12, 'the Clerk walks you to the shelf')],
     fate: byPersona((p) => byKey(FATES, (f) => tbd(12, `${p} fate: ${f}`))),

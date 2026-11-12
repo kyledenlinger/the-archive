@@ -1,4 +1,9 @@
-import { AskContent } from './types';
+import { AskContent, Effects } from './types';
+
+// Default response effects (revision spec §5.4).
+const YES: Effects = [{ meter: 'exposure', delta: -2 }, { meter: 'vision', delta: 1 }];
+const NO: Effects = [{ meter: 'vision', delta: -1 }];
+const SILENCE: Effects = [{ meter: 'time', delta: -1 }];
 
 export const ask: AskContent = {
   intro: 'You start drafting a message. The clearer it is about what you want, the easier it is for someone to say yes. You can leave any part blank.',
@@ -9,8 +14,151 @@ export const ask: AskContent = {
     howLong: { label: 'For how long', options: ['Just this once', 'One year', 'For as long as the work exists'] },
   },
   afterPrompt: 'What do you do with this answer?',
-  // Stop 3 (Strings Attached) responses. Task 9 adds `free`; Task 10 adds effects, odds, and terms.
+  // Stop 1 (Unmarked) responses, after a search finds the owner. Effects per revision spec §5.4. A conditional
+  // yes has no effects of its own: Task 10 applies Exposure −1 and the drawn terms' effects only if accepted.
   responses: {
+    free: {
+      chronicler: {
+        yes: {
+          text: 'The university library that took in the station’s tapes writes back. The station signed the rights over to them along with the tapes, and they’re glad to see the footage used. They send a better copy and a short permission letter.',
+          cartNote: 'Traced the station’s tapes to a university library that holds the rights. Asked; permission granted in writing, with a better copy. Letter saved.',
+          effects: YES,
+        },
+        conditional: {
+          text: 'The university library that took in the station’s tapes writes back. The station signed the rights over to them, and they’re willing to say yes, on terms.',
+          cartNote: 'Traced the station’s tapes to a university library that holds the rights. Asked; offered permission on terms.',
+          effects: [],
+        },
+        no: {
+          text: 'The university library that holds the station’s tapes and rights writes back. They don’t license the news footage for films made outside the university, and they’re sorry.',
+          cartNote:
+            'Traced the station’s tapes to a university library that holds the rights. Asked; declined. A no doesn’t end the fair use question, but you’d be using the clip over the owner’s stated objection.',
+          effects: NO,
+        },
+        silence: {
+          text: 'You find the university library that holds the station’s tapes and send your request to its special collections desk. Two weeks pass without a reply, and your deadline doesn’t move.',
+          cartNote: 'Traced the station’s tapes to a university library. Asked; no reply. Silence isn’t a yes.',
+          effects: SILENCE,
+        },
+      },
+      herald: {
+        yes: {
+          text: 'A reverse image search leads to the photographer’s portfolio, and they answer within the hour: of course you can, and thanks for asking. They’d like a credit in the caption.',
+          cartNote: 'Traced the raccoon photo to its photographer by reverse image search. Asked; yes in writing, with credit in the caption. Message saved.',
+          effects: YES,
+        },
+        conditional: {
+          text: 'A reverse image search leads to the photographer’s portfolio. They write back that you can use the photo, on terms.',
+          cartNote: 'Traced the photo to its photographer. Asked; offered permission on terms.',
+          effects: [],
+        },
+        no: {
+          text: 'A reverse image search leads to the photographer, who writes back politely: so many brands have used the photo without asking that they’ve stopped allowing promotional use.',
+          cartNote:
+            'Traced the photo to its photographer. Asked; declined for promotional use. The post needs a different image, or you’d be using this one over the owner’s stated objection.',
+          effects: NO,
+        },
+        silence: {
+          text: 'A reverse image search leads to the photographer’s portfolio, and you send a message through it. A week goes by. The raccoon keeps going viral without you.',
+          cartNote: 'Traced the photo to its photographer. Asked; no reply. Silence isn’t a yes.',
+          effects: SILENCE,
+        },
+      },
+      naturalist: {
+        yes: {
+          text: 'The blogger replies the next morning, delighted. They spent three winters trying to get that shot. Use it, they say, and link back to the blog.',
+          cartNote: 'Contacted the birding blogger through the site. Asked; yes in writing, with a credit and a link back. Message saved.',
+          effects: YES,
+        },
+        conditional: {
+          text: 'The blogger replies that they’re happy for the photo to be used, on terms.',
+          cartNote: 'Contacted the birding blogger through the site. Asked; offered permission on terms.',
+          effects: [],
+        },
+        no: {
+          text: 'The blogger replies kindly but firmly: they’re putting together a book of their owl photos and don’t want them used anywhere else first.',
+          cartNote:
+            'Contacted the birding blogger. Asked; declined because of a planned book. A monetized post using the whole photo would compete with that book, which weakens any fair use argument further.',
+          effects: NO,
+        },
+        silence: {
+          text: 'You send a note through the blog’s contact form. A few days pass, then a week. The last post on the blog was in the spring.',
+          cartNote: 'Contacted the birding blogger through the site’s form. Asked; no reply. Silence isn’t a yes.',
+          effects: SILENCE,
+        },
+      },
+      artificer: {
+        yes: {
+          text: 'A reverse image search of one cropped wing finally turns up the illustrator’s old portfolio site. She writes back: yes, cut it up, and she’d love to see what you make.',
+          cartNote: 'Traced the moth to its illustrator through an old portfolio site. Asked; yes in writing, including cutting it up for prints. Message saved.',
+          effects: YES,
+        },
+        conditional: {
+          text: 'A reverse image search of one cropped wing finally turns up the illustrator’s old portfolio site. She writes back that you can use the moth, on terms.',
+          cartNote: 'Traced the moth to its illustrator. Asked; offered permission on terms.',
+          effects: [],
+        },
+        no: {
+          text: 'The trail leads at last to the illustrator, who writes back: the moth is part of a set she still sells as prints, and she’d rather it didn’t turn up in someone else’s.',
+          cartNote:
+            'Traced the moth to its illustrator. Asked; declined, because the drawing is part of a print set she sells. A transformative collage might still have a fair use argument, but you’d be using it over her stated objection, in a market she’s active in.',
+          effects: NO,
+        },
+        silence: {
+          text: 'The trail leads at last to an email address on the illustrator’s old portfolio site. You write to it. Nothing bounces back, and nothing else comes either.',
+          cartNote: 'Traced the moth to an illustrator’s old portfolio site. Asked; no reply. Silence isn’t a yes.',
+          effects: SILENCE,
+        },
+      },
+      bard: {
+        yes: {
+          text: 'A crate-digging forum thread traces the break to a 1984 funk single, and the label behind it, which owns both the recording and the song, still exists. Its clearance team approves your sample in writing, as long as the original is credited.',
+          cartNote: 'Traced the break to a 1984 single; its label owns the recording and the song. Asked; sample approved in writing, with credit to the original. Clearance letter saved.',
+          effects: YES,
+        },
+        conditional: {
+          text: 'A crate-digging forum thread traces the break to a 1984 funk single, and the label behind it still clears samples. They’ll approve yours, on terms.',
+          cartNote: 'Traced the break to a 1984 single and its label. Asked; offered clearance on terms.',
+          effects: [],
+        },
+        no: {
+          text: 'A crate-digging forum thread traces the break to a 1984 funk single. The label behind it writes back that they don’t clear that record for samples.',
+          cartNote:
+            'Traced the break to a 1984 single and its label. Asked; declined. The sample can’t be cleared, and a recognizable sample on a commercial release is a weak fair use case.',
+          effects: NO,
+        },
+        silence: {
+          text: 'A crate-digging forum thread traces the break to a 1984 funk single, and you fill in its label’s sample-clearance form. The form says to allow eight weeks. Your release date is in four.',
+          cartNote: 'Traced the break to a 1984 single and its label. Submitted a clearance request; no answer before the deadline. Silence isn’t a yes.',
+          effects: SILENCE,
+        },
+      },
+      conjurer: {
+        yes: {
+          text: 'The forum lets you message the poster. Three days later: “oh wow yeah go for it, just credit me as pixelpotion.” You save the message.',
+          cartNote:
+            'Reached the sprite creator through the forum. Asked; yes in writing, with credit as “pixelpotion.” Message saved. The scope (selling the game? modifying the sprites?) is informal, which is why the saved message matters.',
+          effects: YES,
+        },
+        conditional: {
+          text: 'The forum lets you message the poster, who goes by pixelpotion. They write back that they’re open to it, on terms.',
+          cartNote: 'Reached the sprite creator through the forum. Asked; offered permission on terms.',
+          effects: [],
+        },
+        no: {
+          text: 'The forum lets you message the poster. They reply that the sprites were free for hobby projects, and they’d rather not see them in a game that’s for sale.',
+          cartNote:
+            'Reached the sprite creator through the forum. Asked; declined for a commercial game. The old “free to use” post didn’t cover what you’re doing, and now that’s in writing.',
+          effects: NO,
+        },
+        silence: {
+          text: 'You message the poster through the forum. It shows as delivered, and the account stays as quiet as it has been for four years.',
+          cartNote: 'Reached the sprite creator’s account on the forum. Asked; no reply. Silence isn’t a yes, and “free to use lol” is still all you have.',
+          effects: SILENCE,
+        },
+      },
+    },
+    // Stop 3 (Strings Attached) responses. Task 10 adds effects, odds, and terms.
     permission: {
       chronicler: {
         yes: {

@@ -74,6 +74,18 @@ test('a choice whose effects are all costs needs a gain', () => {
   expect(validateContent(c).errors).toContain('stops.layers.choices[0]: effects need at least one gain and one cost');
 });
 
+test('a choice whose effects come from the fair use strength skips the static gain-and-cost rule, and only it', () => {
+  const c = makeValidContent();
+  c.stops.free.choices[0] = { id: 'rely', label: 'x', outcome: { text: 'x', cartNote: 'x' }, effectsFrom: 'fairUse' };
+  expect(validateContent(c).errors).toEqual([]);
+  // Static effects alongside it are a mistake: the strength decides them.
+  c.stops.free.choices[0].effects = [{ meter: 'vision', delta: 1 }];
+  expect(validateContent(c).errors).toContain('stops.free.choices[0].effects: a choice with effectsFrom has no static effects');
+  // Without the marker, a plain choice with no effects still fails the rule.
+  c.stops.free.choices[0] = { id: 'rely', label: 'x', outcome: { text: 'x', cartNote: 'x' } };
+  expect(validateContent(c).errors).toContain('stops.free.choices[0]: effects need at least one gain and one cost');
+});
+
 test('a choice that moves only one meter fails the gain-and-cost rule', () => {
   const c = makeValidContent();
   c.stops.layers.choices[0].effects = [

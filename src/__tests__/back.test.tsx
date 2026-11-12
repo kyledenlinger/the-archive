@@ -4,7 +4,7 @@ import App from '../App';
 import { content } from '../content';
 import { ui } from '../content/ui';
 import { outcomeFor } from '../screens/Stop';
-import { cartButton, enterStop, passStopWithFirstChoice, startAs, toFlip } from './helpers';
+import { cartButton, enterStop, passStopWithFirstChoice, startAs, toChoices, toFlip } from './helpers';
 
 const lines = content.onboarding.lines;
 const backButton = () => screen.getByRole('button', { name: ui.header.back });
@@ -75,32 +75,49 @@ test('Back to persona select shows your persona chosen and the others locked', a
 
 test('Back walks a stop’s pages; a revisited choice page shows the choice made and locks the rest', async () => {
   const user = await startAs('herald');
-  await enterStop(user);
-  await user.click(screen.getByRole('button', { name: label('free', 'take') }));
+  await toChoices(user);
+  await user.click(screen.getByRole('button', { name: label('free', 'free') }));
   expect(screen.getByRole('button', { name: /Add to cart/ })).toBeInTheDocument();
   await user.click(backButton());
   expect(document.activeElement).toBe(h1());
-  const take = within(choiceGroup()).getByRole('button', { name: label('free', 'take') });
-  expect(take).not.toHaveAttribute('aria-disabled');
-  expect(take).toHaveAccessibleDescription(ui.yourChoice);
-  const leave = within(choiceGroup()).getByRole('button', { name: label('free', 'leave') });
-  expect(leave).toHaveAttribute('aria-disabled', 'true');
-  expect(leave).toHaveAccessibleDescription(ui.lockReasons.decided);
-  await user.click(leave);
+  const free = within(choiceGroup()).getByRole('button', { name: label('free', 'free') });
+  expect(free).not.toHaveAttribute('aria-disabled');
+  expect(free).toHaveAccessibleDescription(ui.yourChoice);
+  const rely = within(choiceGroup()).getByRole('button', { name: label('free', 'rely') });
+  expect(rely).toHaveAttribute('aria-disabled', 'true');
+  expect(rely).toHaveAccessibleDescription(ui.lockReasons.decided);
+  await user.click(rely);
   expect(choiceGroup()).toBeInTheDocument();
+  // Back again: the coached analysis's summary, read-only.
   await user.click(backButton());
-  expect(screen.getByText(content.stops.free.clerkIntro)).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Fair use summary/ })).toBeInTheDocument();
   // Forward again, to the outcome, which still records.
-  await user.click(screen.getByRole('button', { name: /Look closer/ }));
-  await user.click(within(choiceGroup()).getByRole('button', { name: label('free', 'take') }));
+  await user.click(screen.getByRole('button', { name: ui.coached.toDecision }));
+  await user.click(within(choiceGroup()).getByRole('button', { name: label('free', 'free') }));
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
   expect(cartButton(1)).toBeInTheDocument();
 });
 
+test('Back walks stop 1’s coached pages: invitation, complication, setup, intro', async () => {
+  const user = await startAs('bard');
+  await enterStop(user);
+  expect(screen.getByText(content.stops.free.setup.bard)).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: ui.coached.toComplication }));
+  expect(screen.getByText(content.stops.free.complication)).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: ui.coached.toInvite }));
+  expect(screen.getByText(content.clerk.coachInvite)).toBeInTheDocument();
+  await user.click(backButton());
+  expect(screen.getByText(content.stops.free.complication)).toBeInTheDocument();
+  await user.click(backButton());
+  expect(screen.getByText(content.stops.free.setup.bard)).toBeInTheDocument();
+  await user.click(backButton());
+  expect(screen.getByText(content.stops.free.clerkIntro)).toBeInTheDocument();
+});
+
 test('no “Choose again” and no “Go back to this stop” anywhere', async () => {
   const user = await startAs('herald');
-  await enterStop(user);
-  await user.click(screen.getByRole('button', { name: label('free', 'take') }));
+  await toChoices(user);
+  await user.click(screen.getByRole('button', { name: label('free', 'free') }));
   expect(screen.queryByRole('button', { name: /Choose again/ })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
   expect(screen.queryByRole('button', { name: /Go back to this stop/ })).not.toBeInTheDocument();
@@ -110,7 +127,9 @@ test('no “Choose again” and no “Go back to this stop” anywhere', async (
 test('Back through fair use shows each answer given, locked', async () => {
   const user = await startAs('artificer');
   await enterStop(user);
-  await user.click(screen.getByRole('button', { name: content.stops.free.choices.find((c) => c.mechanic === 'fairUse')!.label }));
+  await user.click(screen.getByRole('button', { name: ui.coached.toComplication }));
+  await user.click(screen.getByRole('button', { name: ui.coached.toInvite }));
+  await user.click(screen.getByRole('button', { name: ui.coached.startAnalysis }));
   expect(screen.queryByRole('button', { name: /Go back to the choices/ })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Not sure yet/ }));
   expect(screen.getByText(content.fairUse.factors[1].description)).toBeInTheDocument();

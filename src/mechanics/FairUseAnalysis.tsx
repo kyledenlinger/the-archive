@@ -7,6 +7,7 @@ import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
 import { ClerkSpeech } from '../components/ClerkSpeech';
 import { Pause } from 'lucide-react';
 import { btnPause, eyebrow } from '../components/styles';
+import { ui } from '../content/ui';
 import { Lean } from '../state';
 
 const LEAN_LABEL: Record<Lean, string> = {
@@ -29,12 +30,21 @@ interface Props {
   meters?: Meters;
   /** Class mode: the summary's button label, styled as a pause, since it leads straight to the pause card. */
   pauseLabel?: string;
+  /**
+   * Coached (stop 1, revision spec §5.2): the Clerk's line for each factor shows before the persona text, and the
+   * summary leads on to the decision (`onContinue`) instead of recording anything.
+   */
+  coaching?: readonly string[];
   onAnswer: (lean: Lean) => void;
+  onContinue?: () => void;
   onDone: (cartNote: string, effects: Effects) => void;
 }
 
-/** The four factors, one page each, then the summary. There is no way out but through: starting it is a choice. */
-export function FairUseAnalysis({ stopId, persona, content, factor, answers, reviewing, meters, pauseLabel, onAnswer, onDone }: Props) {
+/**
+ * The four factors, one page each, then the summary. There is no way out but through: starting it is a choice,
+ * or, when coached, everyone's first step.
+ */
+export function FairUseAnalysis({ stopId, persona, content, factor, answers, reviewing, meters, pauseLabel, coaching, onAnswer, onContinue, onDone }: Props) {
   const { factors, assessments } = content.fairUse;
   const step = Math.min(factor, 4);
   const assessment = assessments[stopId][persona];
@@ -59,6 +69,7 @@ export function FairUseAnalysis({ stopId, persona, content, factor, answers, rev
             <h3 className="text-2xl font-serif text-amber-100">{f.title}</h3>
             <p className="text-amber-50/70 font-serif italic">{f.description}</p>
           </div>
+          {coaching && <ClerkSpeech text={coaching[step]} />}
           <p className="bg-stone-900/50 border border-amber-900/20 p-6 sm:p-8 rounded-2xl font-serif text-amber-50/90 text-lg leading-relaxed">{f.text[stopId][persona]}</p>
           <div className="grid gap-4" role="group" aria-label="How does this factor lean?">
             {(Object.keys(LEAN_LABEL) as Lean[]).map((lean) => (
@@ -103,7 +114,12 @@ export function FairUseAnalysis({ stopId, persona, content, factor, answers, rev
       <ClerkSpeech text={assessment.text} />
       {meters && <ChangeLines changes={previewChanges(meters, effects)} />}
       <div className="flex flex-col gap-4">
-        {pauseLabel && !reviewing ? (
+        {coaching ? (
+          // Coached: the analysis comes before the decision, so it records nothing.
+          <ChoiceButton className="choice-btn bg-amber-900/20 border-amber-500/50 justify-center text-center" onSelect={() => onContinue?.()}>
+            {ui.coached.toDecision}
+          </ChoiceButton>
+        ) : pauseLabel && !reviewing ? (
           // Class mode: this records the stop and goes straight to the pause card.
           <ChoiceButton className={`${btnPause} justify-center text-center`} onSelect={() => onDone('Fair use basis. ' + assessment.text, effects)}>
             <Pause aria-hidden="true" /> {pauseLabel}

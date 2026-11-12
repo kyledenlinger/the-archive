@@ -2,11 +2,13 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { content } from '../content';
+import { ui } from '../content/ui';
+import { rollSearch } from '../lib/ask';
 import { GameContent, LicenseId, Mode, PersonaId, ReuseResponse, StopId } from '../content/types';
 
-export async function startAs(persona: PersonaId, mode: Mode = 'class', testContent: GameContent = content) {
+export async function startAs(persona: PersonaId, mode: Mode = 'class', testContent: GameContent = content, seed = 1) {
   const user = userEvent.setup();
-  render(<App seed={1} content={testContent} />);
+  render(<App seed={seed} content={testContent} />);
   await user.click(screen.getByRole('button', { name: mode === 'class' ? /In a class/ : /On my own/ }));
   for (let i = 1; i < content.onboarding.lines.length; i++) await user.click(screen.getByRole('button', { name: /Continue/ }));
   await user.click(screen.getByRole('button', { name: /Choose who you are/ }));
@@ -15,6 +17,13 @@ export async function startAs(persona: PersonaId, mode: Mode = 'class', testCont
   // Pass the brief.
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
   return user;
+}
+
+/** The first session seed whose stop 1 search for `persona` finds the owner (`found`) or doesn't. */
+export function seedWhereSearch(persona: PersonaId, found: boolean, testContent: GameContent = content): number {
+  const chance = testContent.stops.free.searchFindChance![persona]!;
+  for (let seed = 1; seed < 10000; seed++) if (rollSearch(seed, persona, 'free', chance) === found) return seed;
+  throw new Error(`no seed where the search ${found ? 'finds' : 'misses'}`);
 }
 
 /** The header's Cart button, by its count (“2 of 3 found”). */
@@ -34,6 +43,24 @@ export async function enterStop(user: ReturnType<typeof userEvent.setup>) {
 }
 
 /**
+ * Stop 1 is coached: from its setup page (after “Look closer”), step through the complication and the Clerk's
+ * invitation, answer every factor with `lean`, and leave the summary for the decision choices.
+ */
+export async function throughCoaching(user: ReturnType<typeof userEvent.setup>, lean: RegExp = /Not sure yet/) {
+  await user.click(screen.getByRole('button', { name: ui.coached.toComplication }));
+  await user.click(screen.getByRole('button', { name: ui.coached.toInvite }));
+  await user.click(screen.getByRole('button', { name: ui.coached.startAnalysis }));
+  for (let i = 0; i < 4; i++) await user.click(screen.getByRole('button', { name: lean }));
+  await user.click(screen.getByRole('button', { name: ui.coached.toDecision }));
+}
+
+/** From a stop's Clerk intro to its choices, through the coached analysis in stop 1. */
+export async function toChoices(user: ReturnType<typeof userEvent.setup>) {
+  await enterStop(user);
+  if (!screen.queryByRole('group', { name: /What do you do/ })) await throughCoaching(user);
+}
+
+/**
  * Leave the between-stops screen: the debrief's Continue in independent mode, or, in class mode, the pause
  * card's Continue and then “Yes, continue” in the facilitator confirm.
  */
@@ -46,9 +73,9 @@ export async function leaveInterstitial(user: ReturnType<typeof userEvent.setup>
 
 /** Record a stop with its first plain choice and pass the wait screen (class) or debrief (independent). */
 export async function passStopWithFirstChoice(user: ReturnType<typeof userEvent.setup>) {
-  await enterStop(user);
+  await toChoices(user);
   const stop = [content.stops.free, content.stops.layers, content.stops.permission].find((s) =>
-    screen.queryByText(s.complication),
+    s.choices.every((c) => screen.queryByRole('button', { name: c.label })),
   )!;
   const first = stop.choices.find((c) => !c.mechanic)!;
   await user.click(screen.getByRole('button', { name: first.label }));

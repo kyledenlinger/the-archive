@@ -241,6 +241,14 @@ describe('Continue bar (Review Focus 4)', () => {
     await user.click(screen.getByRole('button', { name: /^Continue/ }));
     expect(within(expectNarrative()).getByRole('button', { name: /Look closer/ })).toBeInTheDocument(); // stop intro
     await enterStop(user);
+    expect(within(expectNarrative()).getByRole('button', { name: ui.coached.toComplication })).toBeInTheDocument(); // stop 1 setup
+    await user.click(screen.getByRole('button', { name: ui.coached.toComplication }));
+    expect(within(expectNarrative()).getByRole('button', { name: ui.coached.toInvite })).toBeInTheDocument(); // complication
+    await user.click(screen.getByRole('button', { name: ui.coached.toInvite }));
+    expect(within(expectNarrative()).getByRole('button', { name: ui.coached.startAnalysis })).toBeInTheDocument(); // invitation
+    await user.click(screen.getByRole('button', { name: ui.coached.startAnalysis }));
+    for (let i = 0; i < 4; i++) await user.click(screen.getByRole('button', { name: /Not sure yet/ }));
+    await user.click(screen.getByRole('button', { name: ui.coached.toDecision }));
     expect(screen.queryByTestId('continue-bar')).not.toBeInTheDocument(); // choices stay inline
     await user.click(screen.getByRole('button', { name: content.stops.free.choices.find((c) => !c.mechanic)!.label }));
     expect(within(expectNarrative()).getByRole('button', { name: /Add to cart/ })).toBeInTheDocument(); // outcome
@@ -302,8 +310,14 @@ describe('the Clerk speaks in his own block', () => {
     await user.click(screen.getByRole('button', { name: /^Continue/ }));
     expectClerk(content.stops.free.clerkIntro);
     await enterStop(user);
-    await user.click(screen.getByRole('button', { name: content.stops.free.choices.find((c) => c.mechanic === 'fairUse')!.label }));
-    for (let i = 0; i < 4; i++) await user.click(screen.getByRole('button', { name: /Not sure yet/ }));
+    await user.click(screen.getByRole('button', { name: ui.coached.toComplication }));
+    await user.click(screen.getByRole('button', { name: ui.coached.toInvite }));
+    expectClerk(content.clerk.coachInvite);
+    await user.click(screen.getByRole('button', { name: ui.coached.startAnalysis }));
+    for (let i = 0; i < 4; i++) {
+      expectClerk(content.fairUse.coaching[i]);
+      await user.click(screen.getByRole('button', { name: /Not sure yet/ }));
+    }
     expectClerk(content.fairUse.assessments.free.chronicler.text);
   });
 

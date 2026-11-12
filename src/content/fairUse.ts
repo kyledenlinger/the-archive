@@ -1,12 +1,12 @@
 import { FairUseContent } from './types';
 
 export const fairUse: FairUseContent = {
-  // The Clerk's coaching, one per factor, stop 1 only. PLACEHOLDER until Task 9.
+  // The Clerk's coaching, one per factor, stop 1 only: what each factor is really asking. Same for every persona.
   coaching: [
-    'PLACEHOLDER (Task 9): coaching for factor 1',
-    'PLACEHOLDER (Task 9): coaching for factor 2',
-    'PLACEHOLDER (Task 9): coaching for factor 3',
-    'PLACEHOLDER (Task 9): coaching for factor 4',
+    'This one’s asking what you’re doing with it that the original wasn’t. If you’re commenting on it, or using it to show something new, that helps you. If it would do the same job it was made to do, it mostly doesn’t. Earning money from it weighs against you, but it doesn’t settle the question.',
+    'This one is about the thing you found, not about you. Factual work, like the news, gets thinner protection than a song or a drawing. Honestly, it rarely decides anything on its own, but it tips the scales a little.',
+    'How much are you taking, and is it the part people remember? A small piece can still be too much if it’s the heart of the thing. I’d love to give you a safe number of seconds, but there isn’t one.',
+    'Picture everyone doing what you’re about to do. Would whoever made it lose sales, or lose a fee they’d have charged? Courts tend to give this one a lot of weight, so it’s worth being honest with yourself here. Sorry, that came out like a lecture.',
   ],
   factors: [
     {
