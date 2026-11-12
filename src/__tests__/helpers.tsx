@@ -4,7 +4,7 @@ import App from '../App';
 import { content } from '../content';
 import { ui } from '../content/ui';
 import { DEFAULT_ODDS, dealAskResponse, rollSearch, rollTerms } from '../lib/ask';
-import { AskResponse, GameContent, LicenseId, Mode, PersonaId, ReuseResponse, StandardStopId, StopId, Term } from '../content/types';
+import { AskResponse, Choice, GameContent, LicenseId, Mode, PersonaId, ReuseResponse, StandardStopId, StopId, Term } from '../content/types';
 
 export async function startAs(persona: PersonaId, mode: Mode = 'class', testContent: GameContent = content, seed = 1) {
   const user = userEvent.setup();
@@ -99,6 +99,36 @@ export async function passStopWithFirstChoice(user: ReturnType<typeof userEvent.
   )!;
   const first = stop.choices.find((c) => !c.mechanic)!;
   await user.click(screen.getByRole('button', { name: first.label }));
+  await user.click(screen.getByRole('button', { name: /Add to cart/ }));
+  await leaveInterstitial(user);
+}
+
+/** The current stop's choices whose buttons are not locked (`aria-disabled`), in content order. */
+export function unlockedChoices(): Choice[] {
+  const stop = [content.stops.free, content.stops.layers, content.stops.permission].find((s) =>
+    s.choices.every((c) => screen.queryByRole('button', { name: c.label })),
+  )!;
+  return stop.choices.filter((c) => screen.getByRole('button', { name: c.label }).getAttribute('aria-disabled') !== 'true');
+}
+
+/** What a choice costs in Time and Budget for `persona`, from its recorded effects (a fair use result counts as 0). */
+export function choiceCost(choice: Choice, persona: PersonaId): number {
+  const raw = choice.effects;
+  const effects = !raw ? [] : Array.isArray(raw) ? raw : raw[persona];
+  return effects.filter((e) => (e.meter === 'time' || e.meter === 'budget') && e.delta < 0).reduce((sum, e) => sum - e.delta, 0);
+}
+
+/**
+ * Record a stop with the choice `pick` takes from the unlocked ones, and pass the wait screen or debrief. Fails if
+ * no unlocked choice is left (a dead end) or if the pick needs a mechanic (this helper only drives plain choices).
+ */
+export async function passStopWith(user: ReturnType<typeof userEvent.setup>, pick: (unlocked: Choice[]) => Choice) {
+  await toChoices(user);
+  const unlocked = unlockedChoices();
+  expect(unlocked.length).toBeGreaterThan(0);
+  const choice = pick(unlocked);
+  expect(choice.mechanic).toBeUndefined();
+  await user.click(screen.getByRole('button', { name: choice.label }));
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
   await leaveInterstitial(user);
 }
