@@ -31,17 +31,28 @@ These still apply, and the meters must respect them:
 
 A slim header is present on every screen after mode select. Left to right:
 
-1. **Home.** It opens a confirmation dialog: “Start over? You’ll lose your progress in this game.” with the buttons **Start over** and **Keep playing**. “Start over” dispatches `RESET`. On mode select itself, Home is hidden.
-2. **Meters** (§4.4), shown once a persona is chosen.
-3. **Cart** button (§2.4), shown once a persona is chosen.
-4. **Reference** button (the existing reference panel).
-5. **About.** It opens a panel with: what the game is (two sentences); “This is a learning game, not legal advice.”; who made it (Kyle Denlinger, Z. Smith Reynolds Library, Wake Forest University); the game’s own license; and a link to the source repository. Kyle supplies the license and confirms the credit line before launch.
+1. **Back.** It returns to the previous page, including into an earlier stop. It is for looking only; decisions stay made (§4.7). With nothing to go back to, it shows as unavailable.
+2. **Home.** It opens a confirmation dialog: “Start over? You’ll lose your progress in this game.” with the buttons **Start over** and **Keep playing**. “Start over” dispatches `RESET`. On mode select itself, Home is hidden.
+3. **Meters** (§4.4), shown once a persona is chosen.
+4. **Cart** button (§2.4), shown once a persona is chosen.
+5. **Reference** button (the existing reference panel).
+6. **About.** It opens a panel with: what the game is (two sentences); “This is a learning game, not legal advice.”; who made it (Kyle Denlinger, Z. Smith Reynolds Library, Wake Forest University); the game’s own license; and a link to the source repository. Kyle supplies the license and confirms the credit line before launch.
 
 Dialogs and panels trap focus while open, close with Escape, and return focus to the button that opened them.
 
 ### 2.2 Fixed Continue
 
 On every narrative screen (onboarding, Clerk intros, setups, outcomes, the epilogue), the primary **Continue** button sits in a fixed bar at the bottom of the viewport. The text scrolls in the space above it. The bar has a solid background, so text never shows through. Choice lists are not narrative screens, and their buttons stay inline.
+
+### 2.2a The class-mode pause
+
+In class mode, the screen after each stop is a pause for the full-room discussion, and it must not look like every other page:
+
+- On the outcome right before it, the primary button reads **Add to cart and pause**, with a pause icon and a visibly different style (never color alone).
+- The pause screen is a full-screen card: a large pause icon, **Stop here**, and “Wait for your facilitator.” It has no fixed Continue bar.
+- Leaving it asks “Has your facilitator said it’s time to move on?” with **Not yet** (selected by default) and **Yes, continue**.
+
+Independent mode’s debrief screens are unchanged.
 
 ### 2.3 The Clerk’s speech
 
@@ -156,7 +167,9 @@ Which choices require what: anything that involves asking, searching, or waiting
 
 ### 4.7 Going back
 
-The existing “Go back to this stop” option on the between-stops screen stays. Going back **restores the meters to what they were when the player arrived at the stop** (the game stores a snapshot when each stop starts), so changing a choice replaces its effects rather than stacking them.
+**Choices are final.** Once the player picks an option, it stands: there is no “Choose again” on the outcome screen, and the former “Go back to this stop” option on the between-stops screen is removed.
+
+The header’s **Back** button (§2.1) lets the player retrace their steps, including into an earlier stop if they moved on by accident. Back is for looking only. A page where a decision was made shows that decision as made, and the other options are locked with “You’ve already decided this one.” Going back never changes the meters, the cart, or any roll.
 
 ---
 
@@ -199,7 +212,7 @@ Fair use stays one of the choices and runs as now, without coaching. Its result 
 - **Found:** the Ask mechanic opens as usual. The search cost replaces the normal request cost, so the player doesn’t pay twice.
 - **Not found:** an outcome screen says so, in the persona’s situation (the username leads nowhere; the account was deleted years ago). The player returns to the stop’s choices. The search choice is now disabled with the reason **“You already looked. No luck.”** (it uses the same locked-option display as §4.6).
 - **Odds** are set per persona in content as a find chance from 0 to 1, reflecting how traceable that artifact really is (a sprite sheet on a forum is harder to trace than a drum break off a known record). Drafts range from 0.3 to 0.7.
-- **The roll is seeded,** like the Ask response (session seed + persona + stop), so going back to the stop or retrying gives the same result. Going back restores the meters (§4.7), but the search result stands.
+- **The roll is seeded,** like the Ask response (session seed + persona + stop), so the result never changes, however the player navigates (§4.7).
 
 Where the owner is already known (a named label, a reachable artist), there’s no search, and sending a request costs **Time −1**.
 
@@ -219,7 +232,7 @@ Where the owner is already known (a named label, a reachable artist), there’s 
 - **Accept the terms.** Applies the terms’ effects. If the terms include a fee, this option **requires Budget** and shows “You’re already over budget.” when locked. A fee can also push Budget into the worst band, and the game lets it, because that’s the surprise.
 - **Turn them down.** No terms apply. The player continues to the existing follow-up choices (use it anyway / don’t use it / run a fair use analysis).
 
-Like every roll, the response and its terms are seeded (session seed + persona + stop), so going back gives the same answer.
+Like every roll, the response and its terms are seeded (session seed + persona + stop), so the answer never changes.
 
 Each response carries effects:
 
@@ -354,7 +367,8 @@ The Clerk’s closing line, kept general (for example: the decisions were yours,
 
 ## 9. Testing focus
 
-- Going back to a stop restores meters (no double-counting) but keeps a failed search failed.
+- Back never changes meters, the cart, or a search result; a revisited decision is read-only, with the other options locked.
+- In class mode, leaving the pause screen requires the confirmation; “Not yet” keeps the player there.
 - A failed search costs Time once, disables the search choice with its reason, and leaves at least one other choice open.
 - Search odds behave as set: over many seeds, the find rate is close to each persona’s find chance.
 - Over many seeds, conditional responses produce every term type in the persona’s list; a large fee when Budget is low locks “Accept the terms” and leaves “Turn them down” available.
@@ -382,4 +396,5 @@ The Clerk’s closing line, kept general (for example: the decisions were yours,
 | Clerk | Guide only; no identity mystery |
 | Other futures | After their shelf, players can view the other four licenses’ scenes as clearly marked hypotheticals; game state is unchanged |
 | Ending | The shelf: fate + license scene + last word; the project always ships (it can be late, smaller, compromised, under a cloud, or pulled) |
-| Site | Header with Home (confirm) and About; cart panel; fixed Continue; distinct Clerk speech |
+| Site | Header with Back, Home (confirm), and About; cart panel; fixed Continue; distinct Clerk speech; a class-mode pause that can’t be missed |
+| Going back | Choices are final; Back is for looking only (no “Choose again”, no “Go back to this stop”) |

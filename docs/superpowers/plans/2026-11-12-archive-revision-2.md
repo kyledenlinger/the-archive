@@ -27,7 +27,7 @@
 
 ## Review Focus
 
-1. **Going back refunds meters but not a failed search.** Expected: after a failed search, going back to the stop restores the meters to their arrival values, the search choice stays locked with “You already looked. No luck.”, and Time isn’t charged twice. Test in Task 5.
+1. *(Superseded by Task 8b: choices are final, and Back is navigation only. Spec §4.7’s refund no longer applies.)* **Going back refunds meters but not a failed search.** Expected: after a failed search, going back to the stop restores the meters to their arrival values, the search choice stays locked with “You already looked. No luck.”, and Time isn’t charged twice. Test in Task 5.
 2. **Everything locked at once.** Out of time *and* broke must still leave a usable choice at every stop and in every Ask follow-up. Expected: “Turn them down” and each stop’s unrequired choice are always available. Test in Tasks 2 and 10.
 3. **Keyboard activation of locked options.** Because locked buttons stay focusable, Enter or Space could fire them. Expected: nothing happens, and screen readers read the reason. Test in Task 6.
 4. **The fixed Continue bar hiding text.** On a short screen, the bar covers the last lines of a long passage. Expected: narrative screens have bottom padding at least the bar’s height, and the last line can be scrolled clear of the bar at 375×667. Test in Task 6.
@@ -358,6 +358,43 @@ export interface GameState {
 - fair use in stop 2 costs Time once, even after backing out and starting again (dispatch `APPLY_EFFECTS` with `key: 'fairUse'`, which the reducer ignores the second time)
 - [ ] **Step 3: Implement.** **Step 4: Run** `npm test && npm run validate -- --allow-placeholder`. Expected: PASS.
 - [ ] **Step 5: Content review gate (Kyle).** **Step 6: Commit.**
+
+---
+
+### Task 8b: Persistent Back with undo, and a pause that can't be missed (added after Task 8 review)
+
+Kyle’s requests: “It needs a persistent back button,” and students “should be able to go back to a previous stop if they’ve accidentally gone to the next one, and undo decisions.” Also: the button right before each pause screen looks like every other button, so students miss that it’s a pause.
+
+**Files:**
+- Modify: `src/state.ts` (history, `page`, `BACK`), `src/screens/{Onboarding,Stop,Flip,Interstitial,Brief}.tsx`, `src/mechanics/*` as needed, `src/components/Header.tsx`, `src/content/ui.ts`, `src/content/interstitial.ts`
+- Test: `src/state.test.ts`, `src/__tests__/back.test.tsx`, `src/__tests__/pause.test.tsx`
+
+**Back (game state, not browser history):**
+- Every page a player can see is described by game state. Lift the screens’ local page state (onboarding beat, the stop’s sub-page, the flip phase, the fair use factor index, the Ask form’s step) into a `page` field on `GameState`, changed by reducer actions.
+- **Decisions are final** (Kyle, after the Task 8 review: “let’s not allow them to redo a choice”). Back is navigation only, and it never changes meters, tags, cart, flip, sunk costs, or searches.
+- The reducer keeps `history` as a stack of locations (`screen`, `stopIndex`, `page`), pushed on every page change. `BACK` pops one location. It can cross into the previous stop: from stop 2’s intro, Back reaches stop 1’s pause screen, then its outcome, then its choices.
+- A revisited page where a decision was made is read-only. The decision shows as made, and every other option is locked with “You’ve already decided this one.” (`ui.lockReasons.decided`). Moving forward again from a revisited page only navigates; it never re-records.
+- **Removed redo paths:** “Go back to this stop” (`REVISIT_STOP`) on the pause screen, and “Choose again” on the outcome screen, along with any equivalent back-out after a choice in the mechanics. Clicking a choice is final. Its outcome’s primary button records it.
+- The header gets a persistent **Back** button, left of Home, on every screen after mode select. With nothing to go back to, it stays visible with `aria-disabled="true"`. `RESET` clears history.
+- After Back, focus moves to the restored page’s heading.
+
+**The pause (class mode):**
+- The outcome’s primary button in class mode reads **Add to cart and pause**. It has a pause icon and a visibly different style from Continue (not color alone).
+- The wait screen becomes a full-screen pause card: a large pause icon, the heading “Stop here,” and “Wait for your facilitator.” It has no fixed Continue bar.
+- Its continue button opens a `ConfirmDialog`: “Has your facilitator said it’s time to move on?” with **Not yet** (focused by default) and **Yes, continue**.
+- Independent mode is unchanged.
+
+- [ ] **Step 1: Write failing tests:**
+  - Back through onboarding beats, a stop’s pages, and into the previous stop’s pause screen and outcome
+  - Back across an “Add to cart” leaves meters and cart unchanged, and the revisited choices are locked with “You’ve already decided this one.”
+  - no “Go back to this stop” or “Choose again” anywhere
+  - Back is `aria-disabled` on the first onboarding beat and active afterward
+  - in class mode the outcome button reads “Add to cart and pause”, and leaving the pause needs the confirm (Not yet stays put; Yes advances)
+  - independent mode has neither
+- [ ] **Step 2: Implement.** **Step 3: Run** `npm test && npm run lint && npm run validate -- --allow-placeholder`. **Step 4: Commit.**
+- [ ] **Step 5: Review gate (Kyle).**
+
+Later tasks (9–12) add their new pages through `page` and reducer actions so Back covers them.
 
 ---
 
