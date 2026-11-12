@@ -483,7 +483,7 @@ export interface GameState {
 - [ ] **Step 1: Update the playthrough test:** six personas × both modes, always taking the first *unlocked* choice, `cc-by` in the flip, and `credit` for every response; assert the run reaches the project summary with all three items filled. Add one run that takes the most expensive unlocked option at every step, asserting no dead end (**Review Focus 2**).
 - [ ] **Step 2: Prose pass** over every string added or changed on this branch, against the prose style sheet and its continuity outline. Check in particular:
   - the brief items match the stop setups
-  - no text still alludes to the Clerk’s old secret (`grep -ri "orphan\|scrapbook\|clue" src/content` → none)
+  - no text still alludes to the Clerk’s old secret (`grep -ri "orphan\|scrapbook\|clue\|name tag\|who he works for" src/content` → none)
   - meter-change wording reads naturally
 - [ ] **Step 3: Remove `--allow-placeholder`.** Run `npm test && npm run validate && npm run build`. Expected: all pass. `validate` shows the review list, plus the `ABOUT_LICENSE_TBD` warning until Kyle supplies the license.
 - [ ] **Step 4: Update the README:** the meters, where to tune starting values and effects, and where to edit rolls (find chances, odds, terms).

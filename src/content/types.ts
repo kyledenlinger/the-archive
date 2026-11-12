@@ -98,7 +98,9 @@ export interface ShelfContent {
 }
 export interface ClerkContent { briefIntro: string; coachInvite: string; shelf: ShelfContent }
 
-export interface OnboardingContent { lines: string[] }
+export interface OnboardingPiece { kind: 'narration' | 'clerk'; text: string }
+/** Each beat of the opening scene is a list of pieces, shown in order. */
+export interface OnboardingContent { lines: OnboardingPiece[][] }
 export interface ReferenceEntry { id: string; title: string; body: string }
 export interface Resource { name: string; url: string; description: string; reviewBy?: ReviewFlag }
 export interface InterstitialCopy { waitTitle: string; waitBody: string; continueLabel: string }

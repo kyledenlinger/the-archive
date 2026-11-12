@@ -11,6 +11,7 @@ export const STRENGTHS = ['strong', 'moderate', 'weak'] as const;
 export const TERM_KINDS = ['smallFee', 'largeFee', 'restriction', 'credit'] as const;
 export const LOCK_METERS = ['time', 'budget'] as const;
 export const EXPOSURE_TAGS = ['legal', 'reputational'] as const;
+export const ONBOARDING_KINDS = ['narration', 'clerk'] as const;
 const BRIEF_KEYS = ['making', 'answersTo', 'deadline', 'items'] as const;
 const SHELF_KEYS = ['intro', 'fate', 'scenes', 'outsideDetail', 'lastWord', 'othersOffer', 'altFrame', 'backToYours', 'closingLine'] as const;
 
@@ -90,6 +91,28 @@ export function validateContent(c: GameContent): ValidationResult {
   };
 
   // --- structural completeness ---
+  // Onboarding: at least one beat; each beat a non-empty list of narration/Clerk pieces with text.
+  const ob = (isObj(c.onboarding) ? c.onboarding : {}) as unknown as Obj;
+  if (!Array.isArray(ob.lines) || ob.lines.length === 0) errors.push('onboarding.lines: needs at least one beat');
+  else {
+    (ob.lines as unknown[]).forEach((beat, b) => {
+      const bp = `onboarding.lines[${b}]`;
+      if (!Array.isArray(beat) || beat.length === 0) {
+        errors.push(`${bp}: needs at least one piece`);
+        return;
+      }
+      beat.forEach((piece: unknown, i) => {
+        const pp = `${bp}[${i}]`;
+        if (!isObj(piece)) {
+          errors.push(`${pp}: missing`);
+          return;
+        }
+        if (!(ONBOARDING_KINDS as readonly unknown[]).includes(piece.kind)) errors.push(`${pp}.kind: invalid kind`);
+        if (typeof piece.text !== 'string') errors.push(`${pp}.text: missing`);
+      });
+    });
+  }
+
   const stops = keys(c.stops, 'stops', [...STANDARD_STOP_IDS, 'flip']);
   each(stops, 'stops', [...STANDARD_STOP_IDS, 'flip'], (s, p) => {
     const stop = s as Obj;

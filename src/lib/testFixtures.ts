@@ -70,7 +70,7 @@ export function makeValidContent(): GameContent {
       brief: { making: 'x', answersTo: 'x', deadline: 'x', items: ['x', 'x', 'x'] },
       startMeters: rec(METER_IDS, () => 3),
     })),
-    onboarding: { lines: ['x'] },
+    onboarding: { lines: [[{ kind: 'narration', text: 'x' }, { kind: 'clerk', text: 'x' }]] },
     stops: {
       free: stdStop('free'),
       layers: stdStop('layers'),

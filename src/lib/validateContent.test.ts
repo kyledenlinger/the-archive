@@ -196,3 +196,31 @@ test('revision-2 placeholder text is an error (the CLI’s --allow-placeholder d
   c.clerk.coachInvite = 'PLACEHOLDER (Task 9): coach invite';
   expect(validateContent(c).errors).toContain('clerk.coachInvite: placeholder text');
 });
+
+test('onboarding needs at least one beat', () => {
+  const c = makeValidContent();
+  c.onboarding.lines = [];
+  expect(validateContent(c).errors).toContain('onboarding.lines: needs at least one beat');
+});
+
+test('an empty onboarding beat is an error', () => {
+  const c = makeValidContent();
+  c.onboarding.lines.push([]);
+  expect(validateContent(c).errors).toContain('onboarding.lines[1]: needs at least one piece');
+});
+
+test('an onboarding piece needs a valid kind', () => {
+  const c = makeValidContent();
+  (c.onboarding.lines[0][1] as { kind: string }).kind = 'aside';
+  expect(validateContent(c).errors).toContain('onboarding.lines[0][1].kind: invalid kind');
+});
+
+test('onboarding piece text is checked for emptiness, group size, and placeholders', () => {
+  const c = makeValidContent();
+  c.onboarding.lines[0][0].text = ' ';
+  c.onboarding.lines[0][1].text = 'Both of you, come with me. PLACEHOLDER';
+  const errs = validateContent(c).errors;
+  expect(errs).toContain('onboarding.lines[0][0].text: empty');
+  expect(errs.some((e) => e.startsWith('onboarding.lines[0][1].text: assumes group size'))).toBe(true);
+  expect(errs).toContain('onboarding.lines[0][1].text: placeholder text');
+});
