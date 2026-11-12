@@ -42,6 +42,9 @@ export const ui = {
   meterNudge: (label: string, direction: 'up' | 'down', tag?: ExposureTag) =>
     `${label} ${direction === 'up' ? 'rises' : 'falls'}${tag ? ` (${tag})` : ''}`,
 
+  /** Label for the list of meter changes on an outcome screen. */
+  changesLabel: 'What this does to your project',
+
   /** Why a choice is locked (plan Global Constraints), verbatim. */
   lockReasons: {
     time: 'You’re out of time for this.',

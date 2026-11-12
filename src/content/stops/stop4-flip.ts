@@ -12,7 +12,7 @@ const sit = (arr: string, by: string, bysa: string, bync: string, cc0: string): 
 
 export const stop4Flip: FlipStop = {
   id: 'flip',
-  title: 'The Flip',
+  title: 'Out in the World',
   clerkIntro:
     'Last stop, and this one’s a little different. Turn around. That’s yours, on the shelf behind you. You made something, and it ended up in here too. Everything does, eventually. The only question is what it says on the label. Choose carefully. Or don’t, honestly; they’re all defensible. That’s not advice, obviously.',
   setup: {

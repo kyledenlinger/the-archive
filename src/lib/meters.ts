@@ -1,4 +1,4 @@
-import { Choice, Effects, LockMeter, METER_IDS, MeterBand, MeterId, Meters, PersonaId, VisionBand } from '../content/types';
+import { Choice, Effects, ExposureTag, LockMeter, METER_IDS, MeterBand, MeterId, Meters, PersonaId, Strength, VisionBand } from '../content/types';
 
 const MIN = 0;
 const MAX = 6;
@@ -49,6 +49,23 @@ export function meterChanges(
     to: band(m, after[m]),
     direction: after[m] > before[m] ? 'up' : 'down',
   }));
+}
+
+/** Like `meterChanges`, for effects not yet applied; an exposure rise is tagged when it came from one tag only. */
+export function previewChanges(meters: Meters, effects: Effects): (ReturnType<typeof meterChanges>[number] & { tag?: ExposureTag })[] {
+  const r = applyEffects(meters, effects);
+  const tag: ExposureTag | undefined = r.legal > 0 === r.reputational > 0 ? undefined : r.legal > 0 ? 'legal' : 'reputational';
+  return meterChanges(meters, r.meters).map((c) => (c.meter === 'exposure' && c.direction === 'up' && tag ? { ...c, tag } : c));
+}
+
+/** What running the optional fair use analysis costs up front in stops 2–3 (revision spec §5.3), paid once per stop visit. */
+export const FAIR_USE_TIME_COST: Effects = [{ meter: 'time', delta: -1 }];
+
+/** What relying on a fair use analysis does, by the assessment's strength (revision spec §5.2). */
+export function fairUseEffects(strength: Strength): Effects {
+  const vision = { meter: 'vision', delta: 1 } as const;
+  if (strength === 'strong') return [vision];
+  return [{ meter: 'exposure', delta: strength === 'moderate' ? 1 : 2, tag: 'legal' }, vision];
 }
 
 const VISION: Record<MeterBand, VisionBand> = { best: 'intact', middle: 'compromised', worst: 'lost' };

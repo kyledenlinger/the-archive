@@ -6,12 +6,20 @@ import { ScreenHeading } from '../components/ScreenHeading';
 import { ClerkSpeech } from '../components/ClerkSpeech';
 import { ChoiceButton } from '../components/ChoiceButton';
 import { ContinueBar } from '../components/ContinueBar';
+import { ChangeLines } from '../components/MeterDisplay';
+import { ui } from '../content/ui';
+import { FAIR_USE_TIME_COST, effectsFor, lockReason, previewChanges } from '../lib/meters';
 import { btnLink, btnPrimary, caseNote, eyebrow, narrativePage, page } from '../components/styles';
 import { FairUseAnalysis } from '../mechanics/FairUseAnalysis';
 import { AskRequest } from '../mechanics/AskRequest';
 import { ScreenProps } from './types';
 
-type Sub = { kind: 'intro' } | { kind: 'choices' } | { kind: 'outcome'; outcome: Outcome } | { kind: 'fairUse' } | { kind: 'ask' };
+type Sub =
+  | { kind: 'intro' }
+  | { kind: 'choices' }
+  | { kind: 'outcome'; outcome: Outcome; effects: Effects }
+  | { kind: 'fairUse' }
+  | { kind: 'ask' };
 
 export function outcomeFor(choice: Choice, persona: PersonaId): Outcome {
   const o = choice.outcome!;
@@ -24,14 +32,17 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
   const persona = state.persona!;
   // Revisiting a stop already in the cart opens straight on the choices.
   const [sub, setSub] = useState<Sub>(state.cart[stopId] ? { kind: 'choices' } : { kind: 'intro' });
-  // revision-2: Task 8 passes each choice's effects here.
+  // Effects are applied only here, on “Add to cart”; outcome screens preview them.
   const record = (cartNote: string, effects: Effects = []) => dispatch({ type: 'RECORD_STOP', stopId, cartNote, effects });
   const back = () => setSub({ kind: 'choices' });
 
   const pick = (choice: Choice) => {
-    if (choice.mechanic === 'fairUse') setSub({ kind: 'fairUse' });
-    else if (choice.mechanic === 'ask') setSub({ kind: 'ask' });
-    else setSub({ kind: 'outcome', outcome: outcomeFor(choice, persona) });
+    if (choice.mechanic === 'fairUse') {
+      // The time spent on the analysis is sunk once per visit; the reducer ignores a repeated key.
+      dispatch({ type: 'APPLY_EFFECTS', effects: FAIR_USE_TIME_COST, key: 'fairUse' });
+      setSub({ kind: 'fairUse' });
+    } else if (choice.mechanic === 'ask') setSub({ kind: 'ask' });
+    else setSub({ kind: 'outcome', outcome: outcomeFor(choice, persona), effects: effectsFor(choice.effects, persona) });
   };
 
   return (
@@ -61,11 +72,14 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
             <h2 id="choices-label" className="text-amber-200 text-sm uppercase tracking-widest font-bold font-sans">
               What do you do?
             </h2>
-            {stop.choices.map((c) => (
-              <ChoiceButton key={c.id} onSelect={() => pick(c)}>
-                {c.label}
-              </ChoiceButton>
-            ))}
+            {stop.choices.map((c) => {
+              const lock = lockReason(c, state.meters);
+              return (
+                <ChoiceButton key={c.id} onSelect={() => pick(c)} lockedReason={lock ? ui.lockReasons[lock] : undefined}>
+                  {c.label}
+                </ChoiceButton>
+              );
+            })}
           </div>
         </motion.div>
       )}
@@ -73,19 +87,22 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
       {sub.kind === 'outcome' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
           <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{sub.outcome.text}</p>
+          <ChangeLines changes={previewChanges(state.meters, sub.effects)} />
           <CaseNote note={sub.outcome.cartNote} />
           <button type="button" className={btnLink} onClick={back}>
             Choose again
           </button>
           <ContinueBar>
-            <ChoiceButton className={btnPrimary} onSelect={() => record(sub.outcome.cartNote)}>
+            <ChoiceButton className={btnPrimary} onSelect={() => record(sub.outcome.cartNote, sub.effects)}>
               Add to cart <ChevronRight aria-hidden="true" />
             </ChoiceButton>
           </ContinueBar>
         </motion.div>
       )}
 
-      {sub.kind === 'fairUse' && <FairUseAnalysis stopId={stopId} persona={persona} content={content} onDone={(note) => record(note)} onBack={back} />}
+      {sub.kind === 'fairUse' && (
+        <FairUseAnalysis stopId={stopId} persona={persona} content={content} meters={state.meters} onDone={record} onBack={back} />
+      )}
 
       {sub.kind === 'ask' && <AskRequest content={content} persona={persona} seed={state.seed} onDone={(note) => record(note)} onBack={back} />}
     </div>

@@ -2,7 +2,7 @@ import { StandardStop } from '../types';
 
 export const stop2Layers: StandardStop = {
   id: 'layers',
-  title: 'The Public Domain Trap',
+  title: 'Old Bones',
   clerkIntro:
     'This one’s tricky. The works at the heart of this wing are old, and they’re in the public domain by any measure: the copyright ran out long ago. That part is genuinely free. Anyone can use it, build on it, or remake it. But old things get handled. People restore them, record them, scan them, colorize them, adapt them, and put them on lunchboxes, and each of those can be a separate thing, legally speaking, with its own rights and its own clock. A century-old work can sit inside something made last Tuesday, and the new part is protected. I probably should have mentioned this earlier. Sorry.',
   setup: {
@@ -25,6 +25,15 @@ export const stop2Layers: StandardStop = {
     {
       id: 'clean',
       label: 'Find a version that’s clean all the way down.',
+      // Clean costs looking time or the version you wanted, and takes the protected layers off the table.
+      effects: {
+        chronicler: [{ meter: 'time', delta: -1 }, { meter: 'vision', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        herald: [{ meter: 'vision', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        naturalist: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        artificer: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        bard: [{ meter: 'vision', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        conjurer: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }],
+      },
       outcome: {
         chronicler: {
           text: 'A film archive holds an earlier transfer of the same newsreel. It’s silent, unrestored, and a little shaky, but it’s public domain all the way down. You add your own sound.',
@@ -61,6 +70,17 @@ export const stop2Layers: StandardStop = {
     {
       id: 'contact',
       label: 'Contact the rights holder.',
+      requires: ['time'],
+      // Writing and waiting costs Time. A paid license (chronicler, artificer, bard) costs Budget and keeps the
+      // version you wanted. A no or silence (herald, conjurer) still settles where the line is.
+      effects: {
+        chronicler: [{ meter: 'time', delta: -1 }, { meter: 'budget', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
+        herald: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        naturalist: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
+        artificer: [{ meter: 'time', delta: -1 }, { meter: 'budget', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
+        bard: [{ meter: 'time', delta: -2 }, { meter: 'budget', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
+        conjurer: [{ meter: 'time', delta: -2 }, { meter: 'exposure', delta: -1 }],
+      },
       outcome: {
         chronicler: {
           text: 'You write to the label that issued the 2010 release. They offer a festival-only license for a fee you can just about manage, and quote a separate, larger fee for streaming.',
@@ -98,6 +118,7 @@ export const stop2Layers: StandardStop = {
     {
       id: 'pass',
       label: 'Pass on it.',
+      effects: [{ meter: 'time', delta: -1 }, { meter: 'vision', delta: -1 }, { meter: 'exposure', delta: -1 }],
       outcome: {
         text: 'You put it back on the shelf. There will be something else, somewhere, with fewer layers.',
         cartNote:

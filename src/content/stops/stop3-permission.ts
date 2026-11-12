@@ -2,7 +2,7 @@ import { StandardStop } from '../types';
 
 export const stop3Permission: StandardStop = {
   id: 'permission',
-  title: 'Permission Isn’t Only About Copyright',
+  title: 'Strings Attached',
   clerkIntro:
     'This wing is quieter. Everything in it came with paperwork: licenses, terms of service, the little boxes you ticked without reading. Copyright tells you what the law allows, and this paperwork tells you what you agreed to. The two don’t always line up. And sometimes, and I know this sounds radical, you can just ask.',
   setup: {
@@ -25,34 +25,44 @@ export const stop3Permission: StandardStop = {
     {
       id: 'use',
       label: 'Use it.',
+      // You keep what you wanted and take on the risk of breaking the terms (legal). Where an audience would
+      // also care (an educational channel's accuracy, a reachable artist), there is a reputational rise too.
+      effects: {
+        chronicler: [{ meter: 'vision', delta: 1 }, { meter: 'exposure', delta: 1, tag: 'legal' }],
+        herald: [{ meter: 'vision', delta: 1 }, { meter: 'exposure', delta: 2, tag: 'legal' }],
+        naturalist: [{ meter: 'vision', delta: 1 }, { meter: 'exposure', delta: 1, tag: 'legal' }, { meter: 'exposure', delta: 1, tag: 'reputational' }],
+        artificer: [{ meter: 'vision', delta: 1 }, { meter: 'exposure', delta: 1, tag: 'legal' }, { meter: 'exposure', delta: 1, tag: 'reputational' }],
+        bard: [{ meter: 'vision', delta: 1 }, { meter: 'exposure', delta: 1, tag: 'legal' }],
+        conjurer: [{ meter: 'vision', delta: 1 }, { meter: 'exposure', delta: 2, tag: 'legal' }],
+      },
       outcome: {
         chronicler: {
-          text: 'You use it. The festival screens the film, and nobody says anything. Streaming, which you’re hoping for next, would be a different kind of screening entirely.',
+          text: 'You use it. The festival screens the film, and nobody says anything. Streaming, which you’re hoping for next, would be a different kind of screening entirely. If the stock agency notices, that’s a legal problem: it can charge you a fee or end your license.',
           cartNote:
             'Used an “editorial use only” stock clip in a sponsored festival screening. The question here is the license, not copyright: a sponsor-presented event may fall outside “editorial,” and streaming almost certainly would. The exposure is contractual: the agency can demand a fee or end the license.',
         },
         herald: {
-          text: 'You cross-post the video and run the promotion.',
+          text: 'You cross-post the video and run the promotion. If the song’s rights holders notice, this is the kind of use that gets a post muted or taken down.',
           cartNote:
             'Cross-posted a video with a song from one app’s sound library and ran it as a paid promotion. That library’s license typically covers use on that app, often not commercial use, and not other platforms. Muted audio, takedowns, or claims from the song’s rights holders are possible.',
         },
         naturalist: {
-          text: 'You use the illustration in the monetized video.',
+          text: 'You use the illustration in the monetized video. That’s outside the tool’s terms, which is a legal risk. And if the salamander in the picture isn’t accurate, viewers may call you out for it.',
           cartNote:
             'Used a free-tier AI image on a monetized channel. The tool’s terms limit free-tier output to non-commercial use, and those terms decide what you can do with it. A separate question: an AI image of a real species may not be accurate, which matters on an educational channel.',
         },
         artificer: {
-          text: 'You build the photograph into the collage and put the print on your market table.',
+          text: 'You build the photograph into the collage and put the print on your market table. If the artist finds it, this is the kind of use that gets a takedown or a demand for payment. People who know the artist’s work may call you out for it, too.',
           cartNote:
             'Used a living artist’s photograph with no license, though the artist was reachable. Default copyright applies. Transformation in the collage might support fair use, but permission was one email away.',
         },
         bard: {
-          text: 'You release the track with the AI backing.',
+          text: 'You release the track with the AI backing. If the generator’s company notices, that’s a legal problem: its terms gave you no commercial rights.',
           cartNote:
             'Released a track with an AI backing made on a plan that grants no commercial rights. The generator’s terms decide this, not copyright. Separately, purely AI-generated material generally isn’t protected by U.S. copyright, so you may not own that layer the way you own what you wrote and played.',
         },
         conjurer: {
-          text: 'You push the whole repository public, assets and font included.',
+          text: 'You push the whole repository public, assets and font included. If the asset store or the font’s maker notices, this is the kind of use that gets a takedown.',
           cartNote:
             'Open-sourced the game with an asset pack licensed against redistribution and a font licensed for desktop use. Publishing the files lets anyone download them, which is redistribution. Both licenses are likely breached, even though the game itself is yours to share.',
         },
@@ -61,6 +71,15 @@ export const stop3Permission: StandardStop = {
     {
       id: 'dont',
       label: 'Don’t use it.',
+      // Replacing it costs Time (and, for the naturalist's commission, Budget) or the thing you wanted.
+      effects: {
+        chronicler: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        herald: [{ meter: 'time', delta: -1 }, { meter: 'vision', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        naturalist: [{ meter: 'time', delta: -1 }, { meter: 'budget', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
+        artificer: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        bard: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }],
+        conjurer: [{ meter: 'vision', delta: -1 }, { meter: 'exposure', delta: -1 }],
+      },
       outcome: {
         chronicler: {
           text: 'You cut the clip and shoot the culvert yourself on a rainy afternoon.',
@@ -92,7 +111,7 @@ export const stop3Permission: StandardStop = {
       },
     },
     { id: 'fair-use', label: 'Run a fair use analysis.', mechanic: 'fairUse' },
-    { id: 'ask', label: 'Ask for permission.', mechanic: 'ask' },
+    { id: 'ask', label: 'Ask for permission.', mechanic: 'ask', requires: ['time'] },
   ],
   debrief: {
     lesson:

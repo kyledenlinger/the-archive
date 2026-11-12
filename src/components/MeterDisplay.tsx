@@ -32,6 +32,18 @@ export function describeChanges(changes: MeterChange[]): string[] {
   });
 }
 
+/** The change lines on an outcome screen, before anything is applied. Renders nothing when no meter moves. */
+export function ChangeLines({ changes }: { changes: MeterChange[] }) {
+  if (changes.length === 0) return null;
+  return (
+    <ul aria-label={ui.changesLabel} data-testid="change-lines" className="space-y-1 font-sans text-sm text-amber-200">
+      {describeChanges(changes).map((line) => (
+        <li key={line}>{line}</li>
+      ))}
+    </ul>
+  );
+}
+
 /**
  * The four meters for the header. Below `lg` they collapse to an icon and the glyph (the full words stay
  * in screen-reader text and in the Cart panel). A visually hidden polite live region announces each set of

@@ -2,15 +2,15 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { content } from '../content';
-import { LicenseId, Mode, PersonaId, ReuseResponse, StopId } from '../content/types';
+import { GameContent, LicenseId, Mode, PersonaId, ReuseResponse, StopId } from '../content/types';
 
-export async function startAs(persona: PersonaId, mode: Mode = 'class') {
+export async function startAs(persona: PersonaId, mode: Mode = 'class', testContent: GameContent = content) {
   const user = userEvent.setup();
-  render(<App seed={1} />);
+  render(<App seed={1} content={testContent} />);
   await user.click(screen.getByRole('button', { name: mode === 'class' ? /In a class/ : /On my own/ }));
   for (let i = 1; i < content.onboarding.lines.length; i++) await user.click(screen.getByRole('button', { name: /Continue/ }));
   await user.click(screen.getByRole('button', { name: /Choose who you are/ }));
-  const name = content.personas.find((p) => p.id === persona)!.name;
+  const name = testContent.personas.find((p) => p.id === persona)!.name;
   await user.click(screen.getByRole('button', { name: new RegExp(name) }));
   // Pass the brief.
   await user.click(screen.getByRole('button', { name: /^Continue/ }));

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { GameContent, PersonaId, StandardStopId } from '../content/types';
+import { Effects, GameContent, Meters, PersonaId, StandardStopId } from '../content/types';
+import { fairUseEffects, previewChanges } from '../lib/meters';
+import { ChangeLines } from '../components/MeterDisplay';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ChoiceButton } from '../components/ChoiceButton';
 import { ClerkSpeech } from '../components/ClerkSpeech';
@@ -17,15 +19,18 @@ interface Props {
   stopId: StandardStopId;
   persona: PersonaId;
   content: GameContent;
-  onDone: (cartNote: string) => void;
+  /** Current meters; when given, the summary previews what relying on the analysis changes. */
+  meters?: Meters;
+  onDone: (cartNote: string, effects: Effects) => void;
   onBack: () => void;
 }
 
-export function FairUseAnalysis({ stopId, persona, content, onDone, onBack }: Props) {
+export function FairUseAnalysis({ stopId, persona, content, meters, onDone, onBack }: Props) {
   const [answers, setAnswers] = useState<Lean[]>([]);
   const { factors, assessments } = content.fairUse;
   const step = answers.length; // 0–3: factors; 4: summary
   const assessment = assessments[stopId][persona];
+  const effects = fairUseEffects(assessment.strength);
 
   if (step < 4) {
     const f = factors[step];
@@ -83,8 +88,9 @@ export function FairUseAnalysis({ stopId, persona, content, onDone, onBack }: Pr
         </table>
       </div>
       <ClerkSpeech text={assessment.text} />
+      {meters && <ChangeLines changes={previewChanges(meters, effects)} />}
       <div className="flex flex-col gap-4">
-        <ChoiceButton className="choice-btn bg-amber-900/20 border-amber-500/50 justify-center text-center" onSelect={() => onDone('Fair use basis. ' + assessment.text)}>
+        <ChoiceButton className="choice-btn bg-amber-900/20 border-amber-500/50 justify-center text-center" onSelect={() => onDone('Fair use basis. ' + assessment.text, effects)}>
           Add to cart on a fair use basis
         </ChoiceButton>
         <ChoiceButton className="choice-btn justify-center text-center" onSelect={onBack}>

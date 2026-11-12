@@ -2,7 +2,7 @@ import { StandardStop } from '../types';
 
 export const stop1Free: StandardStop = {
   id: 'free',
-  title: 'The “Free” Thing That Isn’t',
+  title: 'Unmarked',
   clerkIntro:
     'First stop. This section gets a lot of visitors. Everything on these shelves was posted and reposted so many times that nobody remembers where it started. People assume that if they can reach something, they can use it. It’s a very understandable assumption.',
   setup: {
