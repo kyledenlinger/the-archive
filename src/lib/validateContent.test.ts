@@ -230,7 +230,7 @@ test('valid content has no warnings', () => {
   expect(validateContent(makeValidContent()).warnings).toEqual([]);
 });
 
-test('revision-2 placeholder text is an error (the CLI’s --allow-placeholder downgrades it)', () => {
+test('placeholder text is an error', () => {
   const c = makeValidContent();
   c.clerk.coachInvite = 'PLACEHOLDER (Task 9): coach invite';
   expect(validateContent(c).errors).toContain('clerk.coachInvite: placeholder text');

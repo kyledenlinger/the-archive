@@ -18,7 +18,7 @@ const SHELF_KEYS = ['intro', 'fate', 'scenes', 'outsideDetail', 'lastWord', 'oth
 
 /** Kyle supplies the game's license for the About panel; until then this marker is a warning, not an error. */
 export const ABOUT_LICENSE_TBD = 'ABOUT_LICENSE_TBD';
-/** Revision-2 build only: stand-in text written before its task fills it in. An error; `--allow-placeholder` downgrades it. */
+/** Stand-in text left in content by mistake. Always an error. */
 export const PLACEHOLDER_MARK = 'PLACEHOLDER';
 
 export const GROUP_SIZE_RE = /\b(you two|both of you|your partner|each pair|your pair|the pair)\b/i;
