@@ -1,6 +1,4 @@
 import {
-  EndingId,
-  GuessId,
   LicenseId,
   Mode,
   PersonaId,
@@ -10,6 +8,10 @@ import {
   STOP_ORDER,
   StopId,
 } from './content/types';
+
+// revision-2: the guess and ending ids left the content types; Task 5 removes these from state.
+type GuessId = string;
+type EndingId = string;
 
 export type Screen = 'mode' | 'onboarding' | 'persona' | 'stop' | 'interstitial' | 'flip' | 'guess' | 'reveal' | 'ending' | 'cart';
 export interface FlipRecord { license: LicenseId | null; responses: Partial<Record<ReuseEventKind, ReuseResponse>> }

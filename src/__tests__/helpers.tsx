@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { content } from '../content';
-import { GuessId, LicenseId, Mode, PersonaId, ReuseResponse } from '../content/types';
+import { LicenseId, Mode, PersonaId, ReuseResponse } from '../content/types';
 
 export async function startAs(persona: PersonaId, mode: Mode = 'class') {
   const user = userEvent.setup();
@@ -52,9 +52,8 @@ export async function throughFlip(user: ReturnType<typeof userEvent.setup>, lice
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
 }
 
-/** From the guess screen: guess, then read the reveal through to the ending choice. */
-export async function guessAndReveal(user: ReturnType<typeof userEvent.setup>, guess: GuessId = 'letter') {
-  const label = content.clerk.guessOptions.find((g) => g.id === guess)!.label;
-  await user.click(screen.getByRole('button', { name: label }));
-  for (let i = 1; i < content.clerk.reveal.length; i++) await user.click(screen.getByRole('button', { name: /^Continue/ }));
+/** revision-2: the guess and reveal are pass-through stubs; this clicks through both to the ending. Task 12 replaces it with `toShelf`. */
+export async function guessAndReveal(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole('button', { name: /^Continue/ }));
+  await user.click(screen.getByRole('button', { name: /^Continue/ }));
 }

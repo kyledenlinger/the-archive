@@ -51,7 +51,6 @@ export function Flip({ state, dispatch, content, openReference }: ScreenProps) {
             <div className="text-[10px] font-bold tracking-[0.3em] text-amber-500 uppercase mb-2">Your work</div>
             <p className="font-serif text-2xl text-amber-100">{flip.work[persona]}</p>
           </div>
-          <p className="font-serif italic text-amber-50/80 leading-relaxed">{flip.clerkClue}</p>
           <LicensePicker
             flip={flip}
             openReference={openReference}
@@ -75,7 +74,7 @@ export function Flip({ state, dispatch, content, openReference }: ScreenProps) {
 
       {phase === 'askForHelp' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
-          <p className="font-serif italic text-amber-50/90 text-xl leading-relaxed">{content.clerk.askForHelp}</p>
+          {/* revision-2: the Clerk's askForHelp line is gone; Task 11 removes this phase. */}
           <div className="flex justify-center">
             <ChoiceButton className={btnPrimary} onSelect={finish}>
               Continue <ChevronRight aria-hidden="true" />

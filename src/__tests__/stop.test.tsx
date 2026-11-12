@@ -47,7 +47,7 @@ test('fair use walks four factors, then the assessment, then records a fair-use 
     expect(screen.getByText(f.text.free.chronicler)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /supports fair use/ }));
   }
-  expect(screen.getByText(content.fairUse.assessments.free.chronicler)).toBeInTheDocument();
+  expect(screen.getByText(content.fairUse.assessments.free.chronicler.text)).toBeInTheDocument();
   expect(screen.getByTestId('cart-slot-free')).toHaveAttribute('data-filled', 'false');
   await user.click(screen.getByRole('button', { name: /Add to cart on a fair use basis/ }));
   expect(screen.getByTestId('cart-slot-free')).toHaveAttribute('data-filled', 'true');

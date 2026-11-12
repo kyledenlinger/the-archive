@@ -21,7 +21,7 @@ test('the license picker can reveal what a license actually means', async () => 
   expect(screen.getByText(flip.licenses.cc0.summary)).toBeInTheDocument();
 });
 
-test('three responses lead to the Clerk asking for help, with no way back to the picker', async () => {
+test('three responses lead to Continue, with no way back to the picker', async () => {
   const user = await toFlip('artificer');
   await user.click(screen.getByRole('button', { name: /Start with your work/ }));
   await user.click(screen.getByRole('button', { name: `Choose ${flip.licenses['cc-by'].label}` }));
@@ -32,7 +32,7 @@ test('three responses lead to the Clerk asking for help, with no way back to the
     await user.click(screen.getByRole('button', { name: flip.responses.credit.label }));
     await user.click(screen.getByRole('button', { name: /^Next/ }));
   }
-  expect(screen.getByText(content.clerk.askForHelp)).toBeInTheDocument();
+  // revision-2: the Clerk's askForHelp line is gone (Task 11 removes the phase).
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
   const slot = screen.getByTestId('cart-slot-flip');
   expect(slot).toHaveAttribute('data-filled', 'true');

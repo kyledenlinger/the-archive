@@ -83,10 +83,10 @@ export function FairUseAnalysis({ stopId, persona, content, onDone, onBack }: Pr
       </div>
       <div className="bg-amber-900/10 border border-amber-900/30 p-6 sm:p-8 rounded-2xl space-y-3">
         <h3 className="text-amber-400 uppercase tracking-widest text-xs font-bold">The Clerk’s read</h3>
-        <p className="text-amber-50/90 font-serif italic leading-relaxed">{assessment}</p>
+        <p className="text-amber-50/90 font-serif italic leading-relaxed">{assessment.text}</p>
       </div>
       <div className="flex flex-col gap-4">
-        <ChoiceButton className="choice-btn bg-amber-900/20 border-amber-500/50 justify-center text-center" onSelect={() => onDone('Fair use basis. ' + assessment)}>
+        <ChoiceButton className="choice-btn bg-amber-900/20 border-amber-500/50 justify-center text-center" onSelect={() => onDone('Fair use basis. ' + assessment.text)}>
           Add to cart on a fair use basis
         </ChoiceButton>
         <ChoiceButton className="choice-btn justify-center text-center" onSelect={onBack}>

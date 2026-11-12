@@ -42,7 +42,6 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
       {sub.kind === 'intro' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
           <ClerkSpeech text={stop.clerkIntro} />
-          <p className="font-serif text-amber-50/85 italic text-lg leading-relaxed">{stop.clerkClue}</p>
           <div className="flex justify-end">
             <button type="button" className={btnLink} onClick={() => setSub({ kind: 'choices' })}>
               Look closer <ChevronRight aria-hidden="true" />

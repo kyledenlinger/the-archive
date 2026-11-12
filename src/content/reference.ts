@@ -55,10 +55,4 @@ export const reference: ReferenceEntry[] = [
     title: 'Asking Permission',
     body: 'If you can find the owner, you can ask. A good request says what you want to use, how you’ll use it, where it will appear, and for how long. Silence isn’t a yes. A no answers the permission question; it doesn’t settle whether fair use applies, though it’s worth taking seriously. Keep a record of what you asked and what you were told.',
   },
-  {
-    id: 'orphan-works',
-    title: 'Orphan Works',
-    unlockAfterReveal: true,
-    body: 'An orphan work is still under copyright, but its owner can’t be identified or found. Nobody can license it and nobody can release it: only the owner can, or time, when the term runs out. Some countries let you use orphan works after a documented diligent search. The U.S. has no general orphan-works law, so using one means relying on fair use or accepting some risk. Putting your name and a clear license on your own work is the simplest way to keep it from becoming one.',
-  },
 ];

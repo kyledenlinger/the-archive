@@ -7,7 +7,6 @@ import { ScreenProps } from './types';
 
 export function CartReview({ state, dispatch, content }: ScreenProps) {
   const persona = content.personas.find((p) => p.id === state.persona);
-  const guess = content.clerk.guessOptions.find((g) => g.id === state.guess);
   return (
     <div className="min-h-screen py-24 px-6 sm:px-8 max-w-5xl mx-auto space-y-14">
       <div className="text-center space-y-4">
@@ -17,7 +16,6 @@ export function CartReview({ state, dispatch, content }: ScreenProps) {
             {persona.name} · {persona.medium}
           </p>
         )}
-        {guess && <p className="font-serif italic text-amber-200 text-lg">{endUi.guessLine(guess.label)}</p>}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

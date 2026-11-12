@@ -71,7 +71,7 @@ export function AskRequest({ content, persona, seed, onDone, onBack }: Props) {
     );
   }
 
-  const answer = ask.responses[persona][response];
+  const answer = ask.responses.permission![persona][response]; // revision-2: Task 9/10 make this stop-aware
   if (fairUse) {
     return (
       <FairUseAnalysis

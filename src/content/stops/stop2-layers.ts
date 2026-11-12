@@ -5,8 +5,6 @@ export const stop2Layers: StandardStop = {
   title: 'The Public Domain Trap',
   clerkIntro:
     'This one’s tricky. The works at the heart of this wing are old, and they’re in the public domain by any measure: the copyright ran out long ago. That part is genuinely free. Anyone can use it, build on it, or remake it. But old things get handled. People restore them, record them, scan them, colorize them, adapt them, and put them on lunchboxes, and each of those can be a separate thing, legally speaking, with its own rights and its own clock. A century-old work can sit inside something made last Tuesday, and the new part is protected. I probably should have mentioned this earlier. Sorry.',
-  clerkClue:
-    'He runs a thumb along the curled edge of a faded print and says, mostly to himself, “I was developed once, you know. Long ago.” Then, quickly: “Never mind. Where were we?”',
   setup: {
     chronicler:
       'Your film needs a shot of the town before the flood, and on this shelf you find 1920s newsreel footage of Main Street, old enough to be in the public domain. The only copy here is a 2010 remastered release. It has been cleaned up and stabilized, and it’s set to a new orchestral score composed for that release.',

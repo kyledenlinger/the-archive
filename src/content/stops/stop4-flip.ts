@@ -15,8 +15,6 @@ export const stop4Flip: FlipStop = {
   title: 'The Flip',
   clerkIntro:
     'Last stop, and this one’s a little different. Turn around. That’s yours, on the shelf behind you. You made something, and it ended up in here too. Everything does, eventually. The only question is what it says on the label. Choose carefully. Or don’t, honestly; they’re all defensible. That’s not advice, obviously.',
-  clerkClue:
-    'As you reach for the license cards, he watches more closely than he has watched anything all day. When you glance over, he looks away, embarrassed.',
   setup: {
     chronicler: 'Your documentary premiered at the festival. People cried at the flood footage. It’s out in the world now.',
     herald: 'A graphic you made, a cartoon raccoon pulling an all-nighter, has gone semi-viral.',

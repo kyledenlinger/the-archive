@@ -5,14 +5,13 @@ import { ReferenceEntry, Resource } from '../content/types';
 interface Props {
   entries: ReferenceEntry[];
   resources: Resource[];
-  revealed: boolean;
   open: boolean;
   onOpen: () => void;
   onClose: () => void;
 }
 
 /** Slide-over reference desk. Its open state lives in App, so opening it never disturbs the screen beneath. */
-export function ReferencePanel({ entries, resources, revealed, open, onOpen, onClose }: Props) {
+export function ReferencePanel({ entries, resources, open, onOpen, onClose }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const wasOpen = useRef(false);
@@ -30,7 +29,6 @@ export function ReferencePanel({ entries, resources, revealed, open, onOpen, onC
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  const visible = entries.filter((e) => !e.unlockAfterReveal || revealed);
 
   return (
     <>
@@ -61,7 +59,7 @@ export function ReferencePanel({ entries, resources, revealed, open, onOpen, onC
               </button>
             </div>
             <div className="space-y-8 font-serif">
-              {visible.map((e) => (
+              {entries.map((e) => (
                 <section key={e.id} data-testid={`ref-${e.id}`}>
                   <h3 className="text-amber-400 font-bold uppercase tracking-widest text-sm mb-2">{e.title}</h3>
                   <p className="text-sm leading-relaxed whitespace-pre-line">{e.body}</p>

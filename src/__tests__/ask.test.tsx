@@ -29,14 +29,14 @@ test('a well-formed request shows the dealt response', async () => {
   const user = await toAsk();
   await fill(user, 3);
   const r = dealAskResponse(1, 'artificer', true);
-  expect(screen.getByText(content.ask.responses.artificer[r].text)).toBeInTheDocument();
+  expect(screen.getByText(content.ask.responses.permission!.artificer[r].text)).toBeInTheDocument();
   expect(screen.getByText(content.ask.afterPrompt)).toBeInTheDocument();
 });
 
 test('backing out and asking again gives the same answer (Review Focus 3)', async () => {
   const user = await toAsk();
   await fill(user, 3);
-  const first = content.ask.responses.artificer[dealAskResponse(1, 'artificer', true)].text;
+  const first = content.ask.responses.permission!.artificer[dealAskResponse(1, 'artificer', true)].text;
   expect(screen.getByText(first)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Back to the choices/ }));
   await user.click(screen.getByRole('button', { name: /Ask for permission/ }));
@@ -48,13 +48,13 @@ test('a one-field request still sends, using the poor weights', async () => {
   const user = await toAsk();
   await fill(user, 1);
   const r = dealAskResponse(1, 'artificer', false);
-  expect(screen.getByText(content.ask.responses.artificer[r].text)).toBeInTheDocument();
+  expect(screen.getByText(content.ask.responses.permission!.artificer[r].text)).toBeInTheDocument();
 });
 
 test('following up fills cart slot 3 with the response cart note', async () => {
   const user = await toAsk();
   await fill(user, 4);
-  const note = content.ask.responses.artificer[dealAskResponse(1, 'artificer', true)].cartNote;
+  const note = content.ask.responses.permission!.artificer[dealAskResponse(1, 'artificer', true)].cartNote;
   await user.click(screen.getByRole('button', { name: /^Don’t use it/ }));
   expect(screen.getByTestId('cart-slot-permission')).toHaveAttribute('data-filled', 'true');
   expect(screen.getByRole('heading', { level: 1, name: content.interstitial.waitTitle })).toBeInTheDocument();

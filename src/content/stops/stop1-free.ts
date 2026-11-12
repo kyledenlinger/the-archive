@@ -5,8 +5,6 @@ export const stop1Free: StandardStop = {
   title: 'The “Free” Thing That Isn’t',
   clerkIntro:
     'First stop. This section gets a lot of visitors. Everything on these shelves was posted and reposted so many times that nobody remembers where it started. People assume that if they can reach something, they can use it. It’s a very understandable assumption.',
-  clerkClue:
-    'He stops at a shelf and reads a small card out loud: “No license stated.” For a moment he doesn’t say anything. When he starts walking again, he’s humming a tune, and he frowns a little, as if he can’t remember where he heard it.',
   setup: {
     chronicler:
       'Your documentary is about a 1970s flood that reshaped your town, and you need footage from that week. On this shelf you find exactly that: a local TV news clip, with water in the streets and a reporter in a soaked raincoat. Its tag says it was uploaded to a video site by an account called vhs_rescues_77, which has nothing to do with the station. The station itself closed in 1994.',

@@ -57,7 +57,7 @@ export default function App({ seed, content = defaultContent }: { seed?: number;
         <main className="relative z-10" key={`${state.screen}-${state.stopIndex}`} inert={refOpen}>
           <CurrentScreen state={state} dispatch={dispatch} content={content} openReference={openRef} />
         </main>
-        <ReferencePanel entries={content.reference} resources={content.resources} revealed={state.revealed} open={refOpen} onOpen={openRef} onClose={closeRef} />
+        <ReferencePanel entries={content.reference} resources={content.resources} open={refOpen} onOpen={openRef} onClose={closeRef} />
         <div className="fixed inset-0 pointer-events-none opacity-20" aria-hidden="true">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#292524_0%,transparent_70%)]" />
         </div>

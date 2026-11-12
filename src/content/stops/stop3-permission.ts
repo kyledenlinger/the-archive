@@ -5,8 +5,6 @@ export const stop3Permission: StandardStop = {
   title: 'Permission Isn’t Only About Copyright',
   clerkIntro:
     'This wing is quieter. Everything in it came with paperwork: licenses, terms of service, the little boxes you ticked without reading. Copyright tells you what the law allows, and this paperwork tells you what you agreed to. The two don’t always line up. And sometimes, and I know this sounds radical, you can just ask.',
-  clerkClue:
-    'As you walk, he says something half to himself: “Keep this safe until I come back for it.” He glances at you. “Somebody wrote that to me, once.” A little farther on you pass a brass sign that reads TAKEDOWN REQUESTS, and he flinches.',
   setup: {
     chronicler:
       'The Clerk pulls the paperwork for a clip that’s already in your film: stock footage of floodwater rushing through a culvert, which you paid for. The license you clicked through says “editorial use only.” Your festival screening is presented by a sponsor, a regional bank, whose logo opens every program.',

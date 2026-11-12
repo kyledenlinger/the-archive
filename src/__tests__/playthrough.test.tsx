@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react';
-import { content } from '../content';
 import { Mode, PERSONA_IDS, PersonaId, STOP_ORDER } from '../content/types';
 import { GROUP_SIZE_RE } from '../lib/validateContent';
 import { guessAndReveal, passStopWithFirstChoice, startAs, throughFlip } from './helpers';
@@ -26,9 +25,7 @@ test.each(cases)('%s in %s mode plays start to finish', async (persona, mode) =>
   }
   await throughFlip(user, 'cc-by', 'credit');
   snap();
-  await guessAndReveal(user);
-  snap();
-  await user.click(screen.getByRole('button', { name: content.clerk.endings.search.label }));
+  await guessAndReveal(user); // revision-2: guess and reveal are stubs; the shelf replaces them in Task 12
   snap();
   await user.click(screen.getByRole('button', { name: /^Continue/ }));
   snap();

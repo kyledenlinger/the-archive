@@ -1,6 +1,16 @@
-import { FairUseContent } from './types';
+import { FairUseContent, Strength } from './types';
+
+// PLACEHOLDER until Task 8 gives each assessment the strength its text describes.
+const TBD_STRENGTH: Strength = 'moderate';
 
 export const fairUse: FairUseContent = {
+  // The Clerk's coaching, one per factor, stop 1 only. PLACEHOLDER until Task 9.
+  coaching: [
+    'PLACEHOLDER (Task 9): coaching for factor 1',
+    'PLACEHOLDER (Task 9): coaching for factor 2',
+    'PLACEHOLDER (Task 9): coaching for factor 3',
+    'PLACEHOLDER (Task 9): coaching for factor 4',
+  ],
   factors: [
     {
       title: 'Purpose and Character of the Use',
@@ -135,30 +145,30 @@ export const fairUse: FairUseContent = {
   assessments: {
     free: {
       chronicler:
-        'A reasonable argument, strongest if your film comments on the coverage and uses only what it needs. A later streaming deal would weaken it. Defensible, with honest uncertainty.',
-      herald: 'A weak-to-moderate argument. Memes can be transformative, but a promotional post using the whole photo for the same laugh is a hard case to make.',
-      naturalist: 'A weak argument. The photo would do the job it was made for, in full, on a channel that earns money. Not impossible, but thin.',
+        { text: 'A reasonable argument, strongest if your film comments on the coverage and uses only what it needs. A later streaming deal would weaken it. Defensible, with honest uncertainty.', strength: TBD_STRENGTH },
+      herald: { text: 'A weak-to-moderate argument. Memes can be transformative, but a promotional post using the whole photo for the same laugh is a hard case to make.', strength: TBD_STRENGTH },
+      naturalist: { text: 'A weak argument. The photo would do the job it was made for, in full, on a channel that earns money. Not impossible, but thin.', strength: TBD_STRENGTH },
       artificer:
-        'A moderate-to-strong argument, if the moth is genuinely transformed and you take only what you need. Prints that keep the original recognizable would weaken it.',
-      bard: 'A weak argument. A recognizable sample, used as a beat, on a commercial release, in a market where clearance exists, is about the hardest version of this question.',
+        { text: 'A moderate-to-strong argument, if the moth is genuinely transformed and you take only what you need. Prints that keep the original recognizable would weaken it.', strength: TBD_STRENGTH },
+      bard: { text: 'A weak argument. A recognizable sample, used as a beat, on a commercial release, in a market where clearance exists, is about the hardest version of this question.', strength: TBD_STRENGTH },
       conjurer:
-        'Fair use is thin here, but you may not need it. “Free to use” from the creator is a kind of permission, just a vague one. Getting it in writing is the stronger move.',
+        { text: 'Fair use is thin here, but you may not need it. “Free to use” from the creator is a kind of permission, just a vague one. Getting it in writing is the stronger move.', strength: TBD_STRENGTH },
     },
     layers: {
-      chronicler: "A moderate argument for the footage and a weak one for the score. The layers point to an easier path: keep the old, drop the new.",
-      herald: "Weak for the later Mickey, and fair use doesn’t resolve trademark at all. The 1928 version needs no fair use argument; it’s free. The exposure lives in the later design and in any hint of Disney’s involvement.",
-      naturalist: "A moderate argument, but you may not need one: the partner agency’s own terms may already allow your use with credit. Read them first.",
-      artificer: "A weak argument for the colorized version used as it is. The underlying public-domain illustration needs no argument at all.",
-      bard: "A weak argument for sampling the 2019 recording on a commercial release. The public-domain composition and the 1924 recording need none.",
-      conjurer: "A weak argument for the TV series’ designs. The original Holmes is free; the adaptation’s additions are where the exposure is.",
+      chronicler: { text: "A moderate argument for the footage and a weak one for the score. The layers point to an easier path: keep the old, drop the new.", strength: TBD_STRENGTH },
+      herald: { text: "Weak for the later Mickey, and fair use doesn’t resolve trademark at all. The 1928 version needs no fair use argument; it’s free. The exposure lives in the later design and in any hint of Disney’s involvement.", strength: TBD_STRENGTH },
+      naturalist: { text: "A moderate argument, but you may not need one: the partner agency’s own terms may already allow your use with credit. Read them first.", strength: TBD_STRENGTH },
+      artificer: { text: "A weak argument for the colorized version used as it is. The underlying public-domain illustration needs no argument at all.", strength: TBD_STRENGTH },
+      bard: { text: "A weak argument for sampling the 2019 recording on a commercial release. The public-domain composition and the 1924 recording need none.", strength: TBD_STRENGTH },
+      conjurer: { text: "A weak argument for the TV series’ designs. The original Holmes is free; the adaptation’s additions are where the exposure is.", strength: TBD_STRENGTH },
     },
     permission: {
-      chronicler: "Fair use isn’t the main question. You hold a license with limits; staying within it, or upgrading it, is the cleaner path.",
-      herald: "A weak argument. A hit song in a paid promotion is a classic licensing situation.",
-      naturalist: "Fair use doesn’t fit well here. The tool’s terms decide this, and they say non-commercial. Upgrade, ask, or replace.",
-      artificer: "A moderate argument if the collage genuinely transforms the photograph, weaker for prints that keep it recognizable. The artist is reachable, which makes asking easy.",
-      bard: "Fair use doesn’t fit well here. The generator’s terms decide this. Upgrade, ask, or replace.",
-      conjurer: "A weak argument. Redistributing the assets themselves is exactly what both licenses forbid.",
+      chronicler: { text: "Fair use isn’t the main question. You hold a license with limits; staying within it, or upgrading it, is the cleaner path.", strength: TBD_STRENGTH },
+      herald: { text: "A weak argument. A hit song in a paid promotion is a classic licensing situation.", strength: TBD_STRENGTH },
+      naturalist: { text: "Fair use doesn’t fit well here. The tool’s terms decide this, and they say non-commercial. Upgrade, ask, or replace.", strength: TBD_STRENGTH },
+      artificer: { text: "A moderate argument if the collage genuinely transforms the photograph, weaker for prints that keep it recognizable. The artist is reachable, which makes asking easy.", strength: TBD_STRENGTH },
+      bard: { text: "Fair use doesn’t fit well here. The generator’s terms decide this. Upgrade, ask, or replace.", strength: TBD_STRENGTH },
+      conjurer: { text: "A weak argument. Redistributing the assets themselves is exactly what both licenses forbid.", strength: TBD_STRENGTH },
     },
   },
 };
