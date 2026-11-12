@@ -152,6 +152,21 @@ export const stop1Free: StandardStop = {
     bard: 0.6, // a drum break off a real record can be identified
     conjurer: 0.3, // a forum account silent for four years
   },
+  // Shown above the Ask form after a search that finds the owner: who, and how. The reply itself comes later.
+  searchFound: {
+    chronicler:
+      'You trace the station’s tapes to a university library that took them in when the station closed. Its special collections desk handles requests to use them.',
+    herald:
+      'A reverse image search reaches past the reposts to a photographer’s portfolio from three years ago, with the original, uncropped raccoon and their name on it.',
+    naturalist:
+      'The blog’s contact form works, and its about page gives the photographer’s first name. You can write to them directly.',
+    artificer:
+      'A reverse image search of one cropped wing turns up the illustrator’s old portfolio site, with the moth on it and an email address at the bottom.',
+    bard:
+      'A crate-digging forum thread names the source: a 1984 funk single. The label that released it still exists, and it has a sample-clearance process.',
+    conjurer:
+      'The forum still lets you message the poster, who goes by pixelpotion. The account hasn’t posted in four years, but it’s there.',
+  },
   searchFail: {
     chronicler:
       'You trace the station’s tapes as far as a university library that took some of them in when it closed. The librarian is helpful, but nobody there can say who holds the rights now. The company that last owned the station was dissolved years ago, and no one answers for it.',

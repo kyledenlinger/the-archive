@@ -130,6 +130,7 @@ export function validateContent(c: GameContent): ValidationResult {
         if (typeof v !== 'number' || v < 0 || v > 1) errors.push(`${fp}: out of range 0–1`);
       });
       keys(stop.searchFail, `${p}.searchFail`, PERSONA_IDS);
+      keys(stop.searchFound, `${p}.searchFound`, PERSONA_IDS);
     }
     choices.forEach((ch, i) => {
       const cp = `${p}.choices[${i}]`;

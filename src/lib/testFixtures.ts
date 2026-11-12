@@ -48,6 +48,7 @@ function stdStop(id: StandardStopId): StandardStop {
     choices.push({ id: 'd', label: 'x', mechanic: 'search', effects: effects(), requires: ['time'] });
     stop.searchFindChance = rec(PERSONA_IDS, () => 0.5);
     stop.searchFail = persona();
+    stop.searchFound = persona();
   }
   if (id === 'permission') choices.push({ id: 'd', label: 'x', mechanic: 'ask', effects: effects(), requires: ['time'] });
   return stop;

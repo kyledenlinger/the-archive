@@ -70,15 +70,17 @@ export const stop2Layers: StandardStop = {
     {
       id: 'contact',
       label: 'Contact the rights holder.',
-      requires: ['time'],
-      // Writing and waiting costs Time. A paid license (chronicler, artificer, bard) costs Budget and keeps the
-      // version you wanted. A no or silence (herald, conjurer) still settles where the line is.
+      // Contacting can mean paying, so it needs Time and Budget.
+      requires: ['time', 'budget'],
+      // Writing and waiting costs Time. A paid license (chronicler, artificer) costs Budget and keeps the version
+      // you wanted. The bard only gets as far as a form, a fee schedule, and a review queue: time spent, nothing
+      // paid yet. A no or silence (herald, conjurer) still settles where the line is.
       effects: {
         chronicler: [{ meter: 'time', delta: -1 }, { meter: 'budget', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
         herald: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }],
         naturalist: [{ meter: 'time', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
         artificer: [{ meter: 'time', delta: -1 }, { meter: 'budget', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
-        bard: [{ meter: 'time', delta: -2 }, { meter: 'budget', delta: -1 }, { meter: 'exposure', delta: -1 }, { meter: 'vision', delta: 1 }],
+        bard: [{ meter: 'time', delta: -2 }, { meter: 'exposure', delta: -1 }],
         conjurer: [{ meter: 'time', delta: -2 }, { meter: 'exposure', delta: -1 }],
       },
       outcome: {

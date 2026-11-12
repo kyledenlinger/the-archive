@@ -139,23 +139,43 @@ test('a search that finds no one: the fail text, Time drops from Plenty to Tight
   expect(meters()).toHaveTextContent('Time: Tight');
 });
 
-test('a search that finds the owner opens the Ask form, and sending it doesn’t charge Time again', async () => {
+test('a search that finds the owner says who, opens the Ask form, and sending doesn’t charge Time again', async () => {
   const seed = seedWhereSearch('conjurer', true);
   const user = await startAs('conjurer', 'independent', content, seed);
   await toChoices(user);
   await user.click(screen.getByRole('button', { name: choice('search').label }));
-  expect(screen.getByRole('button', { name: /Send the request/ })).toBeInTheDocument();
-  expect(meters()).toHaveTextContent('Time: Tight');
-  const time = screen.getByTestId('meter-glyph-time').textContent;
+  // The found line sits above the form, in the narrator's voice (not a Clerk block).
+  const found = screen.getByText(stop.searchFound!.conjurer!);
+  expect(found.closest('figure')).toBeNull();
+  expect(found.compareDocumentPosition(screen.getByText(content.ask.intro)) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(meters()).toHaveTextContent('Time: Tight'); // 5 → 3 from the search
+  const announced = screen.getByTestId('meter-live').textContent;
   await user.click(screen.getByRole('button', { name: /Send the request/ }));
-  expect(screen.getByTestId('meter-glyph-time').textContent).toBe(time);
+  // The search already paid for the request: no new meter change.
+  expect(screen.getByTestId('meter-live').textContent).toBe(announced);
   expect(meters()).toHaveTextContent('Time: Tight');
   const response = dealAskResponse(seed, 'conjurer', 'free', isWellFormed({}), content.ask.odds?.free?.conjurer ?? DEFAULT_ODDS);
   const answer = content.ask.responses.free!.conjurer[response];
   expect(screen.getByText(answer.text)).toBeInTheDocument();
+  // Back to the form shows the found line again; forward again charges nothing either.
+  await user.click(screen.getByRole('button', { name: ui.header.back }));
+  expect(screen.getByText(stop.searchFound!.conjurer!)).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: content.interstitial.continueLabel }));
+  expect(screen.getByText(answer.text)).toBeInTheDocument();
+  expect(screen.getByTestId('meter-live').textContent).toBe(announced);
   await user.click(screen.getByRole('button', { name: /^Don’t use it$/ }));
   expect(screen.getByText(`${answer.cartNote} ${askFollowUps.dont}`)).toBeInTheDocument();
   expect(cartButton(1)).toBeInTheDocument();
+});
+
+test('after a search that found the owner, sending leaves Time where the search put it: from 4, still Tight', async () => {
+  const testContent = withStart('naturalist', { time: 4 });
+  const user = await startAs('naturalist', 'class', testContent, seedWhereSearch('naturalist', true, testContent));
+  await toChoices(user);
+  await user.click(screen.getByRole('button', { name: choice('search').label }));
+  expect(meters()).toHaveTextContent('Time: Tight'); // 4 → 2
+  await user.click(screen.getByRole('button', { name: /Send the request/ }));
+  expect(meters()).toHaveTextContent('Time: Tight'); // a send cost would make it 1, Out of time
 });
 
 test('Review Focus 2: out of time and broke, stop 1 still offers “use it” and “find a free alternative”', async () => {

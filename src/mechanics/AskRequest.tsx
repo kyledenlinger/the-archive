@@ -17,6 +17,8 @@ interface Props {
   dispatch: Dispatch<Action>;
   content: GameContent;
   stopId: StandardStopId;
+  /** After a search that found the owner: who you found, and how. Shown above the form. */
+  found?: string;
   /** What sending costs, paid once (`APPLY_EFFECTS` key 'send'). Empty after a search, which already paid. */
   sendCost?: Effects;
   /** In a coached stop the factors were already answered, so the follow-up analysis opens on its summary. */
@@ -32,7 +34,7 @@ const SEND_COST: Effects = [{ meter: 'time', delta: -1 }];
  * with Back, the form shows what was sent, and the reply shows the follow-up chosen with the others locked.
  * The follow-up fair use analysis is the stop's `fairUse` page with `via: 'ask'`.
  */
-export function AskRequest({ state, dispatch, content, stopId, sendCost = SEND_COST, coached = false, onRecord }: Props) {
+export function AskRequest({ state, dispatch, content, stopId, found, sendCost = SEND_COST, coached = false, onRecord }: Props) {
   const ask = content.ask;
   const persona = state.persona!;
   const sent = state.asks[stopId];
@@ -53,6 +55,7 @@ export function AskRequest({ state, dispatch, content, stopId, sendCost = SEND_C
         <ScreenHeading level={2} focusKey="ask-form" className={eyebrow}>
           Ask for permission
         </ScreenHeading>
+        {found && <p className="font-serif text-amber-50/90 text-lg leading-relaxed" data-testid="search-found">{found}</p>}
         <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{ask.intro}</p>
         {sent ? (
           <dl className="grid gap-6 sm:grid-cols-2" aria-label="The request you sent">

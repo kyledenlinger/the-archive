@@ -60,6 +60,7 @@ export interface StandardStop extends StopBase {
   coached?: boolean;                                        // true only for 'free'
   searchFindChance?: Partial<Record<PersonaId, number>>;    // 0..1, for 'search' choices
   searchFail?: Partial<Record<PersonaId, string>>;          // the not-found outcome text
+  searchFound?: Partial<Record<PersonaId, string>>;         // who you found, and how; shown above the Ask form
 }
 
 export interface FairUseFactor { title: string; description: string; text: Record<StandardStopId, Record<PersonaId, string>> }

@@ -193,7 +193,8 @@ export function Stop(props: ScreenProps) {
           dispatch={dispatch}
           content={content}
           stopId={stopId}
-          // After a search that found the owner, the search already paid for the request (revision spec §5.4).
+          // After a search that found the owner, say who, and the search already paid for the request (§5.4).
+          found={state.searches[stopId] === 'found' ? stop.searchFound?.[persona] : undefined}
           sendCost={state.searches[stopId] === 'found' ? [] : undefined}
           coached={stop.coached}
           onRecord={record}

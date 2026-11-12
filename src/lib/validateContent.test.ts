@@ -154,6 +154,14 @@ test('a search choice needs a find chance for every persona', () => {
   expect(validateContent(c).errors).toContain('stops.free.searchFindChance.bard: missing');
 });
 
+test('a search choice needs a found line for every persona', () => {
+  const c = makeValidContent();
+  delete c.stops.free.searchFound!.herald;
+  expect(validateContent(c).errors).toContain('stops.free.searchFound.herald: missing');
+  delete c.stops.free.searchFound;
+  expect(validateContent(c).errors).toContain('stops.free.searchFound: missing');
+});
+
 test('a stop with a search or ask choice needs its ask responses', () => {
   const c = makeValidContent();
   delete c.ask.responses.free;

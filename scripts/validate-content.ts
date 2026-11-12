@@ -11,7 +11,7 @@ const PLACEHOLDER_PATTERNS: RegExp[] = [
   /: placeholder text$/,
   /: effects need at least one gain and one cost$/,
   /^personas\[\d+\]\.(brief|startMeters)\b/,
-  /^stops\.\w+\.(searchFindChance|searchFail)\b/,
+  /^stops\.\w+\.(searchFindChance|searchFail|searchFound)\b/,
   /^stops\.\w+: needs at least one choice with no requires$/,
   /^fairUse\.coaching\b/,
   /^fairUse\.assessments\..*: invalid strength$/,
