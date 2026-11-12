@@ -103,7 +103,7 @@ export const endUi = {
   guessLine: (guess: string) => `Your guess: ${guess}. The Clerk was a scrapbook.`,
   facilitatorLine: 'Facilitator: use these cart notes as case documents for the full-room debrief.',
   independentSummary:
-    'You filled your cart with four decisions, each with a reason behind it. None of them is the answer; each is a position you could explain and defend, which is most of what working with copyright comes down to.',
+    'You filled your cart with three things and chose how to share your own work, each with a reason behind it. None of them is the answer; each is a position you could explain and defend, which is most of what working with copyright comes down to.',
   resourcesHeading: 'Where to find work you can use',
 };
 
