@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { content } from '../content';
 import { ui } from '../content/ui';
-import { rollSearch } from '../lib/ask';
-import { GameContent, LicenseId, Mode, PersonaId, ReuseResponse, StopId } from '../content/types';
+import { DEFAULT_ODDS, dealAskResponse, rollSearch, rollTerms } from '../lib/ask';
+import { AskResponse, GameContent, LicenseId, Mode, PersonaId, ReuseResponse, StandardStopId, StopId, Term } from '../content/types';
 
 export async function startAs(persona: PersonaId, mode: Mode = 'class', testContent: GameContent = content, seed = 1) {
   const user = userEvent.setup();
@@ -24,6 +24,26 @@ export function seedWhereSearch(persona: PersonaId, found: boolean, testContent:
   const chance = testContent.stops.free.searchFindChance![persona]!;
   for (let seed = 1; seed < 10000; seed++) if (rollSearch(seed, persona, 'free', chance) === found) return seed;
   throw new Error(`no seed where the search ${found ? 'finds' : 'misses'}`);
+}
+
+/**
+ * The first session seed where an Ask at `stopId` (well formed or not) gets a response, and for a conditional
+ * yes the drawn terms, that `want` accepts. At stop 1 the search must also find the owner first.
+ */
+export function seedWhereAsk(
+  persona: PersonaId,
+  stopId: StandardStopId,
+  want: (response: AskResponse, term?: Term) => boolean,
+  { wellFormed = false, testContent = content }: { wellFormed?: boolean; testContent?: GameContent } = {},
+): number {
+  const odds = testContent.ask.odds?.[stopId]?.[persona] ?? DEFAULT_ODDS;
+  const terms = testContent.ask.terms[stopId]?.[persona] ?? [];
+  for (let seed = 1; seed < 10000; seed++) {
+    if (stopId === 'free' && !rollSearch(seed, persona, 'free', testContent.stops.free.searchFindChance![persona]!)) continue;
+    const r = dealAskResponse(seed, persona, stopId, wellFormed, odds);
+    if (want(r, r === 'conditional' ? rollTerms(seed, persona, stopId, terms) : undefined)) return seed;
+  }
+  throw new Error('no seed with that response');
 }
 
 /** The header's Cart button, by its count (“2 of 3 found”). */

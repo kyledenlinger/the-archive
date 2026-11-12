@@ -7,7 +7,7 @@ import { describeChanges } from '../components/MeterDisplay';
 import { fairUseEffects, previewChanges } from '../lib/meters';
 import { dealAskResponse, DEFAULT_ODDS, isWellFormed } from '../lib/ask';
 import { outcomeFor } from '../screens/Stop';
-import { cartButton, enterStop, seedWhereSearch, startAs, throughCoaching, toChoices } from './helpers';
+import { cartButton, enterStop, seedWhereAsk, seedWhereSearch, startAs, throughCoaching, toChoices } from './helpers';
 
 const stop = content.stops.free;
 const choice = (id: string) => stop.choices.find((c) => c.id === id)!;
@@ -140,7 +140,8 @@ test('a search that finds no one: the fail text, Time drops from Plenty to Tight
 });
 
 test('a search that finds the owner says who, opens the Ask form, and sending doesn’t charge Time again', async () => {
-  const seed = seedWhereSearch('conjurer', true);
+  // A reply other than a conditional yes, so the follow-ups show straight away.
+  const seed = seedWhereAsk('conjurer', 'free', (r) => r !== 'conditional');
   const user = await startAs('conjurer', 'independent', content, seed);
   await toChoices(user);
   await user.click(screen.getByRole('button', { name: choice('search').label }));
@@ -164,7 +165,7 @@ test('a search that finds the owner says who, opens the Ask form, and sending do
   expect(screen.getByText(answer.text)).toBeInTheDocument();
   expect(screen.getByTestId('meter-live').textContent).toBe(announced);
   await user.click(screen.getByRole('button', { name: /^Don’t use it$/ }));
-  expect(screen.getByText(`${answer.cartNote} ${askFollowUps.dont}`)).toBeInTheDocument();
+  expect(screen.getByText(`${answer.cartNote} ${askFollowUps.dont.note}`)).toBeInTheDocument();
   expect(cartButton(1)).toBeInTheDocument();
 });
 

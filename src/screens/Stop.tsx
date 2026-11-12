@@ -7,12 +7,11 @@ import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
 import { ContinueBar } from '../components/ContinueBar';
 import { ChangeLines } from '../components/MeterDisplay';
 import { ui } from '../content/ui';
-import { askFollowUps } from '../content/ask';
 import { FAIR_USE_TIME_COST, effectsFor, fairUseEffects, lockReason, previewChanges } from '../lib/meters';
 import { rollSearch } from '../lib/ask';
 import { btnPause, btnPrimary, caseNote, eyebrow, narrativePage, page as pageClass } from '../components/styles';
 import { FairUseAnalysis } from '../mechanics/FairUseAnalysis';
-import { AskRequest } from '../mechanics/AskRequest';
+import { AskRequest, askBasis } from '../mechanics/AskRequest';
 import { Lean, Page, decisionKey, isReviewing, onward } from '../state';
 import { ScreenProps } from './types';
 
@@ -179,15 +178,18 @@ export function Stop(props: ScreenProps) {
           onDone={(note, effects) => {
             const ask = state.asks[stopId];
             if (page.via === 'ask' && ask) {
-              // revision-2: Task 10 adds the follow-up's own effects here.
-              const answer = content.ask.responses[stopId]![persona][ask.response];
-              record(`${answer.cartNote} ${askFollowUps.fairUse} ${note}`, answer.effects ?? []);
+              // The reply's note and effects, then the follow-up's, then relying on the analysis. After a yes you
+              // already have permission in writing, so the analysis adds no exposure of its own.
+              const basis = askBasis(state, content, stopId);
+              const fu = content.ask.followUps.fairUse;
+              const relied = ask.response === 'yes' ? [] : effects;
+              record(`${basis.note} ${fu.note} ${note}`, [...basis.effects, ...fu.effects, ...relied]);
             } else record(note, effects);
           }}
         />
       )}
 
-      {(page.kind === 'askForm' || page.kind === 'askReply') && (
+      {(page.kind === 'askForm' || page.kind === 'askReply' || page.kind === 'askDeclined') && (
         <AskRequest
           state={state}
           dispatch={dispatch}

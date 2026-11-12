@@ -1,16 +1,17 @@
 import { Dispatch } from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight, Pause } from 'lucide-react';
-import { AskField, Effects, GameContent, StandardStopId } from '../content/types';
-import { askFollowUps } from '../content/ask';
-import { DEFAULT_ODDS, dealAskResponse, isWellFormed } from '../lib/ask';
+import { AskField, AskFollowUpId, Effects, GameContent, StandardStopId } from '../content/types';
+import { ui } from '../content/ui';
+import { DEFAULT_ODDS, dealAskResponse, isWellFormed, rollTerms } from '../lib/ask';
+import { band } from '../lib/meters';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
 import { btnPrimary, choicePause, eyebrow } from '../components/styles';
 import { Action, GameState, decisionKey, isReviewing, onward } from '../state';
 
 const FIELDS: AskField[] = ['what', 'how', 'where', 'howLong'];
-type FollowUp = 'use' | 'dont' | 'fairUse';
+type FollowUp = AskFollowUpId;
 
 interface Props {
   state: GameState;
@@ -23,7 +24,7 @@ interface Props {
   sendCost?: Effects;
   /** In a coached stop the factors were already answered, so the follow-up analysis opens on its summary. */
   coached?: boolean;
-  /** Records the stop with a cart note and the effects of the reply (and, from Task 10, of the follow-up). */
+  /** Records the stop with a cart note and the effects of the reply plus the accepted terms or the follow-up. */
   onRecord: (cartNote: string, effects: Effects) => void;
 }
 
@@ -32,7 +33,9 @@ const SEND_COST: Effects = [{ meter: 'time', delta: -1 }];
 /**
  * The Ask form (`askForm` page) and the reply (`askReply` page). Once sent, the request is final: revisited
  * with Back, the form shows what was sent, and the reply shows the follow-up chosen with the others locked.
- * The follow-up fair use analysis is the stop's `fairUse` page with `via: 'ask'`.
+ * A conditional yes shows its drawn terms on the reply, to accept (recording the stop) or turn down, which
+ * leads to the follow-ups on the `askDeclined` page. The follow-up fair use analysis is the stop's `fairUse`
+ * page with `via: 'ask'`.
  */
 export function AskRequest({ state, dispatch, content, stopId, found, sendCost = SEND_COST, coached = false, onRecord }: Props) {
   const ask = content.ask;
@@ -106,12 +109,63 @@ export function AskRequest({ state, dispatch, content, stopId, found, sendCost =
   }
 
   if (!sent) return null;
-  // revision-2: Task 10 adds a conditional yes's terms (accept / turn down) before these follow-ups.
-  const answer = ask.responses[stopId]![persona][sent.response];
-  const answerEffects = answer.effects ?? [];
-  const made = state.decisions[decisionKey.askFollowUp(stopId)];
+  const { answer, term, declined, note, effects } = askBasis(state, content, stopId);
   const pause = state.mode === 'class';
   const pl = content.interstitial.pauseLabels;
+  const fu = ask.followUps;
+
+  const reply = (
+    <>
+      <ScreenHeading level={2} focusKey={state.page.kind === 'askDeclined' ? 'ask-declined' : 'ask-response'} className={eyebrow}>
+        The reply
+      </ScreenHeading>
+      <div className="font-serif text-amber-50/90 text-lg leading-relaxed bg-stone-900/50 border border-amber-900/20 p-6 rounded-2xl space-y-4">
+        <p>{answer.text}</p>
+        {term && <p data-testid="ask-terms">{term.text}</p>}
+      </div>
+    </>
+  );
+
+  // A conditional yes: accept the drawn terms (which records the stop) or turn them down (on to the follow-ups).
+  if (term && state.page.kind === 'askReply') {
+    const made = state.decisions[decisionKey.askTerms(stopId)];
+    const fee = term.effects.some((e) => e.meter === 'budget' && e.delta < 0);
+    const broke = fee && band('budget', state.meters.budget) === 'worst' ? ui.lockReasons.budget : undefined;
+    const accept = () => {
+      if (isReviewing(state)) return dispatch({ type: 'FORWARD' });
+      dispatch({ type: 'DECIDE', key: decisionKey.askTerms(stopId), value: 'accept' });
+      onRecord(`${answer.cartNote} ${term.cartNote}`, [...(answer.effects ?? []), ...term.effects, { meter: 'exposure', delta: -1 }]);
+    };
+    const decline = () =>
+      dispatch(onward(state, { type: 'DECIDE', key: decisionKey.askTerms(stopId), value: 'decline', page: { kind: 'askDeclined' } }));
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+        {reply}
+        <div role="group" aria-labelledby="ask-terms-label" className="flex flex-col gap-4">
+          <h3 id="ask-terms-label" className="text-amber-200 text-sm uppercase tracking-widest font-bold">
+            {ask.afterPrompt}
+          </h3>
+          {/* Class mode: accepting records the stop and goes straight to the pause card, so it looks and reads as a pause. */}
+          {pause ? (
+            <ChoiceButton className={choicePause} {...decidedProps(made, 'accept', broke)} onSelect={accept}>
+              <Pause size={20} aria-hidden="true" /> {pl.askAccept}
+            </ChoiceButton>
+          ) : (
+            <ChoiceButton {...decidedProps(made, 'accept', broke)} onSelect={accept}>
+              {ask.acceptLabel}
+            </ChoiceButton>
+          )}
+          <ChoiceButton {...decidedProps(made, 'decline')} onSelect={decline}>
+            {ask.declineLabel}
+          </ChoiceButton>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // The follow-ups: after a yes, “Use it”; after a no, silence, or terms turned down, “Use it anyway”.
+  const useId: FollowUp = sent.response === 'yes' ? 'use' : 'useAnyway';
+  const made = state.decisions[decisionKey.askFollowUp(stopId)];
   const follow = (f: FollowUp) => {
     if (isReviewing(state)) return dispatch({ type: 'FORWARD' });
     if (f === 'fairUse') {
@@ -120,16 +174,13 @@ export function AskRequest({ state, dispatch, content, stopId, found, sendCost =
     }
     // The follow-up is kept so the reply can show it if revisited; recording moves on to the pause or debrief.
     dispatch({ type: 'DECIDE', key: decisionKey.askFollowUp(stopId), value: f });
-    // revision-2: Task 10 adds each follow-up's own effects.
-    onRecord(`${answer.cartNote} ${askFollowUps[f]}`, answerEffects);
+    onRecord(`${note} ${fu[f].note}`, [...effects, ...fu[f].effects]);
   };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-      <ScreenHeading level={2} focusKey="ask-response" className={eyebrow}>
-        The reply
-      </ScreenHeading>
-      <p className="font-serif text-amber-50/90 text-lg leading-relaxed bg-stone-900/50 border border-amber-900/20 p-6 rounded-2xl">{answer.text}</p>
+      {reply}
+      {declined && <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{ask.declineNote}</p>}
       <div role="group" aria-labelledby="after-ask" className="flex flex-col gap-4">
         <h3 id="after-ask" className="text-amber-200 text-sm uppercase tracking-widest font-bold">
           {ask.afterPrompt}
@@ -137,8 +188,8 @@ export function AskRequest({ state, dispatch, content, stopId, found, sendCost =
         {/* Class mode: these two record the stop and go straight to the pause card, so they look and read as pauses. */}
         {pause ? (
           <>
-            <ChoiceButton className={choicePause} {...decidedProps(made, 'use')} onSelect={() => follow('use')}>
-              <Pause size={20} aria-hidden="true" /> {pl.askUse}
+            <ChoiceButton className={choicePause} {...decidedProps(made, useId)} onSelect={() => follow(useId)}>
+              <Pause size={20} aria-hidden="true" /> {useId === 'use' ? pl.askUse : pl.askUseAnyway}
             </ChoiceButton>
             <ChoiceButton className={choicePause} {...decidedProps(made, 'dont')} onSelect={() => follow('dont')}>
               <Pause size={20} aria-hidden="true" /> {pl.askDont}
@@ -146,12 +197,33 @@ export function AskRequest({ state, dispatch, content, stopId, found, sendCost =
           </>
         ) : (
           <>
-            <ChoiceButton {...decidedProps(made, 'use')} onSelect={() => follow('use')}>Use it</ChoiceButton>
-            <ChoiceButton {...decidedProps(made, 'dont')} onSelect={() => follow('dont')}>Don’t use it</ChoiceButton>
+            <ChoiceButton {...decidedProps(made, useId)} onSelect={() => follow(useId)}>
+              {fu[useId].label}
+            </ChoiceButton>
+            <ChoiceButton {...decidedProps(made, 'dont')} onSelect={() => follow('dont')}>
+              {fu.dont.label}
+            </ChoiceButton>
           </>
         )}
-        <ChoiceButton {...decidedProps(made, 'fairUse')} onSelect={() => follow('fairUse')}>Run a fair use analysis</ChoiceButton>
+        <ChoiceButton {...decidedProps(made, 'fairUse')} onSelect={() => follow('fairUse')}>
+          {fu.fairUse.label}
+        </ChoiceButton>
       </div>
     </motion.div>
   );
+}
+
+/**
+ * What a sent request comes to before any follow-up: the response, its drawn terms (a conditional yes only;
+ * seeded, so the same every time), whether they were turned down, and the cart note and effects so far.
+ */
+export function askBasis(state: GameState, content: GameContent, stopId: StandardStopId) {
+  const sent = state.asks[stopId]!;
+  const persona = state.persona!;
+  const answer = content.ask.responses[stopId]![persona][sent.response];
+  const terms = content.ask.terms[stopId]?.[persona];
+  const term = sent.response === 'conditional' && terms?.length ? rollTerms(state.seed, persona, stopId, terms) : undefined;
+  const declined = Boolean(term) && state.decisions[decisionKey.askTerms(stopId)] === 'decline';
+  const note = declined ? `${answer.cartNote} ${content.ask.declineNote}` : answer.cartNote;
+  return { answer, term, declined, note, effects: answer.effects ?? [] };
 }

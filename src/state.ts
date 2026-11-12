@@ -42,7 +42,8 @@ export type Page =
   | { kind: 'outcome'; choiceId: string }                    // a plain choice's outcome, before Add to cart
   | { kind: 'fairUse'; factor: number; via?: 'ask' }        // factor 0–3, or 4 for the summary; coached in a coached stop
   | { kind: 'askForm'; draft: AskDraft }                     // the draft changes without adding history
-  | { kind: 'askReply' }
+  | { kind: 'askReply' }                                     // the reply; a conditional yes shows its terms here
+  | { kind: 'askDeclined' }                                  // a conditional yes's terms turned down: the follow-ups
   | { kind: 'license' }                                      // the flip's license picker
   | { kind: 'reuse'; index: number }                         // the flip's reuse events, 0–2
   | { kind: 'flipEnd' };                                     // revision-2: Task 11 removes this page
@@ -55,6 +56,7 @@ export const decisionKey = {
   choice: (stop: StandardStopId) => `${stop}:choice`,
   factor: (stop: StandardStopId, i: number) => `${stop}:factor:${i}`,
   askFollowUp: (stop: StandardStopId) => `${stop}:askFollowUp`,
+  askTerms: (stop: StandardStopId) => `${stop}:askTerms`,   // 'accept' | 'decline'
 };
 
 export interface GameState {

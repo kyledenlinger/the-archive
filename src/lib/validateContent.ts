@@ -9,6 +9,7 @@ export const FATE_IDS = ['pulled', 'asPlanned', 'underCloud', 'late', 'smaller',
 export const VISION_BANDS = ['intact', 'compromised', 'lost'] as const;
 export const STRENGTHS = ['strong', 'moderate', 'weak'] as const;
 export const TERM_KINDS = ['smallFee', 'largeFee', 'restriction', 'credit'] as const;
+export const ASK_FOLLOW_UPS = ['use', 'useAnyway', 'dont', 'fairUse'] as const;
 export const LOCK_METERS = ['time', 'budget'] as const;
 export const EXPOSURE_TAGS = ['legal', 'reputational'] as const;
 export const ONBOARDING_KINDS = ['narration', 'clerk'] as const;
@@ -190,7 +191,7 @@ export function validateContent(c: GameContent): ValidationResult {
   });
 
   const ask = (isObj(c.ask) ? c.ask : {}) as unknown as Obj;
-  keys(ask, 'ask', ['acceptLabel', 'declineLabel']);
+  keys(ask, 'ask', ['acceptLabel', 'declineLabel', 'declineNote']);
   keys(ask.fieldOptions, 'ask.fieldOptions', ASK_FIELDS);
   const ar = isObj(ask.responses) ? ask.responses : (errors.push('ask.responses: missing'), {});
   // A stop needs responses when any of its choices asks (directly, or after a search).
@@ -222,19 +223,30 @@ export function validateContent(c: GameContent): ValidationResult {
       }
     }
   }
-  const terms = keys(ask.terms, 'ask.terms', PERSONA_IDS);
-  each(terms, 'ask.terms', PERSONA_IDS, (v, p) => {
-    if (!Array.isArray(v) || v.length === 0) {
-      errors.push(`${p}: needs at least one term`);
-      return;
+  // Terms, like responses, are per stop: needed wherever a stop asks, and checked wherever given.
+  const at = isObj(ask.terms) ? ask.terms : (errors.push('ask.terms: missing'), {});
+  for (const id of STANDARD_STOP_IDS) {
+    const p = `ask.terms.${id}`;
+    if (at[id] === undefined) {
+      if (askStops.includes(id)) errors.push(`${p}: missing`);
+      continue;
     }
-    (v as Obj[]).forEach((t, i) => {
-      const tp = `${p}[${i}]`;
-      keys(t, tp, ['text', 'cartNote', 'effects']);
-      if (!(TERM_KINDS as readonly unknown[]).includes(t.kind)) errors.push(`${tp}.kind: invalid kind`);
-      if (typeof t.weight !== 'number' || t.weight <= 0) errors.push(`${tp}.weight: must be positive`);
+    const terms = keys(at[id], p, PERSONA_IDS);
+    each(terms, p, PERSONA_IDS, (v, pp) => {
+      if (!Array.isArray(v) || v.length === 0) {
+        errors.push(`${pp}: needs at least one term`);
+        return;
+      }
+      (v as Obj[]).forEach((t, i) => {
+        const tp = `${pp}[${i}]`;
+        keys(t, tp, ['text', 'cartNote', 'effects']);
+        if (!(TERM_KINDS as readonly unknown[]).includes(t.kind)) errors.push(`${tp}.kind: invalid kind`);
+        if (typeof t.weight !== 'number' || t.weight <= 0) errors.push(`${tp}.weight: must be positive`);
+      });
     });
-  });
+  }
+  const fus = keys(ask.followUps, 'ask.followUps', ASK_FOLLOW_UPS);
+  each(fus, 'ask.followUps', ASK_FOLLOW_UPS, (v, p) => keys(v, p, ['label', 'note', 'effects']));
 
   const clerk = keys(c.clerk, 'clerk', ['briefIntro', 'coachInvite', 'shelf']);
   if (isObj(clerk.shelf)) {

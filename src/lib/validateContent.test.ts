@@ -168,10 +168,18 @@ test('a stop with a search or ask choice needs its ask responses', () => {
   expect(validateContent(c).errors).toContain('ask.responses.free: missing');
 });
 
-test('every persona needs at least one term', () => {
+test('every persona needs at least one term at each stop that asks', () => {
   const c = makeValidContent();
-  c.ask.terms.herald = [];
-  expect(validateContent(c).errors).toContain('ask.terms.herald: needs at least one term');
+  c.ask.terms.permission!.herald = [];
+  expect(validateContent(c).errors).toContain('ask.terms.permission.herald: needs at least one term');
+  delete c.ask.terms.free;
+  expect(validateContent(c).errors).toContain('ask.terms.free: missing');
+});
+
+test('every Ask follow-up needs a label, a note, and effects', () => {
+  const c = makeValidContent();
+  delete (c.ask.followUps.useAnyway as { effects?: unknown }).effects;
+  expect(validateContent(c).errors).toContain('ask.followUps.useAnyway.effects: missing');
 });
 
 test('the alternate-future frame must contain {license}', () => {

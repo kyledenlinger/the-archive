@@ -73,15 +73,25 @@ export interface FairUseContent {
 
 export interface AskOdds { wellFormed: Record<AskResponse, number>; poor: Record<AskResponse, number> }
 export interface Term { kind: TermKind; text: string; cartNote: string; effects: Effects; weight: number }
+export type AskFollowUpId = 'use' | 'useAnyway' | 'dont' | 'fairUse';
+/** What you do with the answer. `use` follows a yes; `useAnyway` follows a no, silence, or terms turned down. */
+export interface AskFollowUp { label: string; note: string; effects: Effects }
 export interface AskContent {
   intro: string;
   fieldOptions: Record<AskField, { label: string; options: string[] }>;
   afterPrompt: string;   // “What do you do with this answer?”
   responses: Partial<Record<StandardStopId, Record<PersonaId, Record<AskResponse, Outcome>>>>;
   odds?: Partial<Record<StandardStopId, Partial<Record<PersonaId, AskOdds>>>>;
-  terms: Record<PersonaId, Term[]>;                            // drawn on a 'conditional' response
+  /**
+   * Drawn on a 'conditional' response, per stop and persona: the counterpart differs by stop (stop 1's owner,
+   * found by a search, and stop 3's rights holder), so the terms they'd set do too.
+   */
+  terms: Partial<Record<StandardStopId, Record<PersonaId, Term[]>>>;
   acceptLabel: string;
   declineLabel: string;
+  /** Added to the cart note when a conditional yes's terms are turned down, before the follow-up's note. */
+  declineNote: string;
+  followUps: Record<AskFollowUpId, AskFollowUp>;
 }
 
 export interface FlipStop extends StopBase {
@@ -119,7 +129,7 @@ export interface InterstitialCopy {
   /** Class mode: the outcome button that records the stop and goes to the pause card. */
   pauseLabel: string;
   /** Class mode: the other buttons that record a stop and go straight to the pause card. */
-  pauseLabels: { fairUse: string; askUse: string; askDont: string };
+  pauseLabels: { fairUse: string; askUse: string; askUseAnyway: string; askDont: string; askAccept: string };
   /** Class mode: asked before leaving the pause card. */
   confirmMoveOn: { question: string; confirm: string; cancel: string };
 }

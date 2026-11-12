@@ -1,10 +1,12 @@
-import { screen, within } from '@testing-library/react';
+import { cleanup, screen, within } from '@testing-library/react';
+import { AskResponse } from '../content/types';
 import { content } from '../content';
 import { btnPrimary } from '../components/styles';
-import { cartButton, enterStop, passStopWithFirstChoice, seedWhereSearch, startAs, toChoices } from './helpers';
+import { cartButton, enterStop, passStopWithFirstChoice, seedWhereAsk, startAs, toChoices } from './helpers';
 
 const copy = content.interstitial;
 const plain = content.stops.free.choices.find((c) => !c.mechanic)!.label;
+const notConditional = (r: AskResponse) => r !== 'conditional';
 const searchLabel = content.stops.free.choices.find((c) => c.mechanic === 'search')!.label;
 
 test('class mode: the outcome button reads “Add to cart and pause”, with a pause icon and its own style', async () => {
@@ -75,9 +77,9 @@ describe('every route into the class pause uses the pause button', () => {
     expect(button.querySelector('svg.lucide-pause')).not.toBeNull();
     expect(button).toHaveClass('border-dashed');
   };
-  /** From the start, to stop 3's Ask reply (passing stops 1 and 2 with their first plain choice). */
-  async function toAskReply(mode: 'class' | 'independent') {
-    const user = await startAs('artificer', mode);
+  /** From the start, to stop 3's Ask reply (passing stops 1 and 2 with their first plain choice), sent blank. */
+  async function toAskReply(mode: 'class' | 'independent', want: (r: AskResponse) => boolean = notConditional) {
+    const user = await startAs('artificer', mode, content, seedWhereAsk('artificer', 'permission', want));
     await passStopWithFirstChoice(user);
     await passStopWithFirstChoice(user);
     await enterStop(user);
@@ -123,21 +125,26 @@ describe('every route into the class pause uses the pause button', () => {
     expectPause();
   });
 
-  /** Stop 1's search, with a seed that finds the owner, to the Ask reply. */
-  async function toStop1AskReply(mode: 'class' | 'independent') {
-    const user = await startAs('naturalist', mode, content, seedWhereSearch('naturalist', true));
+  /** Stop 1's search, with a seed that finds the owner and gets a reply `want` accepts, to the Ask reply. */
+  async function toStop1AskReply(mode: 'class' | 'independent', want: (r: AskResponse) => boolean = notConditional) {
+    const user = await startAs('naturalist', mode, content, seedWhereAsk('naturalist', 'free', want));
     await toChoices(user);
     await user.click(screen.getByRole('button', { name: searchLabel }));
     await user.click(screen.getByRole('button', { name: /Send the request/ }));
     return user;
   }
 
-  test.each([
-    ['use it', copy.pauseLabels.askUse],
-    ['don’t use it', copy.pauseLabels.askDont],
-  ])('stop 1’s search, then the Ask follow-up “%s”', async (_, name) => {
-    const user = await toStop1AskReply('class');
-    expect(screen.queryByRole('button', { name: /^Use it$/ })).not.toBeInTheDocument();
+  // After a yes, “Use it”; after a no or silence, “Use it anyway”. Either way, “Don’t use it”.
+  const followUps: [string, (r: AskResponse) => boolean, string][] = [
+    ['use it (after a yes)', (r) => r === 'yes', copy.pauseLabels.askUse],
+    ['use it anyway (after a no)', (r) => r === 'no', copy.pauseLabels.askUseAnyway],
+    ['use it anyway (after silence)', (r) => r === 'silence', copy.pauseLabels.askUseAnyway],
+    ['don’t use it', notConditional, copy.pauseLabels.askDont],
+  ];
+
+  test.each(followUps)('stop 1’s search, then the Ask follow-up “%s”', async (_, want, name) => {
+    const user = await toStop1AskReply('class', want);
+    expect(screen.queryByRole('button', { name: /^Use it( anyway)?$/ })).not.toBeInTheDocument();
     const button = screen.getByRole('button', { name });
     pauseStyled(button);
     expect(screen.getByRole('button', { name: /Run a fair use analysis/ }).querySelector('svg.lucide-pause')).toBeNull();
@@ -155,16 +162,37 @@ describe('every route into the class pause uses the pause button', () => {
     expectPause();
   });
 
-  test.each([
-    ['use it', copy.pauseLabels.askUse],
-    ['don’t use it', copy.pauseLabels.askDont],
-  ])('the Ask follow-up “%s”', async (_, name) => {
-    const user = await toAskReply('class');
-    expect(screen.queryByRole('button', { name: /^Use it$/ })).not.toBeInTheDocument();
+  test.each(followUps)('the Ask follow-up “%s”', async (_, want, name) => {
+    const user = await toAskReply('class', want);
+    expect(screen.queryByRole('button', { name: /^Use it( anyway)?$/ })).not.toBeInTheDocument();
     const button = screen.getByRole('button', { name });
     pauseStyled(button);
     // Running a fair use analysis doesn't pause yet, so it keeps its plain look.
     expect(screen.getByRole('button', { name: /Run a fair use analysis/ }).querySelector('svg.lucide-pause')).toBeNull();
+    await user.click(button);
+    expectPause();
+  });
+
+  test.each([
+    ['stop 1', toStop1AskReply],
+    ['stop 3', toAskReply],
+  ])('%s: accepting a conditional yes’s terms', async (_, to) => {
+    const user = await to('class', (r) => r === 'conditional');
+    expect(screen.queryByRole('button', { name: new RegExp(`^${content.ask.acceptLabel}$`) })).not.toBeInTheDocument();
+    const button = screen.getByRole('button', { name: copy.pauseLabels.askAccept });
+    pauseStyled(button);
+    // Turning them down leads to the follow-ups, not the pause, so it keeps its plain look.
+    expect(screen.getByRole('button', { name: content.ask.declineLabel }).querySelector('svg.lucide-pause')).toBeNull();
+    await user.click(button);
+    expectPause();
+  });
+
+  test('stop 3: turning the terms down, then “use it anyway”', async () => {
+    const user = await toAskReply('class', (r) => r === 'conditional');
+    await user.click(screen.getByRole('button', { name: content.ask.declineLabel }));
+    const button = screen.getByRole('button', { name: copy.pauseLabels.askUseAnyway });
+    pauseStyled(button);
+    pauseStyled(screen.getByRole('button', { name: copy.pauseLabels.askDont }));
     await user.click(button);
     expectPause();
   });
@@ -180,7 +208,12 @@ describe('every route into the class pause uses the pause button', () => {
   });
 
   test('independent mode keeps the plain labels and no pause icons', async () => {
-    const user = await toAskReply('independent');
+    const terms = await toAskReply('independent', (r) => r === 'conditional');
+    expect(screen.getByRole('button', { name: content.ask.acceptLabel }).querySelector('svg.lucide-pause')).toBeNull();
+    await terms.click(screen.getByRole('button', { name: content.ask.declineLabel }));
+    for (const name of [/^Use it anyway$/, /^Don’t use it$/]) expect(screen.getByRole('button', { name }).querySelector('svg.lucide-pause')).toBeNull();
+    cleanup();
+    const user = await toAskReply('independent', (r) => r === 'yes');
     for (const name of [/^Use it$/, /^Don’t use it$/]) expect(screen.getByRole('button', { name }).querySelector('svg.lucide-pause')).toBeNull();
     await user.click(screen.getByRole('button', { name: /Run a fair use analysis/ }));
     await throughFairUse(user);

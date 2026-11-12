@@ -58,6 +58,8 @@ const factor = (): FairUseFactor => ({
   description: 'x',
   text: rec(STD, () => persona()),
 });
+const terms = () =>
+  rec(PERSONA_IDS, () => [{ kind: 'smallFee' as const, text: 'x', cartNote: 'x', effects: [{ meter: 'budget' as const, delta: -1 }], weight: 1 }]);
 const askResponses = () =>
   rec(PERSONA_IDS, () => rec(ASK_RESPONSE_IDS, () => ({ ...outcome(), effects: effects() })));
 
@@ -107,9 +109,11 @@ export function makeValidContent(): GameContent {
       fieldOptions: rec(['what', 'how', 'where', 'howLong'] as const, () => ({ label: 'x', options: ['x'] })),
       afterPrompt: 'x',
       responses: { free: askResponses(), permission: askResponses() },
-      terms: rec(PERSONA_IDS, () => [{ kind: 'smallFee' as const, text: 'x', cartNote: 'x', effects: [{ meter: 'budget' as const, delta: -1 }], weight: 1 }]),
+      terms: { free: terms(), permission: terms() },
       acceptLabel: 'x',
       declineLabel: 'x',
+      declineNote: 'x',
+      followUps: rec(['use', 'useAnyway', 'dont', 'fairUse'] as const, () => ({ label: 'x', note: 'x', effects: [] })),
     },
     clerk: {
       briefIntro: 'x',
@@ -128,6 +132,6 @@ export function makeValidContent(): GameContent {
     },
     reference: [{ id: 'x', title: 'x', body: 'x' }],
     resources: [{ name: 'x', url: 'x', description: 'x' }],
-    interstitial: { waitTitle: 'x', waitLead: 'x', waitBody: 'x', continueLabel: 'x', pauseLabel: 'x', pauseLabels: { fairUse: 'x', askUse: 'x', askDont: 'x' }, confirmMoveOn: { question: 'x', confirm: 'x', cancel: 'x' } },
+    interstitial: { waitTitle: 'x', waitLead: 'x', waitBody: 'x', continueLabel: 'x', pauseLabel: 'x', pauseLabels: { fairUse: 'x', askUse: 'x', askUseAnyway: 'x', askDont: 'x', askAccept: 'x' }, confirmMoveOn: { question: 'x', confirm: 'x', cancel: 'x' } },
   };
 }

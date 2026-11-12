@@ -9,7 +9,9 @@ export const interstitial: InterstitialCopy = {
   pauseLabels: {
     fairUse: 'Add to cart on a fair use basis and pause',
     askUse: 'Use it and pause',
+    askUseAnyway: 'Use it anyway and pause',
     askDont: 'Don’t use it and pause',
+    askAccept: 'Accept the terms and pause',
   },
   confirmMoveOn: {
     question: 'Has your facilitator said it’s time to move on?',
