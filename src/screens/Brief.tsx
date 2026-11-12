@@ -9,6 +9,7 @@ import { meterGlyph, meterWord } from '../components/MeterDisplay';
 import { btnPrimary, narrativePage } from '../components/styles';
 import { ui } from '../content/ui';
 import { band } from '../lib/meters';
+import { onward } from '../state';
 import { ScreenProps } from './types';
 
 const label = 'text-amber-400 font-bold uppercase tracking-widest text-xs mb-2';
@@ -89,7 +90,7 @@ export function Brief({ state, dispatch, content }: ScreenProps) {
       )}
 
       <ContinueBar>
-        <ChoiceButton className={btnPrimary} onSelect={() => dispatch({ type: 'FINISH_BRIEF' })}>
+        <ChoiceButton className={btnPrimary} onSelect={() => dispatch(onward(state, { type: 'FINISH_BRIEF' }))}>
           {content.interstitial.continueLabel} <ChevronRight aria-hidden="true" />
         </ChoiceButton>
       </ContinueBar>

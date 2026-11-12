@@ -29,7 +29,7 @@ function LiveHarness() {
   const [open, setOpen] = useState<PanelId | null>(null);
   return (
     <>
-      <Header state={state} content={content} openPanel={open} onOpen={setOpen} />
+      <Header state={state} content={content} openPanel={open} onOpen={setOpen} onBack={() => dispatch({ type: 'BACK' })} />
       <ReferencePanel entries={content.reference} resources={content.resources} open={open === 'reference'} onClose={() => setOpen(null)} />
       <button
         type="button"

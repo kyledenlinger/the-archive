@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 import { FlipStop, LicenseId, PersonaId, ReuseResponse } from '../content/types';
@@ -13,14 +12,16 @@ interface Props {
   flip: FlipStop;
   persona: PersonaId;
   license: LicenseId;
-  onRespond: (index: number, response: ReuseResponse) => void;
-  onComplete: () => void;
+  /** Which event is showing (0–2); lives in `state.page`. */
+  index: number;
+  /** The response already given to this event (from `state.flip.responses`), if any. Answers are final. */
+  chosen: ReuseResponse | null;
+  onRespond: (response: ReuseResponse) => void;
+  onNext: () => void;
 }
 
-/** The three reuse events, in order. There is no way back to the license picker from here. */
-export function ReuseEvents({ flip, persona, license, onRespond, onComplete }: Props) {
-  const [index, setIndex] = useState(0);
-  const [chosen, setChosen] = useState<ReuseResponse | null>(null);
+/** One reuse event. Once answered, it shows the answer and Next; Back (in the header) is the only way back. */
+export function ReuseEvents({ flip, persona, license, index, chosen, onRespond, onNext }: Props) {
   const kind = REUSE_ORDER[index];
   const event = flip.events[persona][kind];
 
@@ -37,13 +38,7 @@ export function ReuseEvents({ flip, persona, license, onRespond, onComplete }: P
             What do you do?
           </h3>
           {RESPONSE_ORDER.map((r) => (
-            <ChoiceButton
-              key={`${index}-${r}`}
-              onSelect={() => {
-                setChosen(r);
-                onRespond(index, r);
-              }}
-            >
+            <ChoiceButton key={`${index}-${r}`} onSelect={() => onRespond(r)}>
               {flip.responses[r].label}
             </ChoiceButton>
           ))}
@@ -51,15 +46,7 @@ export function ReuseEvents({ flip, persona, license, onRespond, onComplete }: P
       ) : (
         <div className="flex flex-wrap gap-6 items-center justify-between">
           <p className="font-mono text-sm text-amber-200">You chose: {flip.responses[chosen].label}.</p>
-          <ChoiceButton
-            className={btnPrimary}
-            onSelect={() => {
-              if (index < 2) {
-                setIndex(index + 1);
-                setChosen(null);
-              } else onComplete();
-            }}
-          >
+          <ChoiceButton key={`next-${index}`} className={btnPrimary} onSelect={onNext}>
             Next <ChevronRight aria-hidden="true" />
           </ChoiceButton>
         </div>

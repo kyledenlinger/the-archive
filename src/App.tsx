@@ -1,4 +1,4 @@
-import { useCallback, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { MotionConfig } from 'motion/react';
 import { content as defaultContent } from './content';
 import { GameContent } from './content/types';
@@ -55,14 +55,26 @@ export default function App({ seed, content = defaultContent }: { seed?: number;
     dispatch({ type: 'RESET', seed: Date.now() });
   }, []);
   const covered = panel !== null;
+  // After Back, focus goes to the restored page's main heading (nested headings focus first; this runs last).
+  const mainRef = useRef<HTMLElement>(null);
+  const focusAfterBack = useRef(false);
+  const goBack = useCallback(() => {
+    focusAfterBack.current = true;
+    dispatch({ type: 'BACK' });
+  }, []);
+  useEffect(() => {
+    if (!focusAfterBack.current) return;
+    focusAfterBack.current = false;
+    mainRef.current?.querySelector<HTMLElement>('h1')?.focus();
+  }, [state]);
 
   return (
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen bg-stone-950 text-amber-50 selection:bg-amber-500/30 selection:text-amber-200 overflow-x-hidden">
         <div inert={covered}>
-          <Header state={state} content={content} openPanel={panel} onOpen={setPanel} />
+          <Header state={state} content={content} openPanel={panel} onOpen={setPanel} onBack={goBack} />
         </div>
-        <main className="relative z-10" key={`${state.screen}-${state.stopIndex}`} inert={covered}>
+        <main ref={mainRef} className="relative z-10" key={`${state.screen}-${state.stopIndex}`} inert={covered}>
           <CurrentScreen state={state} dispatch={dispatch} content={content} openReference={openRef} />
         </main>
         <ReferencePanel entries={content.reference} resources={content.resources} open={panel === 'reference'} onClose={close} />

@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { content } from '../content';
 import { AskField } from '../content/types';
+import { ui } from '../content/ui';
 import { dealAskResponse } from '../lib/ask';
 import { cartButton, cartItemText, enterStop, passStopWithFirstChoice, startAs } from './helpers';
 
@@ -33,14 +34,18 @@ test('a well-formed request shows the dealt response', async () => {
   expect(screen.getByText(content.ask.afterPrompt)).toBeInTheDocument();
 });
 
-test('backing out and asking again gives the same answer (Review Focus 3)', async () => {
+test('a sent request is final: Back shows it as sent, and Continue returns to the same reply', async () => {
   const user = await toAsk();
+  expect(screen.queryByRole('button', { name: /Back to the choices/ })).not.toBeInTheDocument();
   await fill(user, 3);
   const first = content.ask.responses.permission!.artificer[dealAskResponse(1, 'artificer', 'permission', true, content.ask.odds?.permission?.artificer)].text;
   expect(screen.getByText(first)).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: /Back to the choices/ }));
-  await user.click(screen.getByRole('button', { name: /Ask for permission/ }));
-  await fill(user, 3);
+  expect(screen.queryByRole('button', { name: /Back to the choices/ })).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: ui.header.back }));
+  expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Send the request/ })).not.toBeInTheDocument();
+  expect(screen.getByText(content.ask.fieldOptions.what.options[0])).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /^Continue/ }));
   expect(screen.getByText(first)).toBeInTheDocument();
 });
 

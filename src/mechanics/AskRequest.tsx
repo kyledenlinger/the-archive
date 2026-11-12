@@ -1,90 +1,111 @@
-import { useState } from 'react';
+import { Dispatch } from 'react';
 import { motion } from 'motion/react';
-import { AskField, AskResponse, GameContent, PersonaId } from '../content/types';
+import { ChevronRight } from 'lucide-react';
+import { AskField, GameContent, StandardStopId } from '../content/types';
 import { askFollowUps } from '../content/ask';
 import { DEFAULT_ODDS, dealAskResponse, isWellFormed } from '../lib/ask';
 import { ScreenHeading } from '../components/ScreenHeading';
-import { ChoiceButton } from '../components/ChoiceButton';
-import { btnLink, btnPrimary, eyebrow } from '../components/styles';
-import { FairUseAnalysis } from './FairUseAnalysis';
+import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
+import { btnPrimary, eyebrow } from '../components/styles';
+import { Action, GameState, decisionKey, isReviewing, onward } from '../state';
 
 const FIELDS: AskField[] = ['what', 'how', 'where', 'howLong'];
+type FollowUp = 'use' | 'dont' | 'fairUse';
 
 interface Props {
+  state: GameState;
+  dispatch: Dispatch<Action>;
   content: GameContent;
-  persona: PersonaId;
-  seed: number;
-  onDone: (cartNote: string) => void;
-  onBack: () => void;
+  stopId: StandardStopId;
+  onRecord: (cartNote: string) => void;
 }
 
-export function AskRequest({ content, persona, seed, onDone, onBack }: Props) {
+/**
+ * The Ask form (`askForm` page) and the reply (`askReply` page). Once sent, the request is final: revisited
+ * with Back, the form shows what was sent, and the reply shows the follow-up chosen with the others locked.
+ * The follow-up fair use analysis is the stop's `fairUse` page with `via: 'ask'`.
+ */
+export function AskRequest({ state, dispatch, content, stopId, onRecord }: Props) {
   const ask = content.ask;
-  const [request, setRequest] = useState<Partial<Record<AskField, string>>>({});
-  const [response, setResponse] = useState<AskResponse | null>(null);
-  const [fairUse, setFairUse] = useState(false);
+  const persona = state.persona!;
+  const sent = state.asks[stopId];
 
-  if (!response) {
+  if (state.page.kind === 'askForm') {
+    const draft = state.page.draft;
     return (
       <form
         className="space-y-8"
         onSubmit={(e) => {
           e.preventDefault();
-          setResponse(
-            dealAskResponse(seed, persona, 'permission', isWellFormed(request), ask.odds?.permission?.[persona] ?? DEFAULT_ODDS),
-          );
+          const response = dealAskResponse(state.seed, persona, 'permission', isWellFormed(draft), ask.odds?.permission?.[persona] ?? DEFAULT_ODDS);
+          dispatch(onward(state, { type: 'SEND_ASK', stopId, request: draft, response }));
         }}
       >
         <ScreenHeading level={2} focusKey="ask-form" className={eyebrow}>
           Ask for permission
         </ScreenHeading>
         <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{ask.intro}</p>
-        <div className="grid gap-6 sm:grid-cols-2">
-          {FIELDS.map((f) => {
-            const { label, options } = ask.fieldOptions[f];
-            return (
-              <label key={f} className="flex flex-col gap-2 text-sm text-amber-200 font-bold uppercase tracking-widest">
-                {label}
-                <select
-                  value={request[f] ?? ''}
-                  onChange={(e) => setRequest((r) => ({ ...r, [f]: e.target.value }))}
-                  className="normal-case tracking-normal font-normal font-serif text-base text-amber-50 bg-stone-900 border border-amber-900/40 rounded-lg p-3"
-                >
-                  <option value="">(leave blank)</option>
-                  {options.map((o) => (
-                    <option key={o} value={o}>
-                      {o}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            );
-          })}
-        </div>
-        <div className="flex flex-wrap gap-6 items-center justify-between">
-          <button type="button" className={btnLink} onClick={onBack}>
-            Back to the choices
-          </button>
+        {sent ? (
+          <dl className="grid gap-6 sm:grid-cols-2" aria-label="The request you sent">
+            {FIELDS.map((f) => (
+              <div key={f} className="flex flex-col gap-2">
+                <dt className="text-sm text-amber-200 font-bold uppercase tracking-widest">{ask.fieldOptions[f].label}</dt>
+                <dd className="font-serif text-base text-amber-50">{sent.request[f] || '(left blank)'}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2">
+            {FIELDS.map((f) => {
+              const { label, options } = ask.fieldOptions[f];
+              return (
+                <label key={f} className="flex flex-col gap-2 text-sm text-amber-200 font-bold uppercase tracking-widest">
+                  {label}
+                  <select
+                    value={draft[f] ?? ''}
+                    onChange={(e) => dispatch({ type: 'SET_ASK_DRAFT', draft: { ...draft, [f]: e.target.value } })}
+                    className="normal-case tracking-normal font-normal font-serif text-base text-amber-50 bg-stone-900 border border-amber-900/40 rounded-lg p-3"
+                  >
+                    <option value="">(leave blank)</option>
+                    {options.map((o) => (
+                      <option key={o} value={o}>
+                        {o}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              );
+            })}
+          </div>
+        )}
+        <div className="flex justify-end">
           <button type="submit" className={btnPrimary}>
-            Send the request
+            {sent ? (
+              <>
+                {content.interstitial.continueLabel} <ChevronRight aria-hidden="true" />
+              </>
+            ) : (
+              'Send the request'
+            )}
           </button>
         </div>
       </form>
     );
   }
 
-  const answer = ask.responses.permission![persona][response]; // revision-2: Task 9/10 make this stop-aware
-  if (fairUse) {
-    return (
-      <FairUseAnalysis
-        stopId="permission"
-        persona={persona}
-        content={content}
-        onDone={(note) => onDone(`${answer.cartNote} ${askFollowUps.fairUse} ${note}`)}
-        onBack={() => setFairUse(false)}
-      />
-    );
-  }
+  if (!sent) return null;
+  const answer = ask.responses.permission![persona][sent.response]; // revision-2: Task 9/10 make this stop-aware
+  const made = state.decisions[decisionKey.askFollowUp(stopId)];
+  const follow = (f: FollowUp) => {
+    if (isReviewing(state)) return dispatch({ type: 'FORWARD' });
+    if (f === 'fairUse') {
+      dispatch({ type: 'DECIDE', key: decisionKey.askFollowUp(stopId), value: f, page: { kind: 'fairUse', factor: 0, via: 'ask' } });
+      return;
+    }
+    // The follow-up is kept so the reply can show it if revisited; recording moves on to the pause or debrief.
+    dispatch({ type: 'DECIDE', key: decisionKey.askFollowUp(stopId), value: f });
+    onRecord(`${answer.cartNote} ${askFollowUps[f]}`);
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
@@ -96,13 +117,10 @@ export function AskRequest({ content, persona, seed, onDone, onBack }: Props) {
         <h3 id="after-ask" className="text-amber-200 text-sm uppercase tracking-widest font-bold">
           {ask.afterPrompt}
         </h3>
-        <ChoiceButton onSelect={() => onDone(`${answer.cartNote} ${askFollowUps.use}`)}>Use it</ChoiceButton>
-        <ChoiceButton onSelect={() => onDone(`${answer.cartNote} ${askFollowUps.dont}`)}>Don’t use it</ChoiceButton>
-        <ChoiceButton onSelect={() => setFairUse(true)}>Run a fair use analysis</ChoiceButton>
+        <ChoiceButton {...decidedProps(made, 'use')} onSelect={() => follow('use')}>Use it</ChoiceButton>
+        <ChoiceButton {...decidedProps(made, 'dont')} onSelect={() => follow('dont')}>Don’t use it</ChoiceButton>
+        <ChoiceButton {...decidedProps(made, 'fairUse')} onSelect={() => follow('fairUse')}>Run a fair use analysis</ChoiceButton>
       </div>
-      <button type="button" className={btnLink} onClick={onBack}>
-        Back to the choices
-      </button>
     </motion.div>
   );
 }

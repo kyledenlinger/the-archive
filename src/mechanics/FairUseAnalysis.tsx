@@ -1,14 +1,13 @@
-import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Effects, GameContent, Meters, PersonaId, StandardStopId } from '../content/types';
 import { fairUseEffects, previewChanges } from '../lib/meters';
 import { ChangeLines } from '../components/MeterDisplay';
 import { ScreenHeading } from '../components/ScreenHeading';
-import { ChoiceButton } from '../components/ChoiceButton';
+import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
 import { ClerkSpeech } from '../components/ClerkSpeech';
 import { eyebrow } from '../components/styles';
+import { Lean } from '../state';
 
-type Lean = 'supports' | 'complicates' | 'unsure';
 const LEAN_LABEL: Record<Lean, string> = {
   supports: 'This supports fair use',
   complicates: 'This complicates fair use',
@@ -19,16 +18,22 @@ interface Props {
   stopId: StandardStopId;
   persona: PersonaId;
   content: GameContent;
+  /** Which factor is showing (0–3), or 4 for the summary. Lives in `state.page`. */
+  factor: number;
+  /** The answer given for each factor so far (from `state.decisions`); an answered factor is final. */
+  answers: (Lean | undefined)[];
+  /** True on a page revisited with Back: the summary's button only moves forward. */
+  reviewing: boolean;
   /** Current meters; when given, the summary previews what relying on the analysis changes. */
   meters?: Meters;
+  onAnswer: (lean: Lean) => void;
   onDone: (cartNote: string, effects: Effects) => void;
-  onBack: () => void;
 }
 
-export function FairUseAnalysis({ stopId, persona, content, meters, onDone, onBack }: Props) {
-  const [answers, setAnswers] = useState<Lean[]>([]);
+/** The four factors, one page each, then the summary. There is no way out but through: starting it is a choice. */
+export function FairUseAnalysis({ stopId, persona, content, factor, answers, reviewing, meters, onAnswer, onDone }: Props) {
   const { factors, assessments } = content.fairUse;
-  const step = answers.length; // 0–3: factors; 4: summary
+  const step = Math.min(factor, 4);
   const assessment = assessments[stopId][persona];
   const effects = fairUseEffects(assessment.strength);
 
@@ -54,7 +59,12 @@ export function FairUseAnalysis({ stopId, persona, content, meters, onDone, onBa
           <p className="bg-stone-900/50 border border-amber-900/20 p-6 sm:p-8 rounded-2xl font-serif text-amber-50/90 text-lg leading-relaxed">{f.text[stopId][persona]}</p>
           <div className="grid gap-4" role="group" aria-label="How does this factor lean?">
             {(Object.keys(LEAN_LABEL) as Lean[]).map((lean) => (
-              <ChoiceButton key={`${step}-${lean}`} className="choice-btn justify-center text-center" onSelect={() => setAnswers((a) => (a.length === step ? [...a, lean] : a))}>
+              <ChoiceButton
+                key={`${step}-${lean}`}
+                className="choice-btn justify-center text-center"
+                {...decidedProps(answers[step], lean)}
+                onSelect={() => onAnswer(lean)}
+              >
                 {LEAN_LABEL[lean]}
               </ChoiceButton>
             ))}
@@ -81,7 +91,7 @@ export function FairUseAnalysis({ stopId, persona, content, meters, onDone, onBa
             {factors.map((f, i) => (
               <tr key={f.title} className="border-b border-amber-900/10">
                 <th scope="row" className="p-4 font-bold text-amber-200">{f.title}</th>
-                <td className="p-4">{LEAN_LABEL[answers[i]]}</td>
+                <td className="p-4">{answers[i] ? LEAN_LABEL[answers[i]] : ''}</td>
               </tr>
             ))}
           </tbody>
@@ -91,10 +101,7 @@ export function FairUseAnalysis({ stopId, persona, content, meters, onDone, onBa
       {meters && <ChangeLines changes={previewChanges(meters, effects)} />}
       <div className="flex flex-col gap-4">
         <ChoiceButton className="choice-btn bg-amber-900/20 border-amber-500/50 justify-center text-center" onSelect={() => onDone('Fair use basis. ' + assessment.text, effects)}>
-          Add to cart on a fair use basis
-        </ChoiceButton>
-        <ChoiceButton className="choice-btn justify-center text-center" onSelect={onBack}>
-          Go back to the choices
+          {reviewing ? 'Continue' : 'Add to cart on a fair use basis'}
         </ChoiceButton>
       </div>
     </div>

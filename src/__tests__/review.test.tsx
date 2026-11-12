@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import { content } from '../content';
 import { PersonaId } from '../content/types';
 import { review } from '../content/review';
-import { cartItemText, enterStop, startAs } from './helpers';
+import { enterStop, leaveInterstitial, startAs } from './helpers';
 
 const stop = content.stops.free;
 const label = (id: string) => stop.choices.find((c) => c.id === id)!.label;
@@ -18,20 +18,9 @@ test.each(['class', 'independent'] as const)('the %s-mode interstitial shows the
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
   expect(screen.getByText(review.yourChoice)).toBeInTheDocument();
   expect(screen.getByText(note('take', 'bard'))).toBeInTheDocument();
-});
-
-test('going back to the stop and choosing again replaces the cart note', async () => {
-  const user = await startAs('herald');
-  await enterStop(user);
-  await user.click(screen.getByRole('button', { name: label('take') }));
-  await user.click(screen.getByRole('button', { name: /Add to cart/ }));
-  await user.click(screen.getByRole('button', { name: review.goBack }));
-  expect(screen.getByRole('group', { name: /What do you do/ })).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: label('leave') }));
-  await user.click(screen.getByRole('button', { name: /Add to cart/ }));
-  expect(screen.getByText(note('leave', 'herald'))).toBeInTheDocument();
-  expect(screen.queryByText(note('take', 'herald'))).not.toBeInTheDocument();
-  expect(await cartItemText(user, 'free')).toContain(note('leave', 'herald'));
+  // Choices are final: there is no way back from here to redo it.
+  expect(screen.queryByRole('button', { name: /go back/i })).not.toBeInTheDocument();
+  expect(screen.queryByText(/choose again/i)).not.toBeInTheDocument();
 });
 
 test('the cart so far lists earlier stops behind a toggle', async () => {
@@ -39,7 +28,7 @@ test('the cart so far lists earlier stops behind a toggle', async () => {
   await enterStop(user);
   await user.click(screen.getByRole('button', { name: label('take') }));
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
-  await user.click(screen.getByRole('button', { name: content.interstitial.continueLabel }));
+  await leaveInterstitial(user);
   await enterStop(user);
   await user.click(screen.getByRole('button', { name: content.stops.layers.choices[0].label }));
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));

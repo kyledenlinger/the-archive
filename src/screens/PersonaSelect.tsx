@@ -1,10 +1,12 @@
 import { User } from 'lucide-react';
 import { ui } from '../content/ui';
 import { ScreenHeading } from '../components/ScreenHeading';
-import { ChoiceButton } from '../components/ChoiceButton';
+import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
+import { onward } from '../state';
 import { ScreenProps } from './types';
 
-export function PersonaSelect({ dispatch, content }: ScreenProps) {
+/** Revisited with Back, your persona is marked and the others are locked: the choice is final. */
+export function PersonaSelect({ state, dispatch, content }: ScreenProps) {
   return (
     <div className="min-h-screen py-20 px-6 sm:px-8 max-w-6xl mx-auto">
       <div className="text-center mb-12">
@@ -15,7 +17,8 @@ export function PersonaSelect({ dispatch, content }: ScreenProps) {
         {content.personas.map((p) => (
           <ChoiceButton
             key={p.id}
-            onSelect={() => dispatch({ type: 'CHOOSE_PERSONA', persona: p.id, startMeters: p.startMeters })}
+            {...decidedProps(state.persona ?? undefined, p.id)}
+            onSelect={() => dispatch(onward(state, { type: 'CHOOSE_PERSONA', persona: p.id, startMeters: p.startMeters }))}
             className="bg-stone-900/50 border border-amber-900/20 p-8 rounded-2xl text-left hover:border-amber-500/50 hover:-translate-y-1 transition-all group relative overflow-hidden"
           >
             <span className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity" aria-hidden="true">

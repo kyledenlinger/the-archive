@@ -103,7 +103,17 @@ export interface OnboardingPiece { kind: 'narration' | 'clerk'; text: string }
 export interface OnboardingContent { lines: OnboardingPiece[][] }
 export interface ReferenceEntry { id: string; title: string; body: string }
 export interface Resource { name: string; url: string; description: string; reviewBy?: ReviewFlag }
-export interface InterstitialCopy { waitTitle: string; waitBody: string; continueLabel: string }
+export interface InterstitialCopy {
+  waitTitle: string;
+  /** The pause card's first line, under the heading. */
+  waitLead: string;
+  waitBody: string;
+  continueLabel: string;
+  /** Class mode: the outcome button that records the stop and goes to the pause card. */
+  pauseLabel: string;
+  /** Class mode: asked before leaving the pause card. */
+  confirmMoveOn: { question: string; confirm: string; cancel: string };
+}
 
 export interface GameContent {
   personas: Persona[];

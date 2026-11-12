@@ -50,9 +50,15 @@ export const ui = {
     time: 'You’re out of time for this.',
     budget: 'You’re already over budget.',
     searched: 'You already looked. No luck.',
+    /** On a page revisited with Back: choices are final. */
+    decided: 'You’ve already decided this one.',
   },
 
+  /** Marks the option you chose, on a page revisited with Back. */
+  yourChoice: 'Your choice',
+
   header: {
+    back: 'Back',
     home: 'Home',
     cart: 'Cart',
     cartCount: (found: number) => `${found} of 3 found`,

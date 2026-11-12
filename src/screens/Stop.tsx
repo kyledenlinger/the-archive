@@ -1,69 +1,77 @@
-import { useState } from 'react';
 import { motion } from 'motion/react';
-import { ChevronRight, FileText } from 'lucide-react';
+import { ChevronRight, FileText, Pause } from 'lucide-react';
 import { Choice, Effects, Outcome, PersonaId, STOP_ORDER, StandardStop, StandardStopId } from '../content/types';
 import { ScreenHeading } from '../components/ScreenHeading';
 import { ClerkSpeech } from '../components/ClerkSpeech';
-import { ChoiceButton } from '../components/ChoiceButton';
+import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
 import { ContinueBar } from '../components/ContinueBar';
 import { ChangeLines } from '../components/MeterDisplay';
 import { ui } from '../content/ui';
+import { askFollowUps } from '../content/ask';
 import { FAIR_USE_TIME_COST, effectsFor, lockReason, previewChanges } from '../lib/meters';
-import { btnLink, btnPrimary, caseNote, eyebrow, narrativePage, page } from '../components/styles';
+import { btnPause, btnPrimary, caseNote, eyebrow, narrativePage, page as pageClass } from '../components/styles';
 import { FairUseAnalysis } from '../mechanics/FairUseAnalysis';
 import { AskRequest } from '../mechanics/AskRequest';
+import { Lean, Page, decisionKey, isReviewing, onward } from '../state';
 import { ScreenProps } from './types';
-
-type Sub =
-  | { kind: 'intro' }
-  | { kind: 'choices' }
-  | { kind: 'outcome'; outcome: Outcome; effects: Effects }
-  | { kind: 'fairUse' }
-  | { kind: 'ask' };
 
 export function outcomeFor(choice: Choice, persona: PersonaId): Outcome {
   const o = choice.outcome!;
   return 'cartNote' in o ? (o as Outcome) : (o as Record<PersonaId, Outcome>)[persona];
 }
 
-export function Stop({ state, dispatch, content }: ScreenProps) {
+const FACTORS = [0, 1, 2, 3];
+
+/**
+ * One standard stop. Which page shows (intro, choices, outcome, fair use, Ask) is `state.page`, so Back can
+ * return to any of them. Choices are final: picking one is recorded as a decision, and a page revisited with
+ * Back shows what was chosen, with every other option locked. Forward buttons there only move forward.
+ */
+export function Stop(props: ScreenProps) {
+  const { state, dispatch, content } = props;
   const stopId = STOP_ORDER[state.stopIndex] as StandardStopId;
   const stop: StandardStop = content.stops[stopId];
   const persona = state.persona!;
-  // Revisiting a stop already in the cart opens straight on the choices.
-  const [sub, setSub] = useState<Sub>(state.cart[stopId] ? { kind: 'choices' } : { kind: 'intro' });
-  // Effects are applied only here, on “Add to cart”; outcome screens preview them.
-  const record = (cartNote: string, effects: Effects = []) => dispatch({ type: 'RECORD_STOP', stopId, cartNote, effects });
-  const back = () => setSub({ kind: 'choices' });
+  const page = state.page;
+  const reviewing = isReviewing(state);
+  const pause = state.mode === 'class';
+  const made = state.decisions[decisionKey.choice(stopId)];
+
+  // Effects are applied only on “Add to cart”; outcome screens preview them.
+  const record = (cartNote: string, effects: Effects = []) => dispatch(onward(state, { type: 'RECORD_STOP', stopId, cartNote, effects }));
+  const choose = (choice: Choice, next: Page) =>
+    dispatch(onward(state, { type: 'DECIDE', key: decisionKey.choice(stopId), value: choice.id, page: next }));
 
   const pick = (choice: Choice) => {
     if (choice.mechanic === 'fairUse') {
-      // The time spent on the analysis is sunk once per visit; the reducer ignores a repeated key.
+      // The time spent on the analysis is sunk once per stop; the reducer ignores it while reviewing.
       dispatch({ type: 'APPLY_EFFECTS', effects: FAIR_USE_TIME_COST, key: 'fairUse' });
-      setSub({ kind: 'fairUse' });
-    } else if (choice.mechanic === 'ask') setSub({ kind: 'ask' });
-    else setSub({ kind: 'outcome', outcome: outcomeFor(choice, persona), effects: effectsFor(choice.effects, persona) });
+      choose(choice, { kind: 'fairUse', factor: 0 });
+    } else if (choice.mechanic === 'ask') choose(choice, { kind: 'askForm', draft: {} });
+    else choose(choice, { kind: 'outcome', choiceId: choice.id });
   };
 
+  const narrative = page.kind === 'intro' || page.kind === 'outcome';
+
   return (
-    <div className={sub.kind === 'intro' || sub.kind === 'outcome' ? narrativePage : page}>
-      <ScreenHeading focusKey={sub.kind} className="mb-10">
+    <div className={narrative ? narrativePage : pageClass}>
+      <ScreenHeading focusKey={page.kind} className="mb-10">
         <span className={`block ${eyebrow} mb-3`}>Stop {state.stopIndex + 1} of 4</span>
         <span className="block text-3xl sm:text-4xl font-serif italic text-amber-100">{stop.title}</span>
       </ScreenHeading>
 
-      {sub.kind === 'intro' && (
+      {page.kind === 'intro' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
           <ClerkSpeech text={stop.clerkIntro} />
           <ContinueBar>
-            <button type="button" className={btnPrimary} onClick={() => setSub({ kind: 'choices' })}>
+            <button type="button" className={btnPrimary} onClick={() => dispatch(onward(state, { type: 'GO_TO', page: { kind: 'choices' } }))}>
               Look closer <ChevronRight aria-hidden="true" />
             </button>
           </ContinueBar>
         </motion.div>
       )}
 
-      {sub.kind === 'choices' && (
+      {page.kind === 'choices' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10 font-serif text-amber-50/90 text-lg leading-relaxed">
           <p>{stop.setup[persona]}</p>
           <div className="h-px bg-amber-900/30" aria-hidden="true" />
@@ -75,7 +83,7 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
             {stop.choices.map((c) => {
               const lock = lockReason(c, state.meters);
               return (
-                <ChoiceButton key={c.id} onSelect={() => pick(c)} lockedReason={lock ? ui.lockReasons[lock] : undefined}>
+                <ChoiceButton key={c.id} onSelect={() => pick(c)} {...decidedProps(made, c.id, lock ? ui.lockReasons[lock] : undefined)}>
                   {c.label}
                 </ChoiceButton>
               );
@@ -84,28 +92,81 @@ export function Stop({ state, dispatch, content }: ScreenProps) {
         </motion.div>
       )}
 
-      {sub.kind === 'outcome' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
-          <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{sub.outcome.text}</p>
-          <ChangeLines changes={previewChanges(state.meters, sub.effects)} />
-          <CaseNote note={sub.outcome.cartNote} />
-          <button type="button" className={btnLink} onClick={back}>
-            Choose again
-          </button>
-          <ContinueBar>
-            <ChoiceButton className={btnPrimary} onSelect={() => record(sub.outcome.cartNote, sub.effects)}>
-              Add to cart <ChevronRight aria-hidden="true" />
-            </ChoiceButton>
-          </ContinueBar>
-        </motion.div>
+      {page.kind === 'outcome' && <OutcomePage {...props} choiceId={page.choiceId} record={record} pause={pause} reviewing={reviewing} />}
+
+      {page.kind === 'fairUse' && (
+        <FairUseAnalysis
+          stopId={stopId}
+          persona={persona}
+          content={content}
+          factor={page.factor}
+          answers={FACTORS.map((i) => state.decisions[decisionKey.factor(stopId, i)] as Lean | undefined)}
+          reviewing={reviewing}
+          meters={page.via === 'ask' || reviewing ? undefined : state.meters}
+          onAnswer={(lean) =>
+            dispatch(
+              onward(state, {
+                type: 'DECIDE',
+                key: decisionKey.factor(stopId, page.factor),
+                value: lean,
+                page: { kind: 'fairUse', factor: page.factor + 1, via: page.via },
+              }),
+            )
+          }
+          onDone={(note, effects) => {
+            const ask = state.asks[stopId];
+            if (page.via === 'ask' && ask) {
+              const answer = content.ask.responses.permission![persona][ask.response]; // revision-2: Task 9/10 make this stop-aware
+              record(`${answer.cartNote} ${askFollowUps.fairUse} ${note}`);
+            } else record(note, effects);
+          }}
+        />
       )}
 
-      {sub.kind === 'fairUse' && (
-        <FairUseAnalysis stopId={stopId} persona={persona} content={content} meters={state.meters} onDone={record} onBack={back} />
+      {(page.kind === 'askForm' || page.kind === 'askReply') && (
+        <AskRequest state={state} dispatch={dispatch} content={content} stopId={stopId} onRecord={(note) => record(note)} />
       )}
-
-      {sub.kind === 'ask' && <AskRequest content={content} persona={persona} seed={state.seed} onDone={(note) => record(note)} onBack={back} />}
     </div>
+  );
+}
+
+/** A plain choice's outcome. At the frontier it previews the meter changes and records on its primary button. */
+function OutcomePage({
+  state,
+  content,
+  choiceId,
+  record,
+  pause,
+  reviewing,
+}: ScreenProps & { choiceId: string; record: (note: string, effects: Effects) => void; pause: boolean; reviewing: boolean }) {
+  const stop = content.stops[STOP_ORDER[state.stopIndex] as StandardStopId];
+  const choice = stop.choices.find((c) => c.id === choiceId);
+  if (!choice?.outcome) return null;
+  const outcome = outcomeFor(choice, state.persona!);
+  const effects = effectsFor(choice.effects, state.persona!);
+  const copy = content.interstitial;
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
+      <p className="font-serif text-amber-50/90 text-lg leading-relaxed">{outcome.text}</p>
+      {!reviewing && <ChangeLines changes={previewChanges(state.meters, effects)} />}
+      <CaseNote note={outcome.cartNote} />
+      <ContinueBar>
+        {reviewing ? (
+          <ChoiceButton className={btnPrimary} onSelect={() => record(outcome.cartNote, effects)}>
+            {copy.continueLabel} <ChevronRight aria-hidden="true" />
+          </ChoiceButton>
+        ) : pause ? (
+          // Class mode: the next screen is the pause card, so this button looks and reads differently (not by color alone).
+          <ChoiceButton className={btnPause} onSelect={() => record(outcome.cartNote, effects)}>
+            <Pause aria-hidden="true" /> {copy.pauseLabel}
+          </ChoiceButton>
+        ) : (
+          <ChoiceButton className={btnPrimary} onSelect={() => record(outcome.cartNote, effects)}>
+            Add to cart <ChevronRight aria-hidden="true" />
+          </ChoiceButton>
+        )}
+      </ContinueBar>
+    </motion.div>
   );
 }
 

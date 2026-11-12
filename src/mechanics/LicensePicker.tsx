@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { BookOpen } from 'lucide-react';
 import { FlipStop, LICENSE_IDS, LicenseId } from '../content/types';
-import { ChoiceButton } from '../components/ChoiceButton';
+import { ChoiceButton, decidedProps } from '../components/ChoiceButton';
 import { ClerkSpeech } from '../components/ClerkSpeech';
 
 interface Props {
   flip: FlipStop;
   onChoose: (license: LicenseId) => void;
   openReference?: () => void;
+  /** The license already picked (from `state.flip.license`), if any. The pick is final. */
+  chosen?: LicenseId | null;
 }
 
-export function LicensePicker({ flip, onChoose, openReference }: Props) {
+export function LicensePicker({ flip, onChoose, openReference, chosen }: Props) {
   const [shown, setShown] = useState<Partial<Record<LicenseId, boolean>>>({});
   return (
     <div className="space-y-6">
@@ -46,7 +48,12 @@ export function LicensePicker({ flip, onChoose, openReference }: Props) {
                 </p>
               )}
               <div>
-                <ChoiceButton className="choice-btn !w-auto !p-4" ariaLabel={`Choose ${l.label}`} onSelect={() => onChoose(id)}>
+                <ChoiceButton
+                  className="choice-btn !w-auto !p-4"
+                  ariaLabel={`Choose ${l.label}`}
+                  {...decidedProps(chosen ?? undefined, id)}
+                  onSelect={() => onChoose(id)}
+                >
                   Choose this license
                 </ChoiceButton>
               </div>

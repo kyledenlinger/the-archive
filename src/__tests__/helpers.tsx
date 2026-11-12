@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { content } from '../content';
@@ -33,8 +33,18 @@ export async function enterStop(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole('button', { name: /Look closer/ }));
 }
 
+/**
+ * Leave the between-stops screen: the debrief's Continue in independent mode, or, in class mode, the pause
+ * card's Continue and then “Yes, continue” in the facilitator confirm.
+ */
+export async function leaveInterstitial(user: ReturnType<typeof userEvent.setup>) {
+  const copy = content.interstitial;
+  await user.click(screen.getByRole('button', { name: copy.continueLabel }));
+  const dialog = screen.queryByRole('alertdialog', { name: copy.confirmMoveOn.question });
+  if (dialog) await user.click(within(dialog).getByRole('button', { name: copy.confirmMoveOn.confirm }));
+}
 
-/** Record a stop with its first plain choice and pass the class-mode wait screen. */
+/** Record a stop with its first plain choice and pass the wait screen (class) or debrief (independent). */
 export async function passStopWithFirstChoice(user: ReturnType<typeof userEvent.setup>) {
   await enterStop(user);
   const stop = [content.stops.free, content.stops.layers, content.stops.permission].find((s) =>
@@ -43,7 +53,7 @@ export async function passStopWithFirstChoice(user: ReturnType<typeof userEvent.
   const first = stop.choices.find((c) => !c.mechanic)!;
   await user.click(screen.getByRole('button', { name: first.label }));
   await user.click(screen.getByRole('button', { name: /Add to cart/ }));
-  await user.click(screen.getByRole('button', { name: content.interstitial.continueLabel }));
+  await leaveInterstitial(user);
 }
 
 /** Play from the start through stop 3 (first plain choice each time), landing on the flip. */

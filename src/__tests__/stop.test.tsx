@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { content } from '../content';
 import { PersonaId } from '../content/types';
 import { cartButton, startAs, enterStop } from './helpers';
@@ -54,13 +54,14 @@ test('fair use walks four factors, then the assessment, then records a fair-use 
   expect(screen.getByRole('heading', { level: 1, name: content.interstitial.waitTitle })).toBeInTheDocument();
 });
 
-test('going back from the fair use assessment returns to the choices with the cart unchanged', async () => {
+test('starting fair use is a choice: the summary offers no way back to the choices, and the cart is unchanged until Add to cart', async () => {
   const user = await startAs('artificer');
   await enterStop(user);
   await user.click(screen.getByRole('button', { name: fairUseLabel }));
   for (let i = 0; i < 4; i++) await user.click(screen.getByRole('button', { name: /Not sure yet/ }));
-  await user.click(screen.getByRole('button', { name: /Go back to the choices/ }));
-  const choices = screen.getByRole('group', { name: /What do you do/ });
-  expect(within(choices).getByRole('button', { name: leaveLabel })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Go back to the choices/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('group', { name: /What do you do/ })).not.toBeInTheDocument();
   expect(cartButton(0)).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Add to cart on a fair use basis/ }));
+  expect(cartButton(1)).toBeInTheDocument();
 });

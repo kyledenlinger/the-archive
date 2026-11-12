@@ -8,3 +8,9 @@ export const page = 'min-h-screen py-24 px-6 sm:px-8 max-w-3xl mx-auto';
 /** A page whose primary Continue sits in the fixed ContinueBar: `pb-28` keeps the last line clear of the bar. */
 export const narrativePage = 'min-h-screen pt-24 pb-28 px-6 sm:px-8 max-w-3xl mx-auto';
 export const caseNote = 'font-mono text-amber-100/90 text-sm leading-relaxed border-l-2 border-amber-900/50 pl-6 py-2';
+/**
+ * Class mode's “Add to cart and pause”: an outlined, dashed, squarer button with a pause icon, so it reads
+ * as different from Continue by shape and icon, not by color alone.
+ */
+export const btnPause =
+  'px-8 py-4 bg-stone-950 text-amber-100 rounded-lg font-serif text-xl hover:bg-amber-900/30 transition-all border-2 border-dashed border-amber-400 inline-flex items-center gap-3';
